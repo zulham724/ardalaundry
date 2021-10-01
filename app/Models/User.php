@@ -43,4 +43,16 @@ class User extends \TCG\Voyager\Models\User
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function packages(){
+        return $this->belongsToMany('App\Models\Package','package_users')->withPivot(['expired_date']);
+    }
+
+    public function shop(){
+        return $this->hasOne('App\Models\Shop');
+    }
+
+    public function branches(){
+        return $this->belongsToMany('App\Models\User','branches','slave_id','master_id');
+    }
 }
