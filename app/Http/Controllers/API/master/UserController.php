@@ -70,4 +70,11 @@ class UserController extends Controller
         })->get();
         return response()->json($res);
     }
+
+    public function slaves(){
+        $res = User::with('shop')->whereHas('branches',function($query){
+            $query->where('master_id',Auth::user()->id);
+        })->get();
+        return response()->json($res);
+    }
 }

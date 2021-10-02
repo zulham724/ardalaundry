@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\master;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ServiceController extends Controller
 {
@@ -61,5 +62,12 @@ class ServiceController extends Controller
     public function destroy(Service $service)
     {
         //
+    }
+
+    public function getServiceBySlave($slaveId){
+        $res = Service::with('category')->whereHas('shop.user',function($query)use($slaveId){
+            $query->where('id',$slaveId);
+        })->get();
+        return response()->json($res);
     }
 }
