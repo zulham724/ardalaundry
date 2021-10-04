@@ -21,4 +21,8 @@ class Shop extends Model
     {
         return $this->belongsToMany('App\Models\User', 'shop_employees', 'shop_id', 'user_id');
     }
+
+    public function orders(){
+        return $this->hasMany('App\Models\Order');
+    }
 }

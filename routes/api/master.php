@@ -35,6 +35,9 @@ Route::get('/slave/{shopid}/services',[ServiceController::class,'getServiceBySla
 Route::get('/slave/{slaveid}/orders',[OrderController::class,'getOrdersBySlave']);//kurang meanmpilkan email user
 Route::get('/shop/{shopid}/customers',[ShopController::class,'getCustomersByShop']);
 Route::get('/shop/{shopid}/employee',[ShopController::class,'getEmployeesByShop']);
+Route::get('/shop/{shopid}/orderscount', [OrderController::class, 'geOrderCountByShop']);
+Route::get('/shop/{shopid}/gettotalprice', [OrderController::class, 'getTotalPriceByShop']);
+Route::get('/shop/{shopid}/getcurrentprofit', [OrderController::class, 'getCurrentProfitByShop']);
 // -----------
 // buat cabang dari akun master lalu buat masing-masing cabang shop
 Route::post('/branch',[BranchController::class,'store']);
