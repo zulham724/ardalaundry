@@ -52,7 +52,20 @@ class User extends \TCG\Voyager\Models\User
         return $this->hasOne('App\Models\Shop');
     }
 
-    public function branches(){
-        return $this->belongsToMany('App\Models\User','branches','slave_id','master_id');
+    public function slaves(){
+        return $this->belongsToMany('App\Models\User','branches','master_id','slave_id');
+    }
+
+    public function master(){
+        return $this->belongsToMany('App\Models\User', 'branches', 'slave_id', 'master_id');
+    }
+
+    public function customer_shops(){
+        return $this->belongsToMany('App\Models\Shop','shop_customers','user_id','shop_id');
+    }
+
+    public function employee_shops()
+    {
+        return $this->belongsToMany('App\Models\Shop', 'shop_employees', 'user_id', 'shop_id');
     }
 }

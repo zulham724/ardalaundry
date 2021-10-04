@@ -64,9 +64,9 @@ class ServiceController extends Controller
         //
     }
 
-    public function getServiceBySlave($slaveId){
-        $res = Service::with('category')->whereHas('shop.user',function($query)use($slaveId){
-            $query->where('id',$slaveId);
+    public function getServiceBySlave($shopId){
+        $res = Service::with('category')->whereHas('shop',function($query)use($shopId){
+            $query->where('id',$shopId);
         })->get();
         return response()->json($res);
     }

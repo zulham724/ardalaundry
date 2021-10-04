@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
+use App\Models\User;
+use App\Models\Shop;
 use Illuminate\Http\Request;
 
 class BranchController extends Controller
@@ -28,7 +30,28 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd(User::orderBy('created_at','desc')->first());
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|unique:users',
+            'password' => 'required'
+
+        ]);
+
+        $slave = new User();
+        $slave->role_id = 4;
+        $slave->name = $request->name;
+        $slave->email = $request->email;
+        $slave->password = bcrypt($request->password);
+        $slave->save();
+        $shop = new Shop();
+        $shop->name = $request->shop_name;
+        $shop->description = $request->shop_desc ?? null;
+        $slave->shop()->save($shop);
+        $request->user()->branches()->attach($slave->id);
+
+
+        return $request->user()->load('branches.shop');
     }
 
     /**

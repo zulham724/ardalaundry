@@ -29,13 +29,18 @@ Route::get('/getsubscribestatus',[PackageUserController::class,'getsubscribestat
 Route::get('/slaves',[UserController::class,'slaves']);
 Route::get('/shops',[ShopController::class,'index']);
 Route::get('/branches',[UserController::class,'branches']);
-Route::get('/slave/{slaveId}/services',[ServiceController::class,'getServiceBySlave']);
+Route::get('/slave/{shopid}/services',[ServiceController::class,'getServiceBySlave']);
 //ini belum
 // mirip getservuceBbyslave
-Route::get('/slave/{slaveid}/orders',[OrderController::class,'getOrdersBySlave']);
-Route::get('/slave/{slaveid}/customers',[UserController::class,'getCustomersBySlave']);
-Route::get('/slave/{slaveid}/employee',[UserController::class,'getEmployeesBySlave']);
+Route::get('/slave/{slaveid}/orders',[OrderController::class,'getOrdersBySlave']);//kurang meanmpilkan email user
+Route::get('/shop/{shopid}/customers',[ShopController::class,'getCustomersByShop']);
+Route::get('/shop/{shopid}/employee',[ShopController::class,'getEmployeesByShop']);
 // -----------
 // buat cabang dari akun master lalu buat masing-masing cabang shop
 Route::post('/branch',[BranchController::class,'store']);
 //------------
+
+Route::get('test',function(){
+    $res = \App\Models\User::with('branches')->find(2);
+    return $res;
+});

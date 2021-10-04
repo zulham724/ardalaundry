@@ -65,15 +65,29 @@ class UserController extends Controller
     }
 
     public function branches(){
-        $res = User::with('shop')->whereHas('branches',function($query){
+        // return 'asd';
+        $res = User::with('shop')->has('shop')->whereHas('role',fn($query)=>$query->where('id',4))->whereHas('master',fn($query)=>$query->where('master_id',Auth::user()->id))->get();
+        return response()->json($res);
+    }
+
+    public function slaves(){
+        $res = User::with('shop')->whereHas('master',function($query){
             $query->where('master_id',Auth::user()->id);
         })->get();
         return response()->json($res);
     }
 
-    public function slaves(){
-        $res = User::with('shop')->whereHas('branches',function($query){
-            $query->where('master_id',Auth::user()->id);
+    public function getCustomersBySlave($slaiveId){
+        $res = User::with('customer')->whereHas('shop.user', function($query)use($slaiveId) {
+            $query->where('id', $slaiveId);
+        })->get();
+        return response()->json($res);
+    }
+
+    public function getEmployeesBySlave($slaiveId)
+    {
+        $res = User::with('employee')->whereHas('shop.user', function($query)use($slaiveId) {
+            $query->where('id', $slaiveId);
         })->get();
         return response()->json($res);
     }

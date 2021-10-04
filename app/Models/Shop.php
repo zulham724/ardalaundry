@@ -12,4 +12,13 @@ class Shop extends Model
     public function user(){
         return $this->belongsTo('App\Models\User');
     }
+
+    public function customers(){
+        return $this->belongsToMany('App\Models\User', 'shop_customers', 'shop_id', 'user_id');
+    }
+
+    public function employees()
+    {
+        return $this->belongsToMany('App\Models\User', 'shop_employees', 'shop_id', 'user_id');
+    }
 }
