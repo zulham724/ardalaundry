@@ -16,7 +16,13 @@ class CheckSubscribe
      */
     public function handle(Request $request, Closure $next)
     {
-        $res = \App\Models\PackageUser::with('package')->where('user_id',$request->user()->id)->orderBy('created_at')->first();
+
+        $master = $request->user()->load('master')->master;
+
+        if(count($master) == 0){
+            return response('Akun ini tidak punya master', 500);
+        }
+        $res = \App\Models\PackageUser::with('package')->where('user_id',$master[0]->id)->orderBy('created_at')->first();
         // return $res->expired_date;
         if(new \DateTime($res->expired_date) < new \DateTime()){
             return response('Masa Pakai Habis',500);

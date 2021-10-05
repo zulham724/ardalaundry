@@ -32,7 +32,7 @@ Route::get('/branches',[UserController::class,'branches']);
 Route::get('/slave/{shopid}/services',[ServiceController::class,'getServiceBySlave']);
 //ini belum
 // mirip getservuceBbyslave
-Route::get('/slave/{slaveid}/orders',[OrderController::class,'getOrdersBySlave']);//kurang meanmpilkan email user
+Route::get('/slave/{slaveid}/orders',[OrderController::class,'getOrdersBySlave']);
 Route::get('/shop/{shopid}/customers',[ShopController::class,'getCustomersByShop']);
 Route::get('/shop/{shopid}/employee',[ShopController::class,'getEmployeesByShop']);
 Route::get('/shop/{shopid}/orderscount', [OrderController::class, 'geOrderCountByShop']);
