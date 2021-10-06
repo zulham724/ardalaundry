@@ -62,4 +62,13 @@ class OrderController extends Controller
     {
         //
     }
+
+    public function getOrdersByShop($shop_id){
+        
+        $res = Order::with('customer', 'employee', 'shop')->whereHas('shop', function($query)use($shop_id){
+            $query->where('id', $shop_id);
+        })->get();
+
+        return response()->json($res);
+    }
 }

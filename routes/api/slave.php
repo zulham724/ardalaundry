@@ -47,6 +47,8 @@ Route::get('/shop/getServiceCategories', [ServiceCategoryController::class, 'ind
 Route::post('/shop/addService', [ServiceController::class, 'add_service']);
 Route::post('/shop/deleteService', [ServiceController::class, 'delete_service']);
 
+Route::get('/shop/{shopid}/getOrdersByShop', [OrderController::class, 'getOrdersByShop']);
+
 Route::apiResources([
     'service' => ServiceController::class,
     'customer' => CustomerController::class,
