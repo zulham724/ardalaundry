@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
-use App\Models\ServiceCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
-
-class ServiceCategoryController extends Controller
+class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +16,6 @@ class ServiceCategoryController extends Controller
     public function index()
     {
         //
-        return ServiceCategory::with(['services'=>fn($query)=>$query->whereHas('shop.user',fn($query)=>$query->where('id',Auth::user()->id))])->get();
     }
 
     /**
@@ -30,15 +27,18 @@ class ServiceCategoryController extends Controller
     public function store(Request $request)
     {
         //
+        $customer = new User($request->all());
+        $customer->role_id = 6;
+        return $request->user()->shop()->firstOrFail()->customers()->save($customer);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ServiceCategory  $serviceCategory
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(ServiceCategory $serviceCategory)
+    public function show($id)
     {
         //
     }
@@ -47,10 +47,10 @@ class ServiceCategoryController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ServiceCategory  $serviceCategory
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ServiceCategory $serviceCategory)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -58,10 +58,10 @@ class ServiceCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ServiceCategory  $serviceCategory
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ServiceCategory $serviceCategory)
+    public function destroy($id)
     {
         //
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\slave;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ServiceController extends Controller
 {
@@ -27,6 +28,8 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         //
+        $res = $request->user()->shop()->firstOrFail()->services()->save(new Service($request->all()));
+        return response()->json($res);
     }
 
     /**
@@ -58,9 +61,9 @@ class ServiceController extends Controller
      * @param  \App\Models\Service  $service
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Service $service)
+    public function destroy($id)
     {
-        //
+        return Service::findOrFail($id)->delete();  
     }
 
     public function getServicesByShop($shopId)
@@ -70,6 +73,12 @@ class ServiceController extends Controller
         })->get();
         return response()->json($res);
     }
+
+   public function add_service(Request $request){
+        $res = $request->user()->shop()->firstOrFail()->services()->save(new Service($request->all()));
+        return response()->json($res);
+
+   }
 
    
 }

@@ -7,6 +7,8 @@ use App\Http\Controllers\API\slave\ServiceController;
 use App\Http\Controllers\API\slave\ShopController;
 use App\Http\Controllers\API\slave\UserController;
 use App\Http\Controllers\API\slave\ServiceCategoryController;
+use App\Http\Controllers\API\slave\CustomerController;
+use App\Http\Controllers\API\slave\EmployeeController;
 
 
 use Illuminate\Http\Request;
@@ -42,5 +44,11 @@ Route::get('/shop/add-customer', [ShopController::class, 'add_customer']);
 
 Route::get('/shop/{shopid}/getServicesByShop', [ServiceController::class, 'getServicesByShop']);
 Route::get('/shop/getServiceCategories', [ServiceCategoryController::class, 'index']);
+Route::post('/shop/addService', [ServiceController::class, 'add_service']);
+Route::post('/shop/deleteService', [ServiceController::class, 'delete_service']);
 
-
+Route::apiResources([
+    'service' => ServiceController::class,
+    'customer' => CustomerController::class,
+    'employee' => EmployeeController::class
+]);
