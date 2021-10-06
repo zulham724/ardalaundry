@@ -4,6 +4,9 @@ namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Shop;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -61,5 +64,25 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         //
+    }
+
+   
+
+   
+
+
+    public function add_customer(Request $request){
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|unique:users',
+            'password' => 'required',
+        ]);
+
+        $customer =  new User();
+        $customer->role_id = 6;
+        $customer->name = $request->name;
+        $customer->email = $request->email;
+        $customer->password = bcrypt($request->password);
+        $customer->save();
     }
 }

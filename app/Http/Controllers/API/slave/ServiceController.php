@@ -62,4 +62,14 @@ class ServiceController extends Controller
     {
         //
     }
+
+    public function getServicesByShop($shopId)
+    {
+        $res = Service::with('category')->whereHas('shop', function ($query) use ($shopId) {
+            $query->where('id', $shopId);
+        })->get();
+        return response()->json($res);
+    }
+
+   
 }

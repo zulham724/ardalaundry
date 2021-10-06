@@ -25,4 +25,8 @@ class Shop extends Model
     public function orders(){
         return $this->hasMany('App\Models\Order');
     }
+
+    public function services(){
+        return $this->hasMany('App\Models\Service');
+    }
 }

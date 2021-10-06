@@ -14,7 +14,8 @@ class ServiceCategoryController extends Controller
      */
     public function index()
     {
-        //
+       
+
     }
 
     /**

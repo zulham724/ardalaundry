@@ -64,11 +64,79 @@ class ShopController extends Controller
         //
     }
 
+    //Employee
     public function getEmployeesByShop($shop_id)
     {
         $res = User::whereHas('role', fn ($query) => $query->where('name', 'employee'))
-        ->whereHas('employee_shops', fn ($query) => $query->where('shop_id', $shop_id))
+            ->whereHas('employee_shops', fn ($query) => $query->where('shop_id', $shop_id))
             ->get();
         return response()->json($res);
+    }
+
+    public function add_employee(Request $request)
+    {
+     
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|unique:users',
+            'password' => 'required',
+        ]);
+
+        $employee =  new User();
+        $employee->role_id = 5;
+        $employee->name = $request->name;
+        $employee->email = $request->email;
+        $employee->password = bcrypt($request->password);
+        $employee->save();
+
+        $request->user()->shop()->firstOrFail()->employees()->attach($employee->id);
+
+        return $request->user()->shop()->firstOrFail()->employees()->findOrFail($employee->id);
+    }
+
+    public function delete_employee(Request $request,$employee_id)
+    {
+        $request->user()->shop()->firstOrFail()->employees()->findOrFail($employee_id)->delete();
+        //   $res = \App\Models\User::findOrFail($employee_id)->delete();
+    }
+
+    public function edit_employee(Request $request,$employee_id){
+        return $request->user()->shop()->firstOrFail()->employees()->findOrFail($employee_id)->update($request->all());
+    }
+
+
+
+    //Customer
+    public function getCustomersByShop($shop_id)
+    {
+
+        $res = User::whereHas('role', fn ($query) => $query->where('name', 'customer'))
+            ->whereHas('customer_shops', fn ($query) => $query->where('shop_id', $shop_id))
+            ->get();
+        return response()->json($res);
+    }
+
+    public function add_customer(Request $request){
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|unique:users',
+            'password' => 'required',
+        ]);
+
+        $customer = new User();
+        $customer->role_id = 6;
+        $customer->name = $request->name;
+        $customer->email = $request->email;
+        $customer->password = bcrypt($request->password);
+        $customer->save();
+    }
+
+
+    //Service
+    public function getServicesByShop($shop_id){
+
+        $res = Shop::findOrFail($shop_id)->services()->get();
+        return $res;
+
     }
 }

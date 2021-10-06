@@ -16,6 +16,7 @@ class ServiceCategoryController extends Controller
     public function index()
     {
         //
+        return ServiceCategory::get();
     }
 
     /**
