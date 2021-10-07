@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\slave;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
@@ -16,6 +17,12 @@ class EmployeeController extends Controller
     public function index()
     {
         //
+        // $res = Auth::user()->load(['shop.employees'=>fn($query)=>$query->where('role_id',5)]);
+        // return $res;
+        $res = User::whereHas('role', fn ($query) => $query->where('name', 'employee'))
+        ->whereHas('employee_shops', fn ($query) => $query->where('shop_id', Auth::user()->load('shop')->shop->id))
+            ->get();
+        return response()->json($res);
     }
 
     /**
@@ -54,6 +61,7 @@ class EmployeeController extends Controller
     public function show($id)
     {
         //
+
     }
 
     /**

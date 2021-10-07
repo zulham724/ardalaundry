@@ -1,5 +1,6 @@
 <?php
 
+
 use App\Http\Controllers\API\slave\BranchController;
 use App\Http\Controllers\API\slave\OrderController;
 use App\Http\Controllers\API\slave\PackageUserController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\API\slave\UserController;
 use App\Http\Controllers\API\slave\ServiceCategoryController;
 use App\Http\Controllers\API\slave\CustomerController;
 use App\Http\Controllers\API\slave\EmployeeController;
+use App\Http\Controllers\API\slave\PaymentController;
 
 
 use Illuminate\Http\Request;
@@ -48,8 +50,12 @@ Route::post('/shop/deleteService', [ServiceController::class, 'delete_service'])
 
 Route::get('/shop/{shopid}/getOrdersByShop', [OrderController::class, 'getOrdersByShop']);
 
+Route::post('shop/addOrder', [OrderController::class, 'store']);
+
 Route::apiResources([
     'service' => ServiceController::class,
     'customer' => CustomerController::class,
-    'employee' => EmployeeController::class
+    'employee' => EmployeeController::class,
+    'order' => OrderController::class,
+    'payment' => PaymentController::class
 ]);

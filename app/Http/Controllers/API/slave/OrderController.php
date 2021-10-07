@@ -27,6 +27,18 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         //
+        
+        $order = $request->user()->shop()->firstOrFail()->orders()->save(new Order([
+            'customer_id'=>$request->customer_id,
+            'employee_id'=>$request->employee_id
+        ]));
+        // $order->services()->attach($request->)
+        foreach ($request->services as $service) {
+            # code...
+            $order->services()->attach($service['id'],['quantity'=>$service['quantity'],'start_at'=>\Carbon\Carbon::now(),'end_at'=> \Carbon\Carbon::now()->addHours($service['process_time'])]);
+        }
+
+        return $order->load('services');
     }
 
     /**

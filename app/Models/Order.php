@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
+
+    protected $guarded = ['id'];
+
     use HasFactory;
 
     public function customer(){
@@ -23,6 +26,6 @@ class Order extends Model
     }
 
     public function services(){
-        return $this->belongsToMany('App\Models\Service', 'order_services', 'order_id', 'service_id');
+        return $this->belongsToMany('App\Models\Service', 'order_services', 'order_id', 'service_id')->withPivot('quantity', 'start_at', 'end_at');
     }
 }
