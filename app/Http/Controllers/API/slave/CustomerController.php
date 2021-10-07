@@ -53,6 +53,7 @@ class CustomerController extends Controller
     public function update(Request $request, $id)
     {
         //
+        return $request->user()->shop()->firstOrFail()->customers()->findOrFail($id)->update($request->all());
     }
 
     /**

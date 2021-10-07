@@ -39,7 +39,6 @@ Route::post('/shop/editEmployee/{employeeid}', [ShopController::class, 'edit_emp
 
 
 Route::get('/shop/{shopid}/customers', [ShopController::class, 'getCustomersByShop']);
-Route::get('/shop/add-customer', [ShopController::class, 'add_customer']);
 
 
 Route::get('/shop/{shopid}/getServicesByShop', [ServiceController::class, 'getServicesByShop']);

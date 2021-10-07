@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class EmployeeController extends Controller
 {
@@ -26,6 +27,22 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|unique:users',
+            'password' => 'required',
+        ]);
+
+        $employee =  new User();
+        $employee->role_id = 5;
+        $employee->name = $request->name;
+        $employee->email = $request->email;
+        $employee->password = bcrypt($request->password);
+        $employee->save();
+
+        $request->user()->shop()->firstOrFail()->employees()->attach($employee->id);
+
+        return $request->user()->shop()->firstOrFail()->employees()->findOrFail($employee->id);
     }
 
     /**
@@ -49,6 +66,8 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         //
+        
+        return $request->user()->shop()->firstOrFail()->employees()->findOrFail($id)->update($request->all());
     }
 
     /**
@@ -57,8 +76,9 @@ class EmployeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         //
+        $request->user()->shop()->firstOrFail()->employees()->findOrFail($id)->delete();
     }
 }
