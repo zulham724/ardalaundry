@@ -7,6 +7,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Shop;
+use App\Models\Payment;
 
 class OrderController extends Controller
 {
@@ -119,5 +120,11 @@ class OrderController extends Controller
         }
 
         
+    }
+
+    public function payment(Request $request,$orderid){
+        // return $request->all();
+        $res = $request->user()->shop()->firstOrFail()->orders()->findOrFail($orderid)->payments()->save(new Payment($request->all()));
+        return $res;
     }
 }

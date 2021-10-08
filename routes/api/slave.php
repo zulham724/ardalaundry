@@ -1,6 +1,6 @@
 <?php
 
-
+use App\Http\Controllers\API\master\OrderController as MasterOrderController;
 use App\Http\Controllers\API\slave\BranchController;
 use App\Http\Controllers\API\slave\OrderController;
 use App\Http\Controllers\API\slave\PackageUserController;
@@ -10,6 +10,7 @@ use App\Http\Controllers\API\slave\UserController;
 use App\Http\Controllers\API\slave\ServiceCategoryController;
 use App\Http\Controllers\API\slave\CustomerController;
 use App\Http\Controllers\API\slave\EmployeeController;
+use App\Http\Controllers\API\slave\OrderStatusController;
 use App\Http\Controllers\API\slave\PaymentController;
 
 
@@ -52,10 +53,13 @@ Route::get('/shop/{shopid}/getOrdersByShop', [OrderController::class, 'getOrders
 
 Route::post('shop/addOrder', [OrderController::class, 'store']);
 
+Route::post('shop/order/{orderid}/payment', [MasterOrderController::class, 'payment']);
+
 Route::apiResources([
     'service' => ServiceController::class,
     'customer' => CustomerController::class,
     'employee' => EmployeeController::class,
     'order' => OrderController::class,
-    'payment' => PaymentController::class
+    'payment' => PaymentController::class,
+    'orderstatus' => OrderStatusController::class,
 ]);

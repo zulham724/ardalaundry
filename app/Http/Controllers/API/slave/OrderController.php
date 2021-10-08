@@ -47,9 +47,10 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function show(Order $order)
+    public function show($id)
     {
         //
+        return Order::with('payments', 'status')->findOrFail($id);
     }
 
     /**
@@ -59,9 +60,11 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Order $order)
+    public function update(Request $request, $id)
     {
         //
+
+        return Order::findOrFail($id)->update($request->all());
     }
 
     /**
@@ -77,7 +80,7 @@ class OrderController extends Controller
 
     public function getOrdersByShop($shop_id){
         
-        $res = Order::with('customer', 'employee', 'shop', 'services')->whereHas('shop', function($query)use($shop_id){
+        $res = Order::with('customer', 'employee', 'shop', 'services','status')->whereHas('shop', function($query)use($shop_id){
             $query->where('id', $shop_id);
         })->get();
 

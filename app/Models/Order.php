@@ -28,4 +28,12 @@ class Order extends Model
     public function services(){
         return $this->belongsToMany('App\Models\Service', 'order_services', 'order_id', 'service_id')->withPivot('quantity', 'start_at', 'end_at');
     }
+
+    public function payments(){
+        return $this->morphMany('App\Models\Payment','payment');
+    }
+
+    public function status(){
+        return $this->belongsTo('App\Models\OrderStatus','order_status_id');
+    }
 }
