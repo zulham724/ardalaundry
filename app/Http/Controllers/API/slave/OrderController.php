@@ -16,6 +16,7 @@ class OrderController extends Controller
     public function index()
     {
         //
+        return Order::with('payments', 'status', 'customer')->where('order_status_id', 3)->get();
     }
 
     /**
@@ -27,15 +28,15 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         //
-        
+
         $order = $request->user()->shop()->firstOrFail()->orders()->save(new Order([
-            'customer_id'=>$request->customer_id,
-            'employee_id'=>$request->employee_id
+            'customer_id' => $request->customer_id,
+            'employee_id' => $request->employee_id
         ]));
         // $order->services()->attach($request->)
         foreach ($request->services as $service) {
             # code...
-            $order->services()->attach($service['id'],['quantity'=>$service['quantity'],'start_at'=>\Carbon\Carbon::now(),'end_at'=> \Carbon\Carbon::now()->addHours($service['process_time'])]);
+            $order->services()->attach($service['id'], ['quantity' => $service['quantity'], 'start_at' => \Carbon\Carbon::now(), 'end_at' => \Carbon\Carbon::now()->addHours($service['process_time'])]);
         }
 
         return $order->load('services');
@@ -78,12 +79,36 @@ class OrderController extends Controller
         //
     }
 
-    public function getOrdersByShop($shop_id){
-        
-        $res = Order::with('customer', 'employee', 'shop', 'services','status')->whereHas('shop', function($query)use($shop_id){
+    public function getOrdersByShop($shop_id)
+    {
+
+        $res = Order::with('customer', 'employee', 'shop', 'services', 'status')->whereHas('shop', function ($query) use ($shop_id) {
             $query->where('id', $shop_id);
         })->get();
 
         return response()->json($res);
+    }
+
+    public function order_report(Request $request)
+    {
+        // return $request->all();
+        $d1 = $request->fromDate;
+        $d2 = $request->toDate;
+      return Order::with('payments', 'status', 'customer')->where('order_status_id', 3)
+            ->where('created_at', '>=', $d1)
+            ->where('created_at', '<=', $d2)
+            ->get();
+
+       
+    }
+
+    public function getOrdersReportByShop($shop_id)
+    {
+
+        $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')->whereHas('shop', function ($query) use ($shop_id) {
+            $query->where('id', $shop_id);
+        })->where('order_status_id', 3)->get();
+
+        return $res;
     }
 }

@@ -54,6 +54,8 @@ Route::get('/shop/{shopid}/getOrdersByShop', [OrderController::class, 'getOrders
 Route::post('shop/addOrder', [OrderController::class, 'store']);
 
 Route::post('shop/order/{orderid}/payment', [MasterOrderController::class, 'payment']);
+Route::post('/shop/order/report', [OrderController::class, 'order_report']);
+Route::get('/shop/{shopid}/getOrdersReportByShop', [OrderController::class, 'getOrdersReportByShop']);
 
 Route::apiResources([
     'service' => ServiceController::class,
