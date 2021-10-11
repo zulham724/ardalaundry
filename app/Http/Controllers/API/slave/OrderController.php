@@ -16,7 +16,7 @@ class OrderController extends Controller
     public function index()
     {
         //
-        return Order::with('payments', 'status', 'customer')->where('order_status_id', 3)->get();
+        return Order::with('payments', 'status', 'customer')->where('order_status_id', 4)->get();
     }
 
     /**
@@ -107,7 +107,7 @@ class OrderController extends Controller
 
         $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')->whereHas('shop', function ($query) use ($shop_id) {
             $query->where('id', $shop_id);
-        })->where('order_status_id', 3)->get();
+        })->where('order_status_id', 4)->get();
 
         return $res;
     }
