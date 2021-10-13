@@ -29,4 +29,8 @@ class Shop extends Model
     public function services(){
         return $this->hasMany('App\Models\Service');
     }
+
+    public function attendances(){
+        return $this->belongsToMany('App\Models\User','attendances')->withPivot('created_at');
+    }
 }

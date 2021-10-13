@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\master\OrderController as MasterOrderController;
+use App\Http\Controllers\API\slave\AttendanceController;
 use App\Http\Controllers\API\slave\BranchController;
 use App\Http\Controllers\API\slave\OrderController;
 use App\Http\Controllers\API\slave\PackageUserController;
@@ -57,6 +58,7 @@ Route::post('shop/order/{orderid}/payment', [MasterOrderController::class, 'paym
 Route::post('/shop/order/report', [OrderController::class, 'order_report']);
 Route::get('/shop/{shopid}/getOrdersReportByShop', [OrderController::class, 'getOrdersReportByShop']);
 
+
 Route::apiResources([
     'service' => ServiceController::class,
     'customer' => CustomerController::class,
@@ -64,4 +66,5 @@ Route::apiResources([
     'order' => OrderController::class,
     'payment' => PaymentController::class,
     'orderstatus' => OrderStatusController::class,
+    'attendances' => AttendanceController::class,
 ]);

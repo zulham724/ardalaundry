@@ -27,6 +27,20 @@ class AttendanceController extends Controller
     public function store(Request $request)
     {
         //
+        // return $request->user_id;
+        $exist = $request->user()->shop()->firstOrFail()->attendances()
+        ->where('user_id',$request->user_id)
+        ->whereDate('attendances.created_at',\Carbon\Carbon::today())
+        ->exists();
+        if($exist){
+            return response('Anda sudah absen',200);
+        } else {
+            $request->user()->shop()->firstOrFail()->attendances()->attach($request->user_id);
+        }
+        
+        $res = $request->user()->shop()->firstOrFail()->attendances()->where('user_id',$request->user_id)
+        ->whereDate('attendances.created_at', \Carbon\Carbon::today())->first();
+        return response()->json($res);
     }
 
     /**
@@ -35,9 +49,16 @@ class AttendanceController extends Controller
      * @param  \App\Models\Attendance  $attendance
      * @return \Illuminate\Http\Response
      */
-    public function show(Attendance $attendance)
-    {
-        //
+    public function show(Request $request,$id)
+    {   
+        
+        return $request
+        ->user()
+        ->shop()
+        ->firstOrFail()
+        ->attendances()
+        ->whereDate('attendances.created_at', \Carbon\Carbon::today())
+        ->get();
     }
 
     /**

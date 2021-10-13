@@ -123,8 +123,39 @@ class OrderController extends Controller
     }
 
     public function payment(Request $request,$orderid){
-        // return $request->all();
-        $res = $request->user()->shop()->firstOrFail()->orders()->findOrFail($orderid)->payments()->save(new Payment($request->all()));
+        (int) $total_price = DB::table('orders')
+            ->selectRaw('sum(order_services.quantity*services.price) as total_price')
+            ->join('order_services', 'order_services.order_id', '=', 'orders.id')
+            ->join('services', 'order_services.service_id', '=', 'services.id')
+            ->where('orders.id', $orderid)->first()->total_price;
+        // 2 itung total payment yg masuk
+        (int)$pay = $request->value;
+        (int)$payments = Payment::whereHas('order', function ($query) use ($orderid) {
+            $query->where('id', $orderid);
+        })->sum('value');
+        // return [(int)$payments,(int)$pay];
+        $total_payment = $payments + $pay;
+       
+        
+        // 3 bandingkan nilai yg masuk + payment yg sudah masuk dengan total
+        $payment = new Payment();
+        if ($total_price > $total_payment) {
+            // kalau masih kurang nama = DP. count total payment yg masuk ditambah satu
+            $DP = Payment::whereHas('order', function ($query) use ($orderid) {
+                $query->where('id', $orderid);
+            })->count();
+            $payment->name = 'DP '.($DP+1);
+            $total_price = $total_price - $payments;
+            $payment->value = $pay;
+            $payment->status = 'success';
+        } else if($total_payment ==  $total_price) {
+            // kalau hasil jumlah nya sama dengan total nama nya == pelunasan
+            $payment->name = 'Pelunasan';
+            $payment->value = $pay;
+            $payment->status = 'success';
+        }
+
+        $res = $request->user()->shop()->firstOrFail()->orders()->findOrFail($orderid)->payments()->save($payment);
         return $res;
     }
 }

@@ -19,6 +19,6 @@ class CheckIfSlave
         if($request->user()->hasRole('slave')){
             return $next($request);
         }
-        return response('Harus Master',500);
+        return response('Harus Slave',500);
     }
 }

@@ -71,4 +71,8 @@ class User extends \TCG\Voyager\Models\User
     {
         return $this->belongsToMany('App\Models\Shop', 'shop_employees', 'user_id', 'shop_id');
     }
+
+    public function attendances(){
+        return $this->hasMany('App\Models\Attendance');
+    }
 }

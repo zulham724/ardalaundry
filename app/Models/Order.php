@@ -26,7 +26,9 @@ class Order extends Model
     }
 
     public function services(){
-        return $this->belongsToMany('App\Models\Service', 'order_services', 'order_id', 'service_id')->withPivot('quantity', 'start_at', 'end_at');
+        return $this->belongsToMany('App\Models\Service', 'order_services', 'order_id', 'service_id')
+        ->selectRaw('services.*, (order_services.quantity*services.price) as total')
+        ->withPivot('quantity', 'start_at', 'end_at');
     }
 
     public function payments(){

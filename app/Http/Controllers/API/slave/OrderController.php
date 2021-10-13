@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\slave;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 class OrderController extends Controller
 {
@@ -31,7 +33,8 @@ class OrderController extends Controller
 
         $order = $request->user()->shop()->firstOrFail()->orders()->save(new Order([
             'customer_id' => $request->customer_id,
-            'employee_id' => $request->employee_id
+            'employee_id' => $request->employee_id,
+            'description' => $request->description
         ]));
         // $order->services()->attach($request->)
         foreach ($request->services as $service) {
@@ -48,10 +51,24 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         //
-        return Order::with('payments', 'status')->findOrFail($id);
+        $shop_id = $request->user()->shop()->firstOrFail()->id;
+        $order =
+        Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+        ->withCount(['payments as paid_sum' => function ($query) {
+            $query->select(DB::raw("SUM(value) as paidsum"));
+        }])
+        ->withCount(['services as total_sum' => function ($query) {
+            $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
+        }])
+        ->whereHas('shop', function ($query) use ($shop_id) {
+            $query->where('id', $shop_id);
+        })
+        ->findOrFail($id);
+
+        return $order;
     }
 
     /**
@@ -74,17 +91,32 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Order $order)
+    public function destroy($id)
     {
         //
+        return DB::table('orders')->join('order_services', 'order_services.order_id', '=', 'orders.id')->where('orders.id', $id)->delete();
+        
     }
 
     public function getOrdersByShop($shop_id)
     {
-
-        $res = Order::with('customer', 'employee', 'shop', 'services', 'status')->whereHas('shop', function ($query) use ($shop_id) {
+        
+        $res = Order::
+        with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+        ->withCount(['payments as paid_sum'=>function($query){  
+            $query->select(DB::raw("SUM(value) as paidsum"));
+        }])
+        ->withCount(['services as total_sum'=>function($query){
+            $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
+        }])
+        ->whereHas('shop', function ($query) use ($shop_id) {
             $query->where('id', $shop_id);
-        })->get();
+        })
+        ->get();
+
+        // if ($res->paid_sum ) {
+        //     # code...
+        // }
 
         return response()->json($res);
     }

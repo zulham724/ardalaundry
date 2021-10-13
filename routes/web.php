@@ -22,6 +22,12 @@ Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
 });
 
+Route::get('/employee/{employeeid}/barcode', function ($user_id) {
+    return view('barcode', ['user' => \App\Models\User::findOrFail($user_id)]);
+});
+
+Route::get('/test', fn () => 'asd');
+
 // Route::get('/command', function () {
 //     $data = ['User'];
 //     foreach ($data as $val) {
