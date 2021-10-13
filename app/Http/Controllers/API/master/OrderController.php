@@ -196,4 +196,16 @@ class OrderController extends Controller
             return ((int)$thismonth / (int)$lastmonth) * 100;
         }
     }
+
+    public function orderCountByMonths(){
+        $res = Order::
+        select(
+            DB::raw('count(id) as `orders`'), 
+            DB::raw("DATE_FORMAT(created_at, '%b %Y') time_period"),  
+            DB::raw('YEAR(created_at) year, MONTH(created_at) month')
+        )
+            ->groupby('year','month')
+        ->get();
+        return $res;
+    }
 }
