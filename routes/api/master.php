@@ -21,8 +21,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/user',function(Request $request){
-    return $request->user();
+    return $request->user()->load(['packages']);
 });
+
+Route::get('/totalorders',[OrderController::class,'totalOrders']);
+Route::get('/profit',[OrderController::class,'getProfit']);
+Route::get('/growth',[OrderController::class,'getGrowth']);
 
 Route::get('/getsubscribestatus',[PackageUserController::class,'getsubscribestatus']);
 
