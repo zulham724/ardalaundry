@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -66,7 +67,17 @@ class UserController extends Controller
 
     public function branches(){
         // return 'asd';
-        $res = User::with('shop')->has('shop')->whereHas('role',fn($query)=>$query->where('id',4))->whereHas('master',fn($query)=>$query->where('master_id',Auth::user()->id))->get();
+        $res = User::with('shop')
+        ->has('shop')
+        ->whereHas('role',fn($query)=>$query->where('id',4))
+        ->whereHas('master',fn($query)=>$query->where('master_id',Auth::user()->id))
+        ->withCount(['orders'])
+        ->withCount(['orders as payment_count'=>function($query){
+            $query
+            ->join('payments','orders.id','=','payments.payment_id')->where('payments.payment_type','App\Models\Order')
+            ->select(DB::raw("SUM(payments.value) as total"));
+        }])
+        ->get();
         return response()->json($res);
     }
 

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Shop;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class OrderController extends Controller
 {
@@ -223,6 +224,36 @@ class OrderController extends Controller
                 $query->where('branches.master_id',Auth::user()->id);
             })
             ->groupby('year','month')
+        ->get();
+        return $res;
+    }
+
+    public function orderCountByMonthsEachBranches(){
+        $res = User::whereHas('master',function($query){
+            $query->where('branches.master_id',Auth::user()->id);
+        })
+        ->select('name')
+        ->withCount(['shop as shop_name'=>function($query){
+            $query->select('name');
+        }])
+        ->withCount(['orders as value'])
+        ->get();
+        return $res;
+    }
+
+    public function paymentCountByMonthsEachBranches(){
+        $res = User::whereHas('master',function($query){
+            $query->where('branches.master_id',Auth::user()->id);
+        })
+        ->select('name')
+        ->withCount(['shop as shop_name'=>function($query){
+            $query->select('name');
+        }])
+        ->withCount(['orders as total'=>function($query){
+            $query
+            ->join('payments','orders.id','=','payments.payment_id')->where('payments.payment_type','App\Models\Order')
+            ->select(DB::raw("SUM(payments.value) as total"));
+        }])
         ->get();
         return $res;
     }

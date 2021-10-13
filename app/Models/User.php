@@ -75,4 +75,8 @@ class User extends \TCG\Voyager\Models\User
     public function attendances(){
         return $this->hasMany('App\Models\Attendance');
     }
+
+    public function orders(){
+        return $this->hasManyThrough('App\Models\Order','App\Models\Shop');
+    }
 }
