@@ -204,6 +204,24 @@ class OrderController extends Controller
             DB::raw("DATE_FORMAT(created_at, '%b %Y') time_period"),  
             DB::raw('YEAR(created_at) year, MONTH(created_at) month')
         )
+            ->whereHas('shop.user.master',function($query){
+                $query->where('branches.master_id',Auth::user()->id);
+            })
+            ->groupby('year','month')
+        ->get();
+        return $res;
+    }
+
+    public function paymentCountByMonths(){
+        $res = Payment::
+        select(
+            DB::raw('sum(value) as `total`'), 
+            DB::raw("DATE_FORMAT(created_at, '%b %Y') time_period"),  
+            DB::raw('YEAR(created_at) year, MONTH(created_at) month')
+        )
+            ->whereHas('order.shop.user.master',function($query){
+                $query->where('branches.master_id',Auth::user()->id);
+            })
             ->groupby('year','month')
         ->get();
         return $res;

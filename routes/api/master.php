@@ -28,6 +28,7 @@ Route::get('/totalorders',[OrderController::class,'totalOrders']);
 Route::get('/profit',[OrderController::class,'getProfit']);
 Route::get('/growth',[OrderController::class,'getGrowth']);
 Route::get('/ordercountbymonths',[OrderController::class,'orderCountByMonths']);
+Route::get('/paymentcountbymonths',[OrderController::class,'paymentCountByMonths']);
 
 Route::get('/getsubscribestatus',[PackageUserController::class,'getsubscribestatus']);
 
