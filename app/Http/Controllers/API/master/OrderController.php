@@ -213,6 +213,19 @@ class OrderController extends Controller
         return $res;
     }
 
+    public function orderCountBranchByMonth($shop_id){
+        $res = Order::select(
+            DB::raw('count(id) as `orders`'),
+            DB::raw("DATE_FORMAT(created_at, '%b %Y') time_period"),
+            DB::raw('YEAR(created_at) year, MONTH(created_at) month')
+        )
+            ->whereHas('shop', function ($query)use($shop_id) {
+                $query->where('id', $shop_id);
+            })
+            ->groupby('year', 'month')
+            ->get();
+        return $res;
+    }
     public function paymentCountByMonths(){
         $res = Payment::
         select(
@@ -225,6 +238,20 @@ class OrderController extends Controller
             })
             ->groupby('year','month')
         ->get();
+        return $res;
+    }
+
+    public function branchPaymentCountByMonth($shop_id){
+        $res = Payment::select(
+                DB::raw('sum(value) as `total`'),
+                DB::raw("DATE_FORMAT(created_at, '%b %Y') time_period"),
+                DB::raw('YEAR(created_at) year, MONTH(created_at) month')
+            )
+            ->whereHas('order.shop', function ($query)use($shop_id) {
+                $query->where('id', $shop_id);
+            })
+            ->groupby('year', 'month')
+            ->get();
         return $res;
     }
 

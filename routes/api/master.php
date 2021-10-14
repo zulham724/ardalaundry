@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user',function(Request $request){
     $res = $request->user()->load(['packages']);
     if(count($res->packages)){
-        if(new Date($res->packages[0]['pivot']['expired_date']) > new Date){
+        if(new \DateTime($res->packages[0]['pivot']['expired_date']) > new \DateTime()){
             $res->apiStatus = "Hidup";
         } else {
             $res->apiStatus = "Mati";
@@ -38,7 +38,9 @@ Route::get('/totalorders',[OrderController::class,'totalOrders']);
 Route::get('/profit',[OrderController::class,'getProfit']);
 Route::get('/growth',[OrderController::class,'getGrowth']);
 Route::get('/ordercountbymonths',[OrderController::class,'orderCountByMonths']);
+Route::get('/ordercountbranchbymonth/{shopid}', [OrderController::class, 'orderCountBranchByMonth']);
 Route::get('/paymentcountbymonths',[OrderController::class,'paymentCountByMonths']);
+Route::get('/branchpaymentcountbymonth/{shopid}', [OrderController::class, 'branchPaymentCountByMonth']);
 Route::get('/ordercountbymonthseachbranches',[OrderController::class,'orderCountByMonthsEachBranches']);
 Route::get('/paymentcountbymonthseachbranches',[OrderController::class,'paymentCountByMonthsEachBranches']);
 

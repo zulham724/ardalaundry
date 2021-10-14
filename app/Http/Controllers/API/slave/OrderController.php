@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Payment;
 
 
 class OrderController extends Controller
@@ -56,17 +57,17 @@ class OrderController extends Controller
         //
         $shop_id = $request->user()->shop()->firstOrFail()->id;
         $order =
-        Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
-        ->withCount(['payments as paid_sum' => function ($query) {
-            $query->select(DB::raw("SUM(value) as paidsum"));
-        }])
-        ->withCount(['services as total_sum' => function ($query) {
-            $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
-        }])
-        ->whereHas('shop', function ($query) use ($shop_id) {
-            $query->where('id', $shop_id);
-        })
-        ->findOrFail($id);
+            Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+            ->withCount(['payments as paid_sum' => function ($query) {
+                $query->select(DB::raw("SUM(value) as paidsum"));
+            }])
+            ->withCount(['services as total_sum' => function ($query) {
+                $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
+            }])
+            ->whereHas('shop', function ($query) use ($shop_id) {
+                $query->where('id', $shop_id);
+            })
+            ->findOrFail($id);
 
         return $order;
     }
@@ -95,24 +96,22 @@ class OrderController extends Controller
     {
         //
         return DB::table('orders')->join('order_services', 'order_services.order_id', '=', 'orders.id')->where('orders.id', $id)->delete();
-        
     }
 
     public function getOrdersByShop($shop_id)
     {
-        
-        $res = Order::
-        with('customer', 'employee', 'shop', 'services', 'status', 'payments')
-        ->withCount(['payments as paid_sum'=>function($query){  
-            $query->select(DB::raw("SUM(value) as paidsum"));
-        }])
-        ->withCount(['services as total_sum'=>function($query){
-            $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
-        }])
-        ->whereHas('shop', function ($query) use ($shop_id) {
-            $query->where('id', $shop_id);
-        })
-        ->get();
+
+        $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+            ->withCount(['payments as paid_sum' => function ($query) {
+                $query->select(DB::raw("SUM(value) as paidsum"));
+            }])
+            ->withCount(['services as total_sum' => function ($query) {
+                $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
+            }])
+            ->whereHas('shop', function ($query) use ($shop_id) {
+                $query->where('id', $shop_id);
+            })
+            ->get();
 
         // if ($res->paid_sum ) {
         //     # code...
@@ -126,12 +125,10 @@ class OrderController extends Controller
         // return $request->all();
         $d1 = $request->fromDate;
         $d2 = $request->toDate;
-      return Order::with('payments', 'status', 'customer')->where('order_status_id', 3)
+        return Order::with('payments', 'status', 'customer')->where('order_status_id', 3)
             ->where('created_at', '>=', $d1)
             ->where('created_at', '<=', $d2)
             ->get();
-
-       
     }
 
     public function getOrdersReportByShop($shop_id)
@@ -141,6 +138,39 @@ class OrderController extends Controller
             $query->where('id', $shop_id);
         })->where('order_status_id', 4)->get();
 
+        return $res;
+    }
+
+    public function getOrdersCountByMonth($shop_id)
+    {
+        $colors = ['#193498', '#113CFC', '#1597E5', '#69DADB'];
+        $res = Order::select(
+            DB::raw('count(id) as `orders`'),
+            DB::raw("DATE_FORMAT(created_at, '%b %Y') time_period"),
+            DB::raw('YEAR(created_at) year, MONTH(created_at) month')
+        )
+            ->whereHas('shop', function ($query) use ($shop_id) {
+                $query->where('id', $shop_id);
+            })
+            ->groupby('year', 'month')
+            ->get();
+        foreach ($res as $index => $value) {
+            $value->color = $colors[$index % 4];
+        }
+        return $res;
+    }
+
+    public function getPaymentsCountByMonth($shop_id){
+        $res = Payment::select(
+            DB::raw('sum(value) as `total`'),
+            DB::raw("DATE_FORMAT(created_at, '%b %Y') time_period"),
+            DB::raw('YEAR(created_at) year, MONTH(created_at) month')
+        )
+            ->whereHas('order.shop', function ($query) use ($shop_id) {
+                $query->where('id', $shop_id);
+            })
+            ->groupby('year', 'month')
+            ->get();
         return $res;
     }
 }

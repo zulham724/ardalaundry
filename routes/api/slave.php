@@ -58,6 +58,11 @@ Route::post('shop/order/{orderid}/payment', [MasterOrderController::class, 'paym
 Route::post('/shop/order/report', [OrderController::class, 'order_report']);
 Route::get('/shop/{shopid}/getOrdersReportByShop', [OrderController::class, 'getOrdersReportByShop']);
 
+//chart
+Route::get('shop/orderscountbymonth/{shopid}', [OrderController::class, 'getOrdersCountByMonth']);
+Route::get('shop/paymentscountbymonth/{shopid}', [OrderController::class, 'getPaymentsCountByMonth']);
+
+
 
 Route::apiResources([
     'service' => ServiceController::class,
