@@ -59,12 +59,12 @@ class OrderController extends Controller
         $shop_id = $request->user()->shop()->firstOrFail()->id;
         $order =
             Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
-            ->withCount(['payments as paid_sum' => function ($query) {
-                $query->select(DB::raw("SUM(value) as paidsum"));
-            }])
-            ->withCount(['services as total_sum' => function ($query) {
-                $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
-            }])
+            // ->withCount(['payments as paid_sum' => function ($query) {
+            //     $query->select(DB::raw("SUM(value) as paidsum"));
+            // }])
+            // ->withCount(['services as total_sum' => function ($query) {
+            //     $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
+            // }])
             ->whereHas('shop', function ($query) use ($shop_id) {
                 $query->where('id', $shop_id);
             })
@@ -103,12 +103,12 @@ class OrderController extends Controller
     {
 
         $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
-            ->withCount(['payments as paid_sum' => function ($query) {
-                $query->select(DB::raw("SUM(value) as paidsum"));
-            }])
-            ->withCount(['services as total_sum' => function ($query) {
-                $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
-            }])
+            // ->withCount(['payments as paid_sum' => function ($query) {
+            //     $query->select(DB::raw("SUM(value) as paidsum"));
+            // }])
+            // ->withCount(['services as total_sum' => function ($query) {
+            //     $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
+            // }])
             ->whereHas('shop', function ($query) use ($shop_id) {
                 $query->where('id', $shop_id);
             })

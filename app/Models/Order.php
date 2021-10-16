@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Order extends Model
 {
 
     protected $guarded = ['id'];
+    protected $appends = ['total_sum','paid_sum'];
 
     use HasFactory;
 
@@ -37,5 +39,24 @@ class Order extends Model
 
     public function status(){
         return $this->belongsTo('App\Models\OrderStatus','order_status_id');
+    }
+
+    public function getDescriptionAttribute($value){
+        return "Hai ".$value;
+    }
+
+    public function getTotalSumAttribute()
+    {
+        $services = $this->services()->get();
+        $total = 0;
+        foreach ($services as $s => $service) {
+            # code...
+            $total += $service->price * $service->pivot->quantity;
+        }
+        return $total;
+    }
+
+    public function getPaidSumAttribute(){
+        return (int)$this->payments()->sum('value');
     }
 }
