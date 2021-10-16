@@ -31,7 +31,8 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         //
-
+        // return 'asd';
+        // return $request->all();
         $order = $request->user()->shop()->firstOrFail()->orders()->save(new Order([
             'customer_id' => $request->customer_id,
             'employee_id' => $request->employee_id,
@@ -43,7 +44,7 @@ class OrderController extends Controller
             $order->services()->attach($service['id'], ['quantity' => $service['quantity'], 'start_at' => \Carbon\Carbon::now(), 'end_at' => \Carbon\Carbon::now()->addHours($service['process_time'])]);
         }
 
-        return $order->load('services');
+        return response()->json($order->load('services'));
     }
 
     /**

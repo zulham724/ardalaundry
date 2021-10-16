@@ -27,6 +27,7 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         //
+        // return $request->user()->shop()->firstOrFail()->customers()->get();
         $customer = new User($request->all());
         $customer->role_id = 6;
         return $request->user()->shop()->firstOrFail()->customers()->save($customer);
@@ -65,8 +66,8 @@ class CustomerController extends Controller
     public function destroy(Request $request,$id)
     {
         //
-        
-       
+
+
         return $request->user()->shop()->firstOrFail()->customers()->findOrFail($id)->delete();;
     }
 }

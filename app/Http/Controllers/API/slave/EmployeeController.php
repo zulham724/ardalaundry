@@ -19,7 +19,7 @@ class EmployeeController extends Controller
         //
         // $res = Auth::user()->load(['shop.employees'=>fn($query)=>$query->where('role_id',5)]);
         // return $res;
-        $res = User::whereHas('role', fn ($query) => $query->where('name', 'employee'))
+        $res = User::whereHas('role', fn ($query) => $query->where('id', 5))
         ->whereHas('employee_shops', fn ($query) => $query->where('shop_id', Auth::user()->load('shop')->shop->id))
             ->get();
         return response()->json($res);
@@ -47,7 +47,7 @@ class EmployeeController extends Controller
         $employee->password = bcrypt($request->password);
         $employee->save();
 
-        $request->user()->shop()->firstOrFail()->employees()->attach($employee->id);
+        return $request->user()->shop()->firstOrFail()->employees()->save($employee);
 
         return $request->user()->shop()->firstOrFail()->employees()->findOrFail($employee->id);
     }
@@ -74,7 +74,7 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         //
-        
+
         return $request->user()->shop()->firstOrFail()->employees()->findOrFail($id)->update($request->all());
     }
 
