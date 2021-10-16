@@ -112,6 +112,7 @@ class OrderController extends Controller
             ->whereHas('shop', function ($query) use ($shop_id) {
                 $query->where('id', $shop_id);
             })
+            ->orderBy('id','desc')
             ->get();
 
         // if ($res->paid_sum ) {
@@ -137,7 +138,8 @@ class OrderController extends Controller
 
         $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')->whereHas('shop', function ($query) use ($shop_id) {
             $query->where('id', $shop_id);
-        })->where('order_status_id', 4)->get();
+        })
+        ->where('order_status_id', 4)->get();
 
         return $res;
     }
