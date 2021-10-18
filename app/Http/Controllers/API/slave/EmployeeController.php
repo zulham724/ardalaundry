@@ -45,6 +45,8 @@ class EmployeeController extends Controller
         $employee->name = $request->name;
         $employee->email = $request->email;
         $employee->password = bcrypt($request->password);
+        $employee->home_address = $request->home_address;
+        $employee->contact_number = $request->contact_number;
         $employee->save();
 
         return $request->user()->shop()->firstOrFail()->employees()->save($employee);

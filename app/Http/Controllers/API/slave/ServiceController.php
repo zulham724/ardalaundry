@@ -63,7 +63,10 @@ class ServiceController extends Controller
      */
     public function destroy($id)
     {
-        return Service::findOrFail($id)->delete();  
+        return true;
+        $res = Service::findOrFail($id);
+        $res->delete();
+        return response()->json($res);
     }
 
     public function getServicesByShop($shopId)
