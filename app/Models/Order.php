@@ -41,9 +41,9 @@ class Order extends Model
         return $this->belongsTo('App\Models\OrderStatus','order_status_id');
     }
 
-    public function getDescriptionAttribute($value){
-        return "Hai ".$value;
-    }
+    // public function getDescriptionAttribute($value){
+    //     return "Hai ".$value;
+    // }
 
     public function getTotalSumAttribute()
     {

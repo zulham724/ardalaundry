@@ -58,7 +58,7 @@ class OrderController extends Controller
         //
         $shop_id = $request->user()->shop()->firstOrFail()->id;
         $order =
-            Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+            Order::with('customer', 'employee', 'shop', 'services.category',  'status', 'payments')
             // ->withCount(['payments as paid_sum' => function ($query) {
             //     $query->select(DB::raw("SUM(value) as paidsum"));
             // }])
