@@ -63,7 +63,7 @@ class ServiceController extends Controller
      */
     public function destroy($id)
     {
-        return true;
+        // return true;
         $res = Service::findOrFail($id);
         $res->delete();
         return response()->json($res);
