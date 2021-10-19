@@ -143,7 +143,7 @@ class OrderController extends Controller
             $DP = Payment::whereHas('order', function ($query) use ($orderid) {
                 $query->where('id', $orderid);
             })->count();
-            $payment->name = 'DP '.($DP+1);
+            $payment->name = 'Pembayaran '.($DP+1);
             $total_price = $total_price - $payments;
             $payment->value = $pay;
             $payment->status = 'success';

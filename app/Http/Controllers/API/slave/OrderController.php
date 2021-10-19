@@ -112,7 +112,7 @@ class OrderController extends Controller
             ->whereHas('shop', function ($query) use ($shop_id) {
                 $query->where('id', $shop_id);
             })
-            ->orderBy('id','desc')
+            ->orderBy('id', 'desc')
             ->get();
 
         // if ($res->paid_sum ) {
@@ -139,7 +139,7 @@ class OrderController extends Controller
         $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')->whereHas('shop', function ($query) use ($shop_id) {
             $query->where('id', $shop_id);
         })
-        ->where('order_status_id', 4)->get();
+            ->where('order_status_id', 4)->get();
 
         return $res;
     }
@@ -163,7 +163,8 @@ class OrderController extends Controller
         return $res;
     }
 
-    public function getPaymentsCountByMonth($shop_id){
+    public function getPaymentsCountByMonth($shop_id)
+    {
         $res = Payment::select(
             DB::raw('sum(value) as `total`'),
             DB::raw("DATE_FORMAT(created_at, '%b %Y') time_period"),
@@ -173,6 +174,18 @@ class OrderController extends Controller
                 $query->where('id', $shop_id);
             })
             ->groupby('year', 'month')
+            ->get();
+        return $res;
+    }
+
+    public function searchOrder(Request $request)
+    {
+        $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+            ->whereHas('shop', function ($query) use ($request) {
+                $query->where('id', $request->user()->shop()->firstOrFail()->id);
+            })
+            ->where('id', 'like', '%'.$request->id.'%')
+            ->orderBy('id', 'desc')
             ->get();
         return $res;
     }

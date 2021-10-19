@@ -83,4 +83,16 @@ class AttendanceController extends Controller
     {
         //
     }
+
+    public function searchAttendance(Request $request){
+        return $request
+            ->user()
+            ->shop()
+            ->firstOrFail()
+            ->attendances()
+            // ->user()
+            ->whereDate('attendances.created_at', \Carbon\Carbon::today())
+            ->where('name', 'like', '%'.$request->name.'%')
+            ->get();
+    }
 }

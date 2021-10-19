@@ -33,16 +33,20 @@ Route::get('/user', function (Request $request) {
     return $request->user()->load('shop');
 });
 
+Route::post('/shop/user/{userid}', [UserController::class, 'update']);
+Route::post('/shop/order/search', [OrderController::class, 'searchOrder']);
 
 
 Route::get('/shop/{shopid}/employees', [ShopController::class, 'getEmployeesByShop']);
 Route::post('/shop/addemployee', [ShopController::class, 'add_employee']);
 Route::post('/shop/deleteEmployee/{employeeid}', [ShopController::class, 'delete_employee']);
 Route::post('/shop/editEmployee/{employeeid}', [ShopController::class, 'edit_employee']);
+Route::post('/shop/searchEmployee', [EmployeeController::class, 'searchEmployee']);
 
 
 
 Route::get('/shop/{shopid}/customers', [ShopController::class, 'getCustomersByShop']);
+Route::post('/shop/searchCustomer', [CustomerController::class, 'searchCustomer']);
 
 
 Route::get('/shop/{shopid}/getServicesByShop', [ServiceController::class, 'getServicesByShop']);
@@ -58,6 +62,7 @@ Route::post('shop/order/{orderid}/payment', [MasterOrderController::class, 'paym
 Route::post('/shop/order/report', [OrderController::class, 'order_report']);
 Route::get('/shop/{shopid}/getOrdersReportByShop', [OrderController::class, 'getOrdersReportByShop']);
 
+Route::post('/shop/searchAttendances', [AttendanceController::class, 'searchAttendance']);
 //chart
 Route::get('shop/orderscountbymonth/{shopid}', [OrderController::class, 'getOrdersCountByMonth']);
 Route::get('shop/paymentscountbymonth/{shopid}', [OrderController::class, 'getPaymentsCountByMonth']);

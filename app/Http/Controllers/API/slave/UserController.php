@@ -51,9 +51,16 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
         //
+        $res = User::findOrFail($id);
+        $res->fill($request->all());
+        $res->update();
+
+        $res->shop()->firstOrFail()->update(['name'=>$request->shop['name']]);
+
+        return $res->load('shop');
     }
 
     /**

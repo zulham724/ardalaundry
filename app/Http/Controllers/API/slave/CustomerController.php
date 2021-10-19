@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\slave;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -42,6 +43,7 @@ class CustomerController extends Controller
     public function show($id)
     {
         //
+        return User::findOrFail($id);
     }
 
     /**
@@ -63,11 +65,18 @@ class CustomerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request,$id)
+    public function destroy(Request $request, $id)
     {
         //
-
-
         return $request->user()->shop()->firstOrFail()->customers()->findOrFail($id)->delete();;
+    }
+
+    public function searchCustomer(Request $request)
+    {
+        $res = User::whereHas('role', fn ($query) => $query->where('name', 'customer'))
+            ->whereHas('customer_shops', fn ($query) => $query->where('shop_id', $request->user()->shop()->firstOrFail()->id))
+            ->where('name', 'like', '%' . $request->name . '%')
+            ->get();
+        return response()->json($res);
     }
 }
