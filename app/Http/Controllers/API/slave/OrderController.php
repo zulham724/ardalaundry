@@ -165,15 +165,21 @@ class OrderController extends Controller
 
     public function getPaymentsCountByMonth($shop_id)
     {
+        // dd('asd');
         $res = Payment::select(
+            DB::raw('order_statuses.id'),
+            DB::raw('order_statuses.name'),
             DB::raw('sum(value) as `total`'),
-            DB::raw("DATE_FORMAT(created_at, '%b %Y') time_period"),
-            DB::raw('YEAR(created_at) year, MONTH(created_at) month')
+            DB::raw("DATE_FORMAT(payments.created_at, '%b %Y') time_period"),
+            DB::raw('YEAR(payments.created_at) year, MONTH(payments.created_at) month')
         )
+            ->join('orders', 'orders.id', '=', 'payments.payment_id')
+            ->join('order_statuses', 'order_statuses.id', '=', 'orders.order_status_id')
+            ->where('payments.payment_type', 'App\\Models\\Order')
             ->whereHas('order.shop', function ($query) use ($shop_id) {
                 $query->where('id', $shop_id);
             })
-            ->groupby('year', 'month')
+            ->groupby('year', 'month', 'order_statuses.id')
             ->get();
         return $res;
     }
