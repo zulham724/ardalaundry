@@ -16,6 +16,9 @@ class PackageController extends Controller
     public function index()
     {
         //
+        $res =
+        Package::with('package_contents')->get();
+        return response()->json($res);
     }
 
     /**
@@ -38,6 +41,7 @@ class PackageController extends Controller
     public function show(Package $package)
     {
         //
+        
     }
 
     /**

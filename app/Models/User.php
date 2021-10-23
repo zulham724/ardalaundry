@@ -51,6 +51,10 @@ class User extends \TCG\Voyager\Models\User
         return $this->belongsToMany('App\Models\Package','package_users')->withPivot(['expired_date']);
     }
 
+    public function package_user(){
+        return $this->hasMany('App\Models\PackageUser');
+    }
+
     public function shop(){
         return $this->hasOne('App\Models\Shop');
     }

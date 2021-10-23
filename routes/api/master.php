@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\API\master\BranchController;
 use App\Http\Controllers\API\master\OrderController;
+use App\Http\Controllers\API\master\PackageController;
 use App\Http\Controllers\API\master\PackageUserController;
+use App\Http\Controllers\API\master\PaymentController;
 use App\Http\Controllers\API\master\ServiceController;
 use App\Http\Controllers\API\master\ShopController;
 use App\Http\Controllers\API\master\UserController;
@@ -50,8 +52,7 @@ Route::get('/slaves',[UserController::class,'slaves']);
 Route::get('/shops',[ShopController::class,'index']);
 Route::get('/branches',[UserController::class,'branches']);
 Route::get('/slave/{shopid}/services',[ServiceController::class,'getServiceBySlave']);
-//ini belum
-// mirip getservuceBbyslave
+
 Route::get('/slave/{slaveid}/orders',[OrderController::class,'getOrdersBySlave']);
 Route::get('/shop/{shopid}/customers',[ShopController::class,'getCustomersByShop']);
 Route::get('/shop/{shopid}/employee',[ShopController::class,'getEmployeesByShop']);
@@ -59,9 +60,14 @@ Route::get('/shop/{shopid}/orderscount', [OrderController::class, 'geOrderCountB
 Route::get('/shop/{shopid}/gettotalprice', [OrderController::class, 'getTotalPriceByShop']);
 Route::get('/shop/{shopid}/getcurrentprofit', [OrderController::class, 'getCurrentProfitByShop']);
 // -----------
-// buat cabang dari akun master lalu buat masing-masing cabang shop
 Route::post('/branch',[BranchController::class,'store']);
 //------------
+
+
+//Packages
+Route::get('/packages', [PackageController::class, 'index']);
+Route::post('/packages/payment', [PaymentController::class, 'store']);
+Route::get('/payments/history', [PaymentController::class, 'show']);
 
 Route::get('test',function(){
     $res = \App\Models\User::with('branches')->find(2);

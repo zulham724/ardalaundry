@@ -4,7 +4,10 @@ namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Models\PackageUser;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
@@ -27,6 +30,19 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         //
+        $packageuser = new PackageUser();
+        $packageuser->user_id = Auth::user()->id;
+        $packageuser->package_id = $request->id; 
+        $packageuser->save();
+
+        $payment = new Payment();
+        $payment->value = $request->price;
+        $payment->status = "success";
+        $payment->name = "Lunas";
+        
+      $res = $request->user()->package_user()->findOrFail($packageuser->id)->payment()->save($payment);
+
+      return $res;
     }
 
     /**
@@ -35,9 +51,14 @@ class PaymentController extends Controller
      * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
-    public function show(Payment $payment)
+    public function show()
     {
         //
+        $res = PackageUser::with('package', 'payment')->whereHas('payment', function($query){
+            $query->where('user_id', Auth::user()->id);
+        })->get();
+
+        return $res;
     }
 
     /**

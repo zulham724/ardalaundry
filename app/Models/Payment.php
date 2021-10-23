@@ -14,4 +14,8 @@ class Payment extends Model
     public function order(){
         return $this->belongsTo('App\Models\Order','payment_id')->where('payment_type','App\Models\Order');
     }
+
+    public function package_user(){
+        return $this->morphOne('App\Models\PackageUser', 'payment_id')->where('payment_type', 'App\Models\PackageUser');
+    }
 }

@@ -12,4 +12,10 @@ class Package extends Model
     public function users(){
         return $this->belongsToMany('App\Models\User','package_users')->withPivot(['expired_date']);;
     }
+
+    public function package_contents(){
+        return $this->hasMany('App\Models\PackageContents', 'package_id');
+    }
+
+   
 }
