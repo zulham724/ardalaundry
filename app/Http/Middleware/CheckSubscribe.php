@@ -22,11 +22,12 @@ class CheckSubscribe
         if(count($master) == 0){
             return response('Akun ini tidak punya master', 500);
         }
-        $res = \App\Models\PackageUser::with('package')->where('user_id',$master[0]->id)->orderBy('created_at')->first();
+        $res = \App\Models\PackageUser::with('package')->where('user_id',$master[0]->id)->orderBy('created_at','desc')->first();
         // return $res->expired_date;
         if(new \DateTime($res->expired_date) < new \DateTime()){
             return response('Masa Pakai Habis',500);
         }
+
         return $next($request);
     }
 }

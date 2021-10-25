@@ -22,19 +22,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/user',function(Request $request){
-    $res = $request->user()->load(['packages']);
-    if(count($res->packages)){
-        if(new \DateTime($res->packages[0]['pivot']['expired_date']) > new \DateTime()){
-            $res->apiStatus = "Hidup";
-        } else {
-            $res->apiStatus = "Mati";
-        }
-    } else {
-        $res->apiStatus = "Mati";
-    }
-    return response()->json($res);
-});
+Route::get('/user', [UserController::class, 'login']);
 
 Route::get('/totalorders',[OrderController::class,'totalOrders']);
 Route::get('/profit',[OrderController::class,'getProfit']);
@@ -70,6 +58,6 @@ Route::post('/packages/payment', [PaymentController::class, 'store']);
 Route::get('/payments/history', [PaymentController::class, 'show']);
 
 Route::get('test',function(){
-    $res = \App\Models\User::with('branches')->find(2);
+    $res = \App\Models\User::with('packages')->find(2);
     return $res;
 });

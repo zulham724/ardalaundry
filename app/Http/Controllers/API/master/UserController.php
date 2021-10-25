@@ -4,9 +4,11 @@ namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Package;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 
 class UserController extends Controller
 {
@@ -100,6 +102,25 @@ class UserController extends Controller
         $res = User::with('employee')->whereHas('shop.user', function($query)use($slaiveId) {
             $query->where('id', $slaiveId);
         })->get();
+        return response()->json($res);
+    }
+
+    public function login(Request $request){
+        $res = $request->user()->load(['packages' => function($query){
+            $query->with('package_contents');
+        }]);
+        
+       $expired = $res->packages[count($res->packages)-1];
+        if (count($res->packages)) {
+            if (new \DateTime($expired['pivot']['expired_date']) > new \DateTime()) {
+                $res->apiStatus = "Hidup";
+            } else {
+                $res->apiStatus = "Mati";
+            }
+        } else {
+            $res->apiStatus = "Mati";
+        }
+       
         return response()->json($res);
     }
 }
