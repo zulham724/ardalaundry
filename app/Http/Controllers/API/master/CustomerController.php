@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
-use App\Models\Service;
-use App\Models\Shop;
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Shop;
 use Illuminate\Support\Facades\Auth;
 
-class ServiceController extends Controller
+class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,6 +16,16 @@ class ServiceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
     {
         //
     }
@@ -29,26 +39,34 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         //
-        $request->validate([
-            'name' => 'required',
-            'service_category_id' => 'required',
-            'price' => 'required',
-            'process_time' => 'required'
+        $user = new User($request->all());
+        $user->save();
 
-        ]);
-        
-        return Shop::whereHas('user.master',function($query){
+        $res = Shop::whereHas('user.master',  function($query){
             $query->where('master_id', Auth::user()->id);
-        })->findOrFail($request->shop_id)->services()->save(new Service($request->all()));
+        })->findOrFail($request->shop_id)->customers()->attach($user->id);
+
+        return $res;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Service  $service
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Service $service)
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
     {
         //
     }
@@ -57,10 +75,10 @@ class ServiceController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Service  $service
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Service $service)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -68,21 +86,17 @@ class ServiceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Service  $service
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         //
-        $res = Service::findOrFail($id)->delete();
-        return $res;
-
-    }
-
-    public function getServiceBySlave($shopId){
-        $res = Service::with('category')->whereHas('shop',function($query)use($shopId){
-            $query->where('id',$shopId);
-        })->get();
-        return response()->json($res);
+      
+        $user = User::whereHas('customer_shops.user.master', function ($query) {
+            $query->where("master_id", Auth::user()->id);
+        })->findOrFail($id)->delete();
+        return $user;
+       
     }
 }

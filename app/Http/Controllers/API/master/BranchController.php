@@ -7,6 +7,7 @@ use App\Models\Branch;
 use App\Models\User;
 use App\Models\Shop;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BranchController extends Controller
 {
@@ -31,6 +32,13 @@ class BranchController extends Controller
     public function store(Request $request)
     {
         // dd(User::orderBy('created_at','desc')->first());
+        $user = $request->user()->loadCount(['slaves'])->load(['active_package_user' => function ($query) {
+            $query->with('payment', 'package.slave_limit');
+        }]);
+        
+       if($user->slaves_count > $user->active_package_user->package->slave_limit->limit){
+           return response('Cabang anda sudah mencapai batas', 500);
+       }
         $request->validate([
             'name' => 'required',
             'email' => 'required|unique:users',
@@ -83,8 +91,11 @@ class BranchController extends Controller
      * @param  \App\Models\Branch  $branch
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Branch $branch)
+    public function destroy($id)
     {
         //
+        $res = User::findOrFail($id)->delete();
+
+        return $res;
     }
 }

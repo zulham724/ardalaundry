@@ -67,31 +67,34 @@ class UserController extends Controller
         //
     }
 
-    public function branches(){
+    public function branches()
+    {
         // return 'asd';
         $res = User::with('shop')
-        ->has('shop')
-        ->whereHas('role',fn($query)=>$query->where('id',4))
-        ->whereHas('master',fn($query)=>$query->where('master_id',Auth::user()->id))
-        ->withCount(['orders'])
-        ->withCount(['orders as payment_count'=>function($query){
-            $query
-            ->join('payments','orders.id','=','payments.payment_id')->where('payments.payment_type','App\Models\Order')
-            ->select(DB::raw("SUM(payments.value) as total"));
-        }])
-        ->get();
+            ->has('shop')
+            ->whereHas('role', fn ($query) => $query->where('id', 4))
+            ->whereHas('master', fn ($query) => $query->where('master_id', Auth::user()->id))
+            ->withCount(['orders'])
+            ->withCount(['orders as payment_count' => function ($query) {
+                $query
+                    ->join('payments', 'orders.id', '=', 'payments.payment_id')->where('payments.payment_type', 'App\Models\Order')
+                    ->select(DB::raw("SUM(payments.value) as total"));
+            }])
+            ->get();
         return response()->json($res);
     }
 
-    public function slaves(){
-        $res = User::with('shop')->whereHas('master',function($query){
-            $query->where('master_id',Auth::user()->id);
+    public function slaves()
+    {
+        $res = User::with('shop')->whereHas('master', function ($query) {
+            $query->where('master_id', Auth::user()->id);
         })->get();
         return response()->json($res);
     }
 
-    public function getCustomersBySlave($slaiveId){
-        $res = User::with('customer')->whereHas('shop.user', function($query)use($slaiveId) {
+    public function getCustomersBySlave($slaiveId)
+    {
+        $res = User::with('customer')->whereHas('shop.user', function ($query) use ($slaiveId) {
             $query->where('id', $slaiveId);
         })->get();
         return response()->json($res);
@@ -99,20 +102,31 @@ class UserController extends Controller
 
     public function getEmployeesBySlave($slaiveId)
     {
-        $res = User::with('employee')->whereHas('shop.user', function($query)use($slaiveId) {
+        $res = User::with('employee')->whereHas('shop.user', function ($query) use ($slaiveId) {
             $query->where('id', $slaiveId);
         })->get();
         return response()->json($res);
     }
 
-    public function login(Request $request){
-        $res = $request->user()->load(['packages' => function($query){
-            $query->with('package_contents');
+    public function login(Request $request)
+    {
+        $res = $request->user()
+        ->loadCount(['slaves', 'orders'])
+        ->load(['active_package_user' => function ($query) {
+            $query->with('payment', 'package.package_limits' );
         }]);
-        
-       $expired = $res->packages[count($res->packages)-1];
-        if (count($res->packages)) {
-            if (new \DateTime($expired['pivot']['expired_date']) > new \DateTime()) {
+
+        foreach ($res->active_package_user->package->package_limits as $limit) {
+            if($res->{$limit->entity} > $limit->limit){
+                $res->apiStatus = "Mati";
+            }else{
+                $res->apiStatus = "Hidup";
+            }
+
+        }   
+
+        if ($res->package_user) {
+            if (new \DateTime($res->package_user->expired_date) > new \DateTime() && $res->{$limit->entity} <= $limit->limit) {
                 $res->apiStatus = "Hidup";
             } else {
                 $res->apiStatus = "Mati";
@@ -120,7 +134,9 @@ class UserController extends Controller
         } else {
             $res->apiStatus = "Mati";
         }
+
        
+
         return response()->json($res);
     }
 }

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
-use App\Models\ServiceCategory;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class ServiceCategoryController extends Controller
+class EmployeeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +17,16 @@ class ServiceCategoryController extends Controller
     public function index()
     {
         //
-        return ServiceCategory::get();
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
     }
 
     /**
@@ -33,10 +43,21 @@ class ServiceCategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ServiceCategory  $serviceCategory
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(ServiceCategory $serviceCategory)
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
     {
         //
     }
@@ -45,10 +66,10 @@ class ServiceCategoryController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ServiceCategory  $serviceCategory
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ServiceCategory $serviceCategory)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -56,11 +77,16 @@ class ServiceCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ServiceCategory  $serviceCategory
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ServiceCategory $serviceCategory)
+    public function destroy(Request $request, $id)
     {
         //
+      $user = User::whereHas('employee_shops.user.master',function($query){
+        $query->where("master_id",Auth::user()->id);
+      })->findOrFail($id)->delete();
+
+      return $user;
     }
 }

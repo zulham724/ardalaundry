@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\master\BranchController;
+use App\Http\Controllers\API\master\CustomerController;
 use App\Http\Controllers\API\master\OrderController;
 use App\Http\Controllers\API\master\PackageController;
 use App\Http\Controllers\API\master\PackageUserController;
@@ -8,6 +9,9 @@ use App\Http\Controllers\API\master\PaymentController;
 use App\Http\Controllers\API\master\ServiceController;
 use App\Http\Controllers\API\master\ShopController;
 use App\Http\Controllers\API\master\UserController;
+use App\Http\Controllers\API\master\EmployeeController;
+use App\Http\Controllers\API\master\ServiceCategory;
+use App\Http\Controllers\API\master\ServiceCategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -61,3 +65,11 @@ Route::get('test',function(){
     $res = \App\Models\User::with('packages')->find(2);
     return $res;
 });
+
+Route::apiResources([
+    'branch' => BranchController::class,
+    'branch_service' => ServiceController::class,
+    'branch_employee' => EmployeeController::class,
+    'branch_customer' => CustomerController::class,
+    'branch_service_category' => ServiceCategoryController::class,
+]);

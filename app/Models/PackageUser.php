@@ -17,8 +17,10 @@ class PackageUser extends Model
         return $this->belongsTo('App\Models\User');
     }
 
-    public function payment()
+    public function payment()   
     {
         return $this->morphOne('App\Models\Payment', 'payment');
     }
+
+   
 }

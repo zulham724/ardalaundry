@@ -51,8 +51,14 @@ class User extends \TCG\Voyager\Models\User
         return $this->belongsToMany('App\Models\Package','package_users')->withPivot(['expired_date']);
     }
 
-    public function package_user(){
+    public function package_users(){
         return $this->hasMany('App\Models\PackageUser');
+    }
+
+    public function active_package_user(){
+        return $this->hasOne('App\Models\PackageUser')->whereHas('payment', function ($query) {
+            $query->where('status', 'success');
+        })->orderBy('created_at', 'desc');
     }
 
     public function shop(){
