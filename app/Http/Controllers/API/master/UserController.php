@@ -112,28 +112,33 @@ class UserController extends Controller
     {
         $res = $request->user()
         ->loadCount(['slaves', 'orders'])
-        ->load(['active_package_user' => function ($query) {
+        ->load(['packages','active_package_user' => function ($query) {
             $query->with('payment', 'package.package_limits' );
         }]);
 
-        foreach ($res->active_package_user->package->package_limits as $limit) {
-            if($res->{$limit->entity} > $limit->limit){
-                $res->apiStatus = "Mati";
-            }else{
-                $res->apiStatus = "Hidup";
+        if($res->active_package_user !== null){
+            foreach ($res->active_package_user->package->package_limits as $limit) {
+                if($res->{$limit->entity} > $limit->limit){
+                    $res->apiStatus = "Mati";
+                }else{
+                    $res->apiStatus = "Hidup";
+                }
             }
 
-        }   
-
-        if ($res->package_user) {
-            if (new \DateTime($res->package_user->expired_date) > new \DateTime() && $res->{$limit->entity} <= $limit->limit) {
-                $res->apiStatus = "Hidup";
+            if ($res->package_user) {
+                if (new \DateTime($res->package_user->expired_date) > new \DateTime() && $res->{$limit->entity} <= $limit->limit) {
+                    $res->apiStatus = "Hidup";
+                } else {
+                    $res->apiStatus = "Mati";
+                }
             } else {
                 $res->apiStatus = "Mati";
             }
-        } else {
+        }else{
             $res->apiStatus = "Mati";
         }
+
+        
 
        
 
