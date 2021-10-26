@@ -40,6 +40,7 @@ class CustomerController extends Controller
     {
         //
         $user = new User($request->all());
+        $user->role_id = 6;
         $user->save();
 
         $res = Shop::whereHas('user.master',  function($query){
@@ -58,6 +59,8 @@ class CustomerController extends Controller
     public function show($id)
     {
         //
+        return User::findOrFail($id);
+
     }
 
     /**
@@ -81,6 +84,8 @@ class CustomerController extends Controller
     public function update(Request $request, $id)
     {
         //
+        return User::findOrFail($id)->update($request->all
+        ());
     }
 
     /**

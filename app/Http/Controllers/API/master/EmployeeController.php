@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,6 +39,14 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         //
+        $user = new User($request->all());
+        $user->role_id = 5;
+        $user->save();
+
+        $res = Shop::whereHas('user.master', function($query){
+            $query->where('master_id', Auth::user()->id);
+        })->findOrFail($request->shop_id)->employees()->attach($user->id);
+        return $res;
     }
 
     /**
@@ -49,6 +58,7 @@ class EmployeeController extends Controller
     public function show($id)
     {
         //
+        return User::findOrFail($id);
     }
 
     /**
@@ -72,6 +82,7 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         //
+        return User::findOrFail($id)->update($request->all());
     }
 
     /**

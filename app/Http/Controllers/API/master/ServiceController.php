@@ -48,9 +48,10 @@ class ServiceController extends Controller
      * @param  \App\Models\Service  $service
      * @return \Illuminate\Http\Response
      */
-    public function show(Service $service)
+    public function show($id)
     {
         //
+        return Service::with('category')->findOrFail($id);
     }
 
     /**
@@ -60,9 +61,10 @@ class ServiceController extends Controller
      * @param  \App\Models\Service  $service
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Service $service)
+    public function update(Request $request, $id)
     {
         //
+        return Service::findOrFail($id)->update($request->all());
     }
 
     /**
