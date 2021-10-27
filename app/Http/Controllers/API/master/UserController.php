@@ -138,7 +138,6 @@ class UserController extends Controller
             
         }else{
             $res->apiStatus = "Mati";
-            return response('qqqq');
         }
 
         return response()->json($res);
