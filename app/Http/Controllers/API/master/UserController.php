@@ -118,15 +118,15 @@ class UserController extends Controller
 
         if($res->active_package_user !== null){
             foreach ($res->active_package_user->package->package_limits as $limit) {
-                if($res->{$limit->entity} > $limit->limit){
+                if ($res->{$limit->entity} > $limit->limit) {
                     $res->apiStatus = "Mati";
-                }else{
+                } else {
                     $res->apiStatus = "Hidup";
+                    
                 }
             }
-
-            if ($res->package_user) {
-                if (new \DateTime($res->package_user->expired_date) > new \DateTime() && $res->{$limit->entity} <= $limit->limit) {
+            if ($res->active_package_user) {
+                if (new \DateTime($res->active_package_user->expired_date) > new \DateTime() && $res->{$limit->entity} <= $limit->limit) {
                     $res->apiStatus = "Hidup";
                 } else {
                     $res->apiStatus = "Mati";
@@ -134,13 +134,12 @@ class UserController extends Controller
             } else {
                 $res->apiStatus = "Mati";
             }
+
+            
         }else{
             $res->apiStatus = "Mati";
+            return response('qqqq');
         }
-
-        
-
-       
 
         return response()->json($res);
     }

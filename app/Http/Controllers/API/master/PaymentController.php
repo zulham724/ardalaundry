@@ -56,7 +56,7 @@ class PaymentController extends Controller
         //
         $res = PackageUser::with('package', 'payment')->whereHas('payment', function($query){
             $query->where('user_id', Auth::user()->id);
-        })->get();
+        })->orderBy('created_at', 'desc')->get();
 
         return $res;
     }
