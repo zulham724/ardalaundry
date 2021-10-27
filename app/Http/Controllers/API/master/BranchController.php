@@ -59,7 +59,7 @@ class BranchController extends Controller
         $request->user()->slaves()->attach($slave->id);
 
 
-        return $request->user()->load('branches.shop');
+        return $request->user()->load('slaves.shop');
     }
 
     /**
