@@ -56,7 +56,7 @@ class BranchController extends Controller
         $shop->name = $request->shop_name;
         $shop->description = $request->shop_desc ?? null;
         $slave->shop()->save($shop);
-        $request->user()->branches()->attach($slave->id);
+        $request->user()->slaves()->attach($slave->id);
 
 
         return $request->user()->load('branches.shop');
