@@ -37,7 +37,7 @@ class PaymentController extends Controller
 
         $payment = new Payment();
         $payment->value = $request->price;
-        $payment->status = "success";
+        $payment->status = "pending";
         $payment->name = "Lunas";
         
       $res = $request->user()->package_users()->findOrFail($packageuser->id)->payment()->save($payment);
