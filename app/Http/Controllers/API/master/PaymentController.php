@@ -8,6 +8,7 @@ use App\Models\PackageUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
@@ -33,6 +34,7 @@ class PaymentController extends Controller
         $packageuser = new PackageUser();
         $packageuser->user_id = Auth::user()->id;
         $packageuser->package_id = $request->id; 
+        $packageuser->expired_date = Carbon::now()->addDays(30);
         $packageuser->save();
 
         $payment = new Payment();
