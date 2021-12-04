@@ -22,5 +22,9 @@ class PackageUser extends Model
         return $this->morphOne('App\Models\Payment', 'payment');
     }
 
+    // public function payment()
+    // {
+    //     return $this->morphOne('App\Models\Payment', 'paymentable');
+    // }
    
 }

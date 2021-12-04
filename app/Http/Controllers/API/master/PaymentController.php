@@ -20,6 +20,15 @@ class PaymentController extends Controller
     public function index()
     {
         //
+        // $res = PackageUser::with('package', 'payment')->whereHas('payment', function ($query) {
+        //     $query->where('user_id', Auth::user()->id);
+        // })->orderBy('created_at', 'desc')->get();
+        
+        return $res = Payment::with('package_user')->whereHas('package_user.user', function($query){
+            $query->where('user_id', Auth::user()->id);
+        })->orderBy('created_at', 'desc')->get();
+
+        return $res;
     }
 
     /**
@@ -53,14 +62,14 @@ class PaymentController extends Controller
      * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show($id)
     {
         //
-        $res = PackageUser::with('package', 'payment')->whereHas('payment', function($query){
-            $query->where('user_id', Auth::user()->id);
-        })->orderBy('created_at', 'desc')->get();
 
-        return $res;
+        $res = Payment::with('package_user')->where('id', $id)->first();
+
+        return $res;    
+      
     }
 
     /**

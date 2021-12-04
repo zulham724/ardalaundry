@@ -54,7 +54,7 @@ Route::get('/shop/{shopid}/getcurrentprofit', [OrderController::class, 'getCurre
 // -----------
 Route::post('/branch',[BranchController::class,'store']);
 //------------
-
+Route::post('/register', [UserController::class, 'register']);
 
 //Packages
 Route::get('/packages', [PackageController::class, 'index']);
@@ -72,4 +72,6 @@ Route::apiResources([
     'branch_employee' => EmployeeController::class,
     'branch_customer' => CustomerController::class,
     'branch_service_category' => ServiceCategoryController::class,
+    'master_payment' => PaymentController::class
 ]);
+

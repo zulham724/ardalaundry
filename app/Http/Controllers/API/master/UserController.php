@@ -67,6 +67,12 @@ class UserController extends Controller
         //
     }
 
+    public function register(Request $request){
+        $user = new User($request->all());
+        $user->role_id = 3;
+        $user->save();
+    }
+
     public function branches()
     {
         // return 'asd';
@@ -113,7 +119,7 @@ class UserController extends Controller
         $res = $request->user()
         ->loadCount(['slaves', 'orders'])
         ->load(['packages','active_package_user' => function ($query) {
-            $query->with('payment', 'package.package_limits' );
+            $query->with('payment', 'package.package_limits', 'package.package_contents' );
         }]);
 
         if($res->active_package_user !== null){
@@ -126,7 +132,7 @@ class UserController extends Controller
                 }
             }
             if ($res->active_package_user) {
-                if (new \DateTime($res->active_package_user->expired_date) > new \DateTime() && $res->{$limit->entity} <= $limit->limit) {
+                if (new \DateTime($res->active_package_user->expired_date) > new \DateTime() && $res->{$limit->entity} < $limit->limit) {
                     $res->apiStatus = "Hidup";
                 } else {
                     $res->apiStatus = "Mati";
