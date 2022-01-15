@@ -18,7 +18,9 @@ class ServiceCategoryController extends Controller
     public function index()
     {
         //
-        return ServiceCategory::with(['services'=>fn($query)=>$query->whereHas('shop.user',fn($query)=>$query->where('id',Auth::user()->id))])->get();
+        // return ServiceCategory::with(['services'=>fn($query)=>$query->whereHas('shop.user',fn($query)=>$query->where('id',Auth::user()->id))])->get();
+        // return response()->json(auth('api')->user()->shop->id);
+        return ServiceCategory::with("service_unit")->where("shop_id", auth('api')->user()->shop->id)->get();
     }
 
     /**
@@ -30,6 +32,12 @@ class ServiceCategoryController extends Controller
     public function store(Request $request)
     {
         //
+        // return response()->json($request->all());
+        // return response()->json(auth('api')->user()->shop);
+        $categories = new ServiceCategory($request->all());
+        $categories->shop_id = auth('api')->user()->shop->id;
+        $categories->save();
+        
     }
 
     /**

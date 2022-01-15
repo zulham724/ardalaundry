@@ -9,7 +9,13 @@ class ServiceCategory extends Model
 {
     use HasFactory;
 
+    protected $guarded = ["id"];
+
     public function services(){
         return $this->hasMany('App\Models\Service');
+    }
+
+    public function service_unit(){
+        return $this->belongsTo("App\Models\ServiceUnit");
     }
 }

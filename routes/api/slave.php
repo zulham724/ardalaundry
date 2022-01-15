@@ -13,8 +13,7 @@ use App\Http\Controllers\API\slave\CustomerController;
 use App\Http\Controllers\API\slave\EmployeeController;
 use App\Http\Controllers\API\slave\OrderStatusController;
 use App\Http\Controllers\API\slave\PaymentController;
-
-
+use App\Http\Controllers\API\slave\ServiceUnitController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,11 +28,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('/user', function (Request $request) {
-    return $request->user()->load('shop');
+    if ($request->user()->hasRole('customer')) {
+        return $request->user()->load('customer_shops');
+    } else {
+        return $request->user()->load('shop');
+    }
 });
 
+Route::post('/user/register', [UserController::class, 'register_customer']);
+Route::post('/user/update/{userid}', [UserController::class, 'update_customer']);
 Route::post('/shop/user/{userid}', [UserController::class, 'update']);
+Route::post('/user/order', [OrderController::class, 'user_orders']);
+Route::post('/user/order/{orderid}/payment', [OrderController::class, 'user_payment']);
+Route::get('/user/{userid}/getOrdersByCustomer', [OrderController::class, 'getOrdersByCustomer']);
 Route::post('/shop/order/search', [OrderController::class, 'searchOrder']);
 
 
@@ -61,11 +70,17 @@ Route::post('shop/addOrder', [OrderController::class, 'store']);
 Route::post('shop/order/{orderid}/payment', [MasterOrderController::class, 'payment']);
 Route::post('/shop/order/report', [OrderController::class, 'order_report']);
 Route::get('/shop/{shopid}/getOrdersReportByShop', [OrderController::class, 'getOrdersReportByShop']);
+Route::get('/shop/{shopid}/queueorder', [OrderController::class, 'getQueueOrderByShop']);
+Route::post('/shop/order/accept', [OrderController::class, 'accept_order']);
+Route::post('/shop/order/reject', [OrderController::class, 'reject_order']);
 
 Route::post('/shop/searchAttendances', [AttendanceController::class, 'searchAttendance']);
 //chart
 Route::get('shop/orderscountbymonth/{shopid}', [OrderController::class, 'getOrdersCountByMonth']);
 Route::get('shop/paymentscountbymonth/{shopid}', [OrderController::class, 'getPaymentsCountByMonth']);
+
+//service
+Route::get('/services/{categoryid}', [ServiceController::class, 'index']);
 
 
 
@@ -77,4 +92,6 @@ Route::apiResources([
     'payment' => PaymentController::class,
     'orderstatus' => OrderStatusController::class,
     'attendances' => AttendanceController::class,
+    'serviceunits' => ServiceUnitController::class,
+    'servicecategories' => ServiceCategoryController::class,
 ]);

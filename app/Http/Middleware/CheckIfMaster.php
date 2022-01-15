@@ -16,6 +16,7 @@ class CheckIfMaster
      */
     public function handle(Request $request, Closure $next)
     {
+       
         if($request->user()->hasRole('master')){
             return $next($request);
         }

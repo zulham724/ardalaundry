@@ -15,10 +15,12 @@ class CheckIfSlave
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
-    {
-        if($request->user()->hasRole('slave')){
+    {   
+        if($request->user()->hasRole('customer')){
+            return $next($request);
+        }else if($request->user()->hasRole('slave')){
             return $next($request);
         }
-        return response('Harus Slave',500);
+        return response('Role ini tidak dijinkan',500);
     }
 }

@@ -5,9 +5,11 @@ namespace App\Http\Controllers\API\master;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Package;
+use App\Models\PackageUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 
 class UserController extends Controller
@@ -69,8 +71,15 @@ class UserController extends Controller
 
     public function register(Request $request){
         $user = new User($request->all());
+        $user->password = bcrypt($request->password);
         $user->role_id = 3;
         $user->save();
+
+        $package_user = new PackageUser();
+        $package_user->user_id = $user->id;
+        $package_user->package_id = 1;
+        $package_user->expired_date = Carbon::now()->addDays(7);
+        $package_user->save();
     }
 
     public function branches()
@@ -79,7 +88,7 @@ class UserController extends Controller
         $res = User::with('shop')
             ->has('shop')
             ->whereHas('role', fn ($query) => $query->where('id', 4))
-            ->whereHas('master', fn ($query) => $query->where('master_id', Auth::user()->id))
+            ->whereHas('master', fn ($query) => $query->where('master_id', auth('api')->user()->id))
             ->withCount(['orders'])
             ->withCount(['orders as payment_count' => function ($query) {
                 $query
@@ -93,7 +102,7 @@ class UserController extends Controller
     public function slaves()
     {
         $res = User::with('shop')->whereHas('master', function ($query) {
-            $query->where('master_id', Auth::user()->id);
+            $query->where('master_id', auth('api')->user()->id);
         })->get();
         return response()->json($res);
     }
@@ -116,6 +125,7 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
+        // return response()->json($request->all());
         $res = $request->user()
         ->loadCount(['slaves', 'orders'])
         ->load(['packages','active_package_user' => function ($query) {

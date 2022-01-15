@@ -44,7 +44,7 @@ class CustomerController extends Controller
         $user->save();
 
         $res = Shop::whereHas('user.master',  function($query){
-            $query->where('master_id', Auth::user()->id);
+            $query->where('master_id', auth('api')->user()->id);
         })->findOrFail($request->shop_id)->customers()->attach($user->id);
 
         return $res;
@@ -99,7 +99,7 @@ class CustomerController extends Controller
         //
       
         $user = User::whereHas('customer_shops.user.master', function ($query) {
-            $query->where("master_id", Auth::user()->id);
+            $query->where("master_id", auth('api')->user()->id);
         })->findOrFail($id)->delete();
         return $user;
        

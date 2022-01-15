@@ -32,7 +32,7 @@ class BranchController extends Controller
     public function store(Request $request)
     {
         // dd(User::orderBy('created_at','desc')->first());
-        $user = $request->user()->loadCount(['slaves'])->load(['active_package_user' => function ($query) {
+        $user = auth('api')->user()->loadCount(['slaves'])->load(['active_package_user' => function ($query) {
             $query->with('payment', 'package.slave_limit');
         }]);
         
@@ -56,10 +56,10 @@ class BranchController extends Controller
         $shop->name = $request->shop_name;
         $shop->description = $request->shop_desc ?? null;
         $slave->shop()->save($shop);
-        $request->user()->slaves()->attach($slave->id);
+        auth('api')->user()->slaves()->attach($slave->id);
 
 
-        return $request->user()->load('slaves.shop');
+        return auth('api')->user()->load('slaves.shop');
     }
 
     /**

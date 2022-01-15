@@ -14,9 +14,12 @@ class ServiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
         //
+       
+        $res = Service::with("category.service_unit")->where("service_category_id", $id)->get();
+        return $res;
     }
 
     /**
@@ -28,6 +31,7 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         //
+        // return response()->json($request->all());
         $res = $request->user()->shop()->firstOrFail()->services()->save(new Service($request->all()));
         return response()->json($res);
     }

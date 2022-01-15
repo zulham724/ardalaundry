@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\API\master;
+namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Shop;
+use App\Models\ServiceUnit;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class EmployeeController extends Controller
+class ServiceUnitController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,6 +16,7 @@ class EmployeeController extends Controller
     public function index()
     {
         //
+        return ServiceUnit::get();
     }
 
     /**
@@ -39,14 +38,6 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         //
-        $user = new User($request->all());
-        $user->role_id = 5;
-        $user->save();
-
-        $res = Shop::whereHas('user.master', function($query){
-            $query->where('master_id', auth('api')->user()->id);
-        })->findOrFail($request->shop_id)->employees()->attach($user->id);
-        return $res;
     }
 
     /**
@@ -58,7 +49,6 @@ class EmployeeController extends Controller
     public function show($id)
     {
         //
-        return User::findOrFail($id);
     }
 
     /**
@@ -82,7 +72,6 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         //
-        return User::findOrFail($id)->update($request->all());
     }
 
     /**
@@ -91,13 +80,8 @@ class EmployeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy($id)
     {
         //
-      $user = User::whereHas('employee_shops.user.master',function($query){
-        $query->where("master_id",auth('api')->user()->id);
-      })->findOrFail($id)->delete();
-
-      return $user;
     }
 }

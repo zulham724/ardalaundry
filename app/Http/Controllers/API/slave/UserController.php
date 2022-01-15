@@ -74,10 +74,20 @@ class UserController extends Controller
         //
     }
 
-   
+    public function register_customer(Request $request){
+        $customer = new User($request->all());
+        $customer->role_id = 6;
+        $customer->password = bcrypt($request->password);
+        $customer->save();
+    }
 
-   
+    public function update_customer(Request $request, $id){
+        $user = User::findOrFail($id);
+        $user->fill($request->all());
+        $user->update();
 
+        return $user;
+    }
 
     public function add_customer(Request $request){
         $request->validate([

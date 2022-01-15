@@ -89,4 +89,8 @@ class User extends \TCG\Voyager\Models\User
     public function orders(){
         return $this->hasManyThrough('App\Models\Order','App\Models\Shop');
     }
+
+    public function order(){
+        return $this->hasMany('App\Models\Order', 'customer_id', 'id');
+    }
 }

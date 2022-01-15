@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/user', [UserController::class, 'login']);
+Route::middleware(['auth:api', 'checkifmaster'])->get('/user', [UserController::class, 'login']);
 
 Route::get('/totalorders',[OrderController::class,'totalOrders']);
 Route::get('/profit',[OrderController::class,'getProfit']);

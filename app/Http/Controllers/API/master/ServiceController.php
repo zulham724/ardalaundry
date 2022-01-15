@@ -38,7 +38,7 @@ class ServiceController extends Controller
         ]);
         
         return Shop::whereHas('user.master',function($query){
-            $query->where('master_id', Auth::user()->id);
+            $query->where('master_id', auth('api')->user()->id);
         })->findOrFail($request->shop_id)->services()->save(new Service($request->all()));
     }
 

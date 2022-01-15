@@ -16,35 +16,40 @@ class CheckSubscribe
      */
     public function handle(Request $request, Closure $next)
     {
-        $pass = true;
-        $master = \App\Models\User::whereHas('slaves', function ($query) use ($request) {
-            $query->where('slave_id', $request->user()->id);
-        })
-            ->withCount(['slaves'])
-            ->with(['active_package_user' => function ($query) {
-                $query->with('payment', 'package.package_limits');
-            }])
-            ->firstOrFail();
-        // return response($master, 500);
-
-        foreach ($master->active_package_user->package->package_limits as $key => $limit) {
-            # code...
-            if ($master->{$limit->entity} > $limit->limit) {
-                $pass = false;
-            } 
-        }
-        
-        $res = \App\Models\PackageUser::with('package')->where('user_id', $master->id)->orderBy('created_at', 'desc')->first();
-        // return $res->expired_date;
-        if (new \DateTime($res->expired_date) < new \DateTime()) {
-            $pass = false;
-            
-        }
-
-        if($pass){
+        if($request->user()->hasRole('customer')){
             return $next($request);
-        } else {
-            return response('Masa Pakai Habis atau Melebihi syarat paket', 500);
+        }else{
+
+            $pass = true;
+            $master = \App\Models\User::whereHas('slaves', function ($query) use ($request) {
+                $query->where('slave_id', $request->user()->id);
+            })
+                ->withCount(['slaves'])
+                ->with(['active_package_user' => function ($query) {
+                    $query->with('payment', 'package.package_limits');
+                }])
+                ->firstOrFail();
+            // return response($master, 500);
+    
+            foreach ($master->active_package_user->package->package_limits as $key => $limit) {
+                # code...
+                if ($master->{$limit->entity} > $limit->limit) {
+                    $pass = false;
+                } 
+            }
+            
+            $res = \App\Models\PackageUser::with('package')->where('user_id', $master->id)->orderBy('created_at', 'desc')->first();
+            // return $res->expired_date;
+            if (new \DateTime($res->expired_date) < new \DateTime()) {
+                $pass = false;
+                
+            }
+    
+            if($pass){
+                return $next($request);
+            } else {
+                return response('Masa Pakai Habis atau Melebihi syarat paket', 500);
+            }
         }
         
     }

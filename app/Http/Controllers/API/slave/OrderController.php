@@ -47,6 +47,23 @@ class OrderController extends Controller
         return response()->json($order->load('services'));
     }
 
+    public function user_orders(Request $request)
+    {
+        $order = new Order();
+        $order->customer_id = auth('api')->user()->id;
+        $order->employee_id = 8;
+        $order->shop_id = $request->shop_id;
+        $order->order_status_id = 1;
+        $order->description = $request->description;
+        $order->save();
+        // $order->services()->attach($request->)
+        foreach ($request->services as $service) {
+            # code...
+            $order->services()->attach($service['id'], ['quantity' => $service['quantity'], 'start_at' => \Carbon\Carbon::now(), 'end_at' => \Carbon\Carbon::now()->addHours($service['process_time'])]);
+        }
+
+        return response()->json($order->load('services'));
+    }
     /**
      * Display the specified resource.
      *
@@ -122,6 +139,15 @@ class OrderController extends Controller
         return response()->json($res);
     }
 
+    public function getOrdersByCustomer($userid)
+    {
+
+        $res = Order::with('shop', 'services', 'status', 'payments', 'customer')
+            ->where('customer_id', $userid)
+            ->orderBy('id', 'desc')->get();
+
+        return $res;
+    }
     public function order_report(Request $request)
     {
         // return $request->all();
@@ -186,13 +212,90 @@ class OrderController extends Controller
 
     public function searchOrder(Request $request)
     {
+
+        if (isset($request->data['role'])) {
+            $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+                ->where('id', 'like', '%' . $request->data['id'] . '%')
+                ->orderBy('id', 'desc')
+                ->get();
+
+            return $res;
+        } else {
+            $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+                ->whereHas('shop', function ($query) use ($request) {
+                    $query->where('id', $request->user()->shop()->firstOrFail()->id);
+                })
+                ->where('id', 'like', '%' . $request->data['id'] . '%')
+                ->orderBy('id', 'desc')
+                ->get();
+            return $res;
+        }
+    }
+
+    public function user_payment(Request $request, $orderid)
+    {
+        (int) $total_price = DB::table('orders')
+            ->selectRaw('sum(order_services.quantity*services.price) as total_price')
+            ->join('order_services', 'order_services.order_id', '=', 'orders.id')
+            ->join('services', 'order_services.service_id', '=', 'services.id')
+            ->where('orders.id', $orderid)->first()->total_price;
+        // 2 itung total payment yg masuk
+        (int)$pay = $request->value;
+        (int)$payments = Payment::whereHas('order', function ($query) use ($orderid) {
+            $query->where('id', $orderid);
+        })->sum('value');
+        // return [(int)$payments,(int)$pay];
+        $total_payment = $payments + $pay;
+
+
+        // 3 bandingkan nilai yg masuk + payment yg sudah masuk dengan total
+        $payment = new Payment();
+        if ($total_price > $total_payment) {
+            // kalau masih kurang nama = DP. count total payment yg masuk ditambah satu
+            $DP = Payment::whereHas('order', function ($query) use ($orderid) {
+                $query->where('id', $orderid);
+            })->count();
+            $payment->name = 'Pembayaran ' . ($DP + 1);
+            $total_price = $total_price - $payments;
+            $payment->value = $pay;
+            $payment->status = 'success';
+        } else if ($total_payment ==  $total_price) {
+            // kalau hasil jumlah nya sama dengan total nama nya == pelunasan
+            $payment->name = 'Pelunasan';
+            $payment->value = $pay;
+            $payment->status = 'success';
+        }
+
+        $order = Order::findOrFail($orderid)->payments()->save($payment);
+        // $res = $request->user()->order()->findOrFail($orderid)->payments()->save($payment);
+        return $order;
+    }
+
+    public function getQueueOrderByShop($shopid)
+    {
+
         $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
-            ->whereHas('shop', function ($query) use ($request) {
-                $query->where('id', $request->user()->shop()->firstOrFail()->id);
+            ->whereHas('shop', function ($query) use ($shopid) {
+                $query->where('id', $shopid);
             })
-            ->where('id', 'like', '%'.$request->id.'%')
-            ->orderBy('id', 'desc')
+            ->where('order_status_id', 1)
             ->get();
         return $res;
+    }
+
+    public function accept_order(Request $request)
+    {
+
+        $res = Order::findOrFail($request->id);
+        $res->order_status_id = 4;
+        $res->save();
+
+        return $res;
+    }
+
+    public function reject_order(Request $request)
+    {
+
+        return Order::findOrFail($request->id)->delete();
     }
 }
