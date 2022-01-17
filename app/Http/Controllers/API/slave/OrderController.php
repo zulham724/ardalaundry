@@ -32,16 +32,19 @@ class OrderController extends Controller
     {
         //
         // return 'asd';
-        // return $request->all();
+        // return response()->json($request->all());
         $order = $request->user()->shop()->firstOrFail()->orders()->save(new Order([
-            'customer_id' => $request->customer_id,
-            'employee_id' => $request->employee_id,
+            'customer_id' => 6,
+            'employee_id' => 8,
             'description' => $request->description
         ]));
         // $order->services()->attach($request->)
-        foreach ($request->services as $service) {
-            # code...
-            $order->services()->attach($service['id'], ['quantity' => $service['quantity'], 'start_at' => \Carbon\Carbon::now(), 'end_at' => \Carbon\Carbon::now()->addHours($service['process_time'])]);
+        // foreach ($request->services as $service) {
+        //     # code...
+        //     $order->services()->attach($service['id'], ['quantity' => $service['quantity'], 'start_at' => \Carbon\Carbon::now(), 'end_at' => \Carbon\Carbon::now()->addHours($service['process_time'])]);
+        // }
+        foreach ($request->charts as $c => $chart) {
+            $order->services()->attach($chart['package']['id'], ['quantity' => $chart['quantity'], 'start_at' => \Carbon\Carbon::now(), 'end_at' => \Carbon\Carbon::now()->addHours($chart['package']['process_time'])]);
         }
 
         return response()->json($order->load('services'));
@@ -75,7 +78,7 @@ class OrderController extends Controller
         //
         $shop_id = $request->user()->shop()->firstOrFail()->id;
         $order =
-            Order::with('customer', 'employee', 'shop', 'services.category',  'status', 'payments')
+            Order::with('customer', 'employee', 'shop', 'services.category.service_unit',  'status', 'payments')
             // ->withCount(['payments as paid_sum' => function ($query) {
             //     $query->select(DB::raw("SUM(value) as paidsum"));
             // }])
@@ -114,6 +117,10 @@ class OrderController extends Controller
     {
         //
         return DB::table('orders')->join('order_services', 'order_services.order_id', '=', 'orders.id')->where('orders.id', $id)->delete();
+    }
+
+    public function get_order(){
+        return Order::with('services', 'customer')->orderBy('created_at', 'desc')->first();
     }
 
     public function getOrdersByShop($shop_id)

@@ -73,7 +73,7 @@ Route::get('/shop/{shopid}/getOrdersReportByShop', [OrderController::class, 'get
 Route::get('/shop/{shopid}/queueorder', [OrderController::class, 'getQueueOrderByShop']);
 Route::post('/shop/order/accept', [OrderController::class, 'accept_order']);
 Route::post('/shop/order/reject', [OrderController::class, 'reject_order']);
-
+Route::get('/getorder', [OrderController::class, 'get_order']);
 Route::post('/shop/searchAttendances', [AttendanceController::class, 'searchAttendance']);
 //chart
 Route::get('shop/orderscountbymonth/{shopid}', [OrderController::class, 'getOrdersCountByMonth']);
