@@ -38,7 +38,7 @@ class OrderController extends Controller
             'employee_id' => 8,
             'description' => $request->description
         ]));
-        // $order->services()->attach($request->)
+       
         // foreach ($request->services as $service) {
         //     # code...
         //     $order->services()->attach($service['id'], ['quantity' => $service['quantity'], 'start_at' => \Carbon\Carbon::now(), 'end_at' => \Carbon\Carbon::now()->addHours($service['process_time'])]);
