@@ -69,8 +69,15 @@ class ServiceCategoryController extends Controller
      * @param  \App\Models\ServiceCategory  $serviceCategory
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ServiceCategory $serviceCategory)
+    public function destroy(Request $request)
     {
         //
+       
+    }
+
+    public function delete_categories(Request $request){
+        // return response()->json($request->all());
+        $res = ServiceCategory::whereIn('id', $request->all())->delete();
+        return $res;
     }
 }

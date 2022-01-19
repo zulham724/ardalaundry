@@ -37,14 +37,15 @@ class EmployeeController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|unique:users',
-            'password' => 'required',
         ]);
 
         $employee =  new User();
         $employee->role_id = 5;
         $employee->name = $request->name;
         $employee->email = $request->email;
-        $employee->password = bcrypt($request->password);
+        if($request->has("password")){
+            $employee->password = bcrypt($request->password);
+        }
         $employee->home_address = $request->home_address;
         $employee->contact_number = $request->contact_number;
         $employee->save();
@@ -63,6 +64,7 @@ class EmployeeController extends Controller
     public function show($id)
     {
         //
+        return User::where('id', $id)->firstOrFail();
 
     }
 
@@ -76,7 +78,8 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         //
-        return $request->user()->shop()->firstOrFail()->employees()->findOrFail($id)->update($request->all());
+        // return response()->json($request->all());
+        return $request->user()->shop()->firstOrFail()->employees()->findOrFail($id)->update($request->employee);
     }
 
     /**

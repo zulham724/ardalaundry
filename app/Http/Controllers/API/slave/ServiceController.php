@@ -14,11 +14,11 @@ class ServiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function index()
     {
         //
        
-        $res = Service::with("category.service_unit")->where("service_category_id", $id)->get();
+        $res = Service::with("category.service_unit")->get();
         return $res;
     }
 
@@ -86,6 +86,11 @@ class ServiceController extends Controller
         $res = $request->user()->shop()->firstOrFail()->services()->save(new Service($request->all()));
         return response()->json($res);
 
+   }
+
+   public function delete_service(Request $request){
+       $res = Service::whereIn('id', $request->all())->delete();
+       return $res;
    }
 
    

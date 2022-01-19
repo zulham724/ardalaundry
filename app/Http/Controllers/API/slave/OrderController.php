@@ -36,6 +36,7 @@ class OrderController extends Controller
         $order = $request->user()->shop()->firstOrFail()->orders()->save(new Order([
             'customer_id' => 6,
             'employee_id' => 8,
+            'order_status_id' => 1,
             'description' => $request->description
         ]));
        

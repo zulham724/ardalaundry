@@ -80,7 +80,12 @@ Route::get('shop/orderscountbymonth/{shopid}', [OrderController::class, 'getOrde
 Route::get('shop/paymentscountbymonth/{shopid}', [OrderController::class, 'getPaymentsCountByMonth']);
 
 //service
-Route::get('/services/{categoryid}', [ServiceController::class, 'index']);
+Route::get('/services', [ServiceController::class, 'index']);
+Route::post('/deleteservices', [ServiceController::class, 'delete_service']);
+
+Route::post('/deletecategories', [ServiceCategoryController::class, 'delete_categories']);
+
+// Route::post('/update_employee', [EmployeeController::class, 'update']);
 
 
 
