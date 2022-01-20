@@ -17,7 +17,7 @@ class AddContactnumberAndHomeaddressInUserTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             //
             $table->string('home_address')->nullable();
-            $table->bigInteger('contact_number')->nullable();
+            $table->string('contact_number')->nullable();
         });
     }
 

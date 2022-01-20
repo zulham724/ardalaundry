@@ -39,7 +39,7 @@ class OrderController extends Controller
             'order_status_id' => 1,
             'description' => $request->description
         ]));
-       
+
         // foreach ($request->services as $service) {
         //     # code...
         //     $order->services()->attach($service['id'], ['quantity' => $service['quantity'], 'start_at' => \Carbon\Carbon::now(), 'end_at' => \Carbon\Carbon::now()->addHours($service['process_time'])]);
@@ -120,7 +120,8 @@ class OrderController extends Controller
         return DB::table('orders')->join('order_services', 'order_services.order_id', '=', 'orders.id')->where('orders.id', $id)->delete();
     }
 
-    public function get_order(){
+    public function get_order()
+    {
         return Order::with('services', 'customer')->orderBy('created_at', 'desc')->first();
     }
 
@@ -140,10 +141,14 @@ class OrderController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        // if ($res->paid_sum ) {
-        //     # code...
-        // }
+        foreach ($res as $o => $order) {
+            # code...
+            $order->percentage = 0;
+            // service status id 3 adalah yang status pekerjaan per kaet nya complete
+            if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+        }
 
+        
         return response()->json($res);
     }
 

@@ -27,10 +27,14 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // return response()->json($request->all());
         // return $request->user()->shop()->firstOrFail()->customers()->get();
-        $customer = new User($request->all());
+        $customer = new User();
+        $customer->name = $request->name;
         $customer->role_id = 6;
+        $customer->email = $request->email;
+        $customer->contact_number = $request->contact_number;
+        $customer->home_address = $request->home_address;
         return $request->user()->shop()->firstOrFail()->customers()->save($customer);
     }
 
@@ -43,7 +47,7 @@ class CustomerController extends Controller
     public function show($id)
     {
         //
-        return User::findOrFail($id);
+        return User::with("order.services.category.service_unit")->findOrFail($id);
     }
 
     /**

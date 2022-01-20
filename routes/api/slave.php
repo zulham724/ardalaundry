@@ -82,6 +82,7 @@ Route::get('shop/paymentscountbymonth/{shopid}', [OrderController::class, 'getPa
 //service
 Route::get('/services', [ServiceController::class, 'index']);
 Route::post('/deleteservices', [ServiceController::class, 'delete_service']);
+Route::get('/getservices/{categoryid}', [ServiceController::class, 'getServicesBycategory']);
 
 Route::post('/deletecategories', [ServiceCategoryController::class, 'delete_categories']);
 

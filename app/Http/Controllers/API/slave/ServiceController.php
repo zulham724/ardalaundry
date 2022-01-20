@@ -93,5 +93,7 @@ class ServiceController extends Controller
        return $res;
    }
 
-   
+   public function getServicesBycategory($id){
+       return Service::where('service_category_id', $id)->get();
+   }
 }
