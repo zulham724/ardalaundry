@@ -4,6 +4,9 @@ namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use App\Models\Order;
+use App\Models\OrderService;
+use App\Models\ServiceStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,7 +20,7 @@ class ServiceController extends Controller
     public function index()
     {
         //
-       
+
         $res = Service::with("category.service_unit")->get();
         return $res;
     }
@@ -82,18 +85,34 @@ class ServiceController extends Controller
         return response()->json($res);
     }
 
-   public function add_service(Request $request){
+    public function add_service(Request $request)
+    {
         $res = $request->user()->shop()->firstOrFail()->services()->save(new Service($request->all()));
         return response()->json($res);
+    }
 
-   }
+    public function delete_service(Request $request)
+    {
+        $res = Service::whereIn('id', $request->all())->delete();
+        return $res;
+    }
 
-   public function delete_service(Request $request){
-       $res = Service::whereIn('id', $request->all())->delete();
-       return $res;
-   }
+    public function getServicesBycategory($id)
+    {
+        return Service::where('service_category_id', $id)->get();
+    }
 
-   public function getServicesBycategory($id){
-       return Service::where('service_category_id', $id)->get();
-   }
+    public function updateStatus(Request $request)
+    {
+        //    return response()->json($request->all());
+        $order = Order::with(["services" => function ($query) use ($request) {
+            $query->where('services.id', $request->service_id)->with("category");
+        }, "service_status.status"])->findOrFail($request->orderid);
+
+        $order_service = OrderService::findOrFail($order->service_status->id);
+        $order_service->update($request->all());
+        return $order_service;
+
+        
+    }
 }

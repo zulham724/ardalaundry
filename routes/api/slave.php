@@ -83,11 +83,13 @@ Route::get('shop/paymentscountbymonth/{shopid}', [OrderController::class, 'getPa
 Route::get('/services', [ServiceController::class, 'index']);
 Route::post('/deleteservices', [ServiceController::class, 'delete_service']);
 Route::get('/getservices/{categoryid}', [ServiceController::class, 'getServicesBycategory']);
+Route::post('/getOrderServiceStatus', [OrderController::class, 'getServiceStatusByOrder']);
+Route::post('/updateStatusService', [ServiceController::class, 'updateStatus']);
 
 Route::post('/deletecategories', [ServiceCategoryController::class, 'delete_categories']);
 
 // Route::post('/update_employee', [EmployeeController::class, 'update']);
-
+Route::post('/searchOrders', [OrderController::class, 'searchOrders']);
 
 
 Route::apiResources([

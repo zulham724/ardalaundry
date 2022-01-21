@@ -129,17 +129,11 @@ class OrderController extends Controller
     {
 
         $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
-            // ->withCount(['payments as paid_sum' => function ($query) {
-            //     $query->select(DB::raw("SUM(value) as paidsum"));
-            // }])
-            // ->withCount(['services as total_sum' => function ($query) {
-            //     $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
-            // }])
             ->whereHas('shop', function ($query) use ($shop_id) {
                 $query->where('id', $shop_id);
             })
             ->orderBy('id', 'desc')
-            ->get();
+            ->paginate();
 
         foreach ($res as $o => $order) {
             # code...
@@ -148,8 +142,41 @@ class OrderController extends Controller
             if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
         }
 
-        
+
         return response()->json($res);
+
+         // ->withCount(['payments as paid_sum' => function ($query) {
+            //     $query->select(DB::raw("SUM(value) as paidsum"));
+            // }])
+            // ->withCount(['services as total_sum' => function ($query) {
+            //     $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
+            // }])
+    }
+
+    public function getServiceStatusByOrder(Request $request)
+    {
+        // return response()->json($request->all());
+       $res = Order::with(["services" => function($query)use($request){
+           $query->where('services.id', $request->service_id)->with("category");
+       }, "service_status.status"])->findOrFail($request->order_id);
+
+       return $res;
+    }
+
+    public function searchOrders(Request $request){
+        $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+            ->whereHas('customer', function($query)use($request){
+                $query->where('name','like', '%' . $request->value . '%');
+            })
+            ->orWhere('id', (int)$request->value)
+            ->paginate();
+        foreach ($res as $o => $order) {
+            # code...
+            $order->percentage = 0;
+            // service status id 3 adalah yang status pekerjaan per kaet nya complete
+            if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+        }
+        return $res;
     }
 
     public function getOrdersByCustomer($userid)

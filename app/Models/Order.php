@@ -33,6 +33,10 @@ class Order extends Model
         ->withPivot('quantity', 'start_at', 'end_at', 'service_status_id');
     }
 
+    public function service_status(){
+        return $this->hasOne('App\Models\OrderService')->orderBy('id', 'desc');
+    }
+
     public function payments(){
         return $this->morphMany('App\Models\Payment','payment');
     }

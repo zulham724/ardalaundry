@@ -47,7 +47,7 @@ class CustomerController extends Controller
     public function show($id)
     {
         //
-        return User::with("order.services.category.service_unit")->findOrFail($id);
+        return User::with("order.services.category.service_unit", "order.status")->findOrFail($id);
     }
 
     /**
