@@ -87,10 +87,16 @@ Route::post('/getOrderServiceStatus', [OrderController::class, 'getServiceStatus
 Route::post('/updateStatusService', [ServiceController::class, 'updateStatus']);
 
 Route::post('/deletecategories', [ServiceCategoryController::class, 'delete_categories']);
+Route::post('/updatecustomer', [CustomerController::class, 'update']);
 
 // Route::post('/update_employee', [EmployeeController::class, 'update']);
 Route::post('/searchOrders', [OrderController::class, 'searchOrders']);
-
+Route::post('/updateorderstatus', [OrderController::class, 'updateStatusOrder']);
+Route::get('/getorderbymonth/{shopid}', [OrderController::class, 'getOrdersShopByMonth']);
+Route::get('/getorderbyweek/{shopid}', [OrderController::class, 'getOrdersShopByWeek']);
+Route::get('/getorderbyday/{shopid}', [OrderController::class, 'getOrdersShopByWeek']);
+Route::post('/deletecustomers', [CustomerController::class, 'destroy']);
+Route::post('/attendance', [EmployeeController::class, 'attendance']);
 
 Route::apiResources([
     'service' => ServiceController::class,
@@ -103,3 +109,7 @@ Route::apiResources([
     'serviceunits' => ServiceUnitController::class,
     'servicecategories' => ServiceCategoryController::class,
 ]);
+
+
+//customer
+Route::get('/customer/{customerid}/order', [OrderController::class, 'getOrdersCustomer']);

@@ -79,10 +79,17 @@ class ServiceController extends Controller
 
     public function getServicesByShop($shopId)
     {
-        $res = Service::with('category.service_unit')->whereHas('shop', function ($query) use ($shopId) {
-            $query->where('id', $shopId);
-        })->get();
-        return response()->json($res);
+        if($shopId){
+            $res = Service::with('category.service_unit')->whereHas('shop', function ($query) use ($shopId) {
+                $query->where('id', $shopId);
+            })->get();
+            return response()->json($res);
+        }else{
+            $res = Service::with('category.service_unit')->whereHas('shop', function ($query) use ($shopId) {
+                $query->where('id', 1);
+            })->get();
+            return response()->json($res);
+        }
     }
 
     public function add_service(Request $request)
@@ -105,11 +112,9 @@ class ServiceController extends Controller
     public function updateStatus(Request $request)
     {
         //    return response()->json($request->all());
-        $order = Order::with(["services" => function ($query) use ($request) {
-            $query->where('services.id', $request->service_id)->with("category");
-        }, "service_status.status"])->findOrFail($request->orderid);
+        
 
-        $order_service = OrderService::findOrFail($order->service_status->id);
+        $order_service = OrderService::findOrFail($request->id);
         $order_service->update($request->all());
         return $order_service;
 

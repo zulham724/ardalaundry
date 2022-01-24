@@ -35,6 +35,9 @@ class CustomerController extends Controller
         $customer->email = $request->email;
         $customer->contact_number = $request->contact_number;
         $customer->home_address = $request->home_address;
+        if($request->has('password')){
+            $customer->password = bcrypt($request->password);
+        }
         return $request->user()->shop()->firstOrFail()->customers()->save($customer);
     }
 
@@ -57,10 +60,11 @@ class CustomerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         //
-        return $request->user()->shop()->firstOrFail()->customers()->findOrFail($id)->update($request->all());
+        // return response()->json($request->all());
+        return $request->user()->shop()->firstOrFail()->customers()->findOrFail($request->id)->update($request->all());
     }
 
     /**
@@ -69,10 +73,11 @@ class CustomerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request)
     {
         //
-        return $request->user()->shop()->firstOrFail()->customers()->findOrFail($id)->delete();;
+        // return response()->json($request->all());
+        return $request->user()->shop()->firstOrFail()->customers()->whereIn('user_id', $request->all())->delete();;
     }
 
     public function searchCustomer(Request $request)

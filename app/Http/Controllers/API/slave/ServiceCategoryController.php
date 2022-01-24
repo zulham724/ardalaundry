@@ -20,7 +20,12 @@ class ServiceCategoryController extends Controller
         //
         // return ServiceCategory::with(['services'=>fn($query)=>$query->whereHas('shop.user',fn($query)=>$query->where('id',Auth::user()->id))])->get();
         // return response()->json(auth('api')->user()->shop->id);
-        return ServiceCategory::with("service_unit")->where("shop_id", auth('api')->user()->shop->id)->get();
+        if(auth('api')->user()->shop){
+            return ServiceCategory::with("service_unit")->where("shop_id", auth('api')->user()->shop->id)->get();
+        }else{
+            return ServiceCategory::with("service_unit")->where("shop_id", 1)->get();
+
+        }
     }
 
     /**
@@ -80,4 +85,6 @@ class ServiceCategoryController extends Controller
         $res = ServiceCategory::whereIn('id', $request->all())->delete();
         return $res;
     }
+
+    
 }
