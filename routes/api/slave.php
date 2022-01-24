@@ -97,6 +97,7 @@ Route::get('/getorderbyweek/{shopid}', [OrderController::class, 'getOrdersShopBy
 Route::get('/getorderbyday/{shopid}', [OrderController::class, 'getOrdersShopByWeek']);
 Route::post('/deletecustomers', [CustomerController::class, 'destroy']);
 Route::post('/attendance', [EmployeeController::class, 'attendance']);
+Route::get('/detailattendance/{userid}', [AttendanceController::class, 'detailAttendance']);
 
 Route::apiResources([
     'service' => ServiceController::class,

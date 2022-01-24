@@ -95,4 +95,9 @@ class AttendanceController extends Controller
             ->where('name', 'like', '%'.$request->name.'%')
             ->get();
     }
+
+    public function detailAttendance($employeeid){
+        $res = Attendance::where('user_id', $employeeid)->get();
+        return $res;
+    }
 }

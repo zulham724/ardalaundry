@@ -108,16 +108,16 @@ class EmployeeController extends Controller
 
     public function attendance(Request $request){
         // return response()->json($request->all());
-        $attendance = Attendance::whereDate('created_at', \Carbon\Carbon::today())->exists();
+        $attendance = Attendance::where('created_at', \Carbon\Carbon::today())->exists();
         if($attendance){
-            return response()->json("Sudah absen masuk",403);
+            return response()->json("Sudah absen",403);
         }else{
             $res = new Attendance();
             $res->user_id = $request->id;
             $res->shop_id = auth('api')->user()->shop->id;
             $res->in_at = \Carbon\Carbon::now();
             $res->save();
-            return response()->json($res);
+            return ;
         }
         
     }
