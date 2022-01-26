@@ -98,6 +98,8 @@ Route::get('/getorderbyday/{shopid}', [OrderController::class, 'getOrdersShopByW
 Route::post('/deletecustomers', [CustomerController::class, 'destroy']);
 Route::post('/attendance', [EmployeeController::class, 'attendance']);
 Route::get('/detailattendance/{userid}', [AttendanceController::class, 'detailAttendance']);
+// route ini untuk memberikan data array attendances berdasarkan di karyawan
+Route::get('attendance/getemployeeattendances/{employeeid}',[AttendanceController::class, 'getEmployeeAttendances']);
 
 Route::apiResources([
     'service' => ServiceController::class,
@@ -114,3 +116,6 @@ Route::apiResources([
 
 //customer
 Route::get('/customer/{customerid}/order', [OrderController::class, 'getOrdersCustomer']);
+
+// Attendance
+Route::get('/attendance/monthlyattendancereport1/{shopId}', [AttendanceController::class, 'monthlyAttendanceReport1']);

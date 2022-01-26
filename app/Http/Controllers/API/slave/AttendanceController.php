@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\slave;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class AttendanceController extends Controller
 {
@@ -99,5 +100,31 @@ class AttendanceController extends Controller
     public function detailAttendance($employeeid){
         $res = Attendance::where('user_id', $employeeid)->get();
         return $res;
+    }
+    // fungsi ini berguna untuk mengambil data array attendances berdasarkan id karyawan
+    public function getEmployeeAttendances($employeeid){
+        $result = Attendance::where('user_id', $employeeid)
+        ->whereMonth('in_at',\Carbon\Carbon::now()->month)
+        ->whereYear('in_at',\Carbon\Carbon::now()->year)
+        ->get();
+        return $result;
+    }
+
+    public function monthlyAttendanceReport1($shopId) {
+        $res1 = User::with('employee_shops','attendances','roles')->whereHas("employee_shops", function($query) use($shopId) {
+            $query->where('shop_id', $shopId);
+        })
+        ->whereHas("attendances", function($query) {
+            $query->whereDate('in_at',\Carbon\Carbon::today());
+            // $query->whereMonth('in_at',\Carbon\Carbon::now()->month)->whereYear('in_at',\Carbon\Carbon::now()->year);
+        })        
+        ->count();
+
+        $res2 = User::whereHas("employee_shops", function($query) use($shopId) {
+            $query->where('shops.id', $shopId);
+        })
+        ->count();
+
+        return ['telah_absen'=>$res1, 'total_karyawan'=>$res2];
     }
 }
