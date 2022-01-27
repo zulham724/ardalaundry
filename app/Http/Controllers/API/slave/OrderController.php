@@ -368,6 +368,7 @@ class OrderController extends Controller
             if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
         }
         return response()->json($res);
+        return ['total_bulan'=>$res];
     }
 
     public function getOrdersShopByWeek($shopid)

@@ -97,10 +97,6 @@ class AttendanceController extends Controller
             ->get();
     }
 
-    public function detailAttendance($employeeid){
-        $res = Attendance::where('user_id', $employeeid)->get();
-        return $res;
-    }
     // fungsi ini berguna untuk mengambil data array attendances berdasarkan id karyawan
     public function getEmployeeAttendances($employeeid){
         $result = Attendance::where('user_id', $employeeid)

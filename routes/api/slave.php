@@ -92,9 +92,11 @@ Route::post('/updatecustomer', [CustomerController::class, 'update']);
 // Route::post('/update_employee', [EmployeeController::class, 'update']);
 Route::post('/searchOrders', [OrderController::class, 'searchOrders']);
 Route::post('/updateorderstatus', [OrderController::class, 'updateStatusOrder']);
+//Income
 Route::get('/getorderbymonth/{shopid}', [OrderController::class, 'getOrdersShopByMonth']);
 Route::get('/getorderbyweek/{shopid}', [OrderController::class, 'getOrdersShopByWeek']);
-Route::get('/getorderbyday/{shopid}', [OrderController::class, 'getOrdersShopByWeek']);
+Route::get('/getorderbyday/{shopid}', [OrderController::class, 'getOrdersShopByDay']);
+
 Route::post('/deletecustomers', [CustomerController::class, 'destroy']);
 Route::post('/attendance', [EmployeeController::class, 'attendance']);
 Route::get('/detailattendance/{userid}', [AttendanceController::class, 'detailAttendance']);
