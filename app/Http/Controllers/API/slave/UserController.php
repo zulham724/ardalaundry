@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
+/**
+ * @group  Cabang SDM
+ *
+ * API untuk manajemen SDM di Cabang
+ */
+
 class UserController extends Controller
 {
     /**
@@ -73,6 +79,14 @@ class UserController extends Controller
     {
         //
     }
+
+    /**
+     * Mendaftarkan Pelanggan
+     * 
+     * API untuk mendaftarkan pelanggan melalui Cabang
+     * 
+     * @queryParam name Nama dari pelanggan. contoh: Agus
+     */
 
     public function register_customer(Request $request){
         $customer = new User($request->all());

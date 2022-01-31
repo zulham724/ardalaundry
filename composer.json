@@ -12,7 +12,9 @@
         "laravel/passport": "^10.1",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "tcg/voyager": "^1.5"
+        "tcg/voyager": "^1.5",
+        "mpociot/documentarian": "dev-master as 0.4.0",
+        "mpociot/laravel-apidoc-generator": "dev-master"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

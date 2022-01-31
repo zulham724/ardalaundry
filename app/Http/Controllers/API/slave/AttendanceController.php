@@ -28,24 +28,25 @@ class AttendanceController extends Controller
     public function store(Request $request)
     {
         //
-        // return $request->user_id;
+        // return response()->json($request->all());
         $exist = $request->user()->shop()->firstOrFail()->attendances()
-        ->where('user_id',$request->user_id)
+        ->where('user_id',$request->id)
         ->whereDate('attendances.created_at',\Carbon\Carbon::today())
         ->exists();
+        // return response()->json($exist);
         if($exist){
-            return response('Anda sudah absen',200);
+            return response('Anda sudah absen',400);
         } else {
-            $request->user()->shop()->firstOrFail()->attendances()->attach($request->user_id);
+            $request->user()->shop()->firstOrFail()->attendances()->attach($request->id);
         }
         
-        $res = $request->user()->shop()->firstOrFail()->attendances()->where('user_id',$request->user_id)
+        $res = $request->user()->shop()->firstOrFail()->attendances()->where('user_id',$request->id)
         ->whereDate('attendances.created_at', \Carbon\Carbon::today())->first();
         return response()->json($res);
     }
 
     /**
-     * Display the specified resource.
+     * Di{{ splay the specified  }}resource.
      *
      * @param  \App\Models\Attendance  $attendance
      * @return \Illuminate\Http\Response
@@ -83,6 +84,14 @@ class AttendanceController extends Controller
     public function destroy(Attendance $attendance)
     {
         //
+    }
+
+    public function attendanceOut(Request $request){
+        $employee = Attendance::where('user_id', $request->id)->orderBy('id', 'desc')->first();;
+        $employee->out_at = \Carbon\Carbon::now();
+        $employee->update();
+
+        return response()->json($employee);
     }
 
     public function searchAttendance(Request $request){

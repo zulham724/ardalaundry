@@ -13,6 +13,7 @@ use App\Http\Controllers\API\slave\CustomerController;
 use App\Http\Controllers\API\slave\EmployeeController;
 use App\Http\Controllers\API\slave\OrderStatusController;
 use App\Http\Controllers\API\slave\PaymentController;
+use App\Http\Controllers\API\slave\PostController;
 use App\Http\Controllers\API\slave\ServiceUnitController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -96,9 +97,8 @@ Route::get('/getorderbyday/{shopid}', [OrderController::class, 'getOrdersShopByD
 Route::get('/getCountProfitOrdersByDay/{shopid}', [OrderController:: class, 'CountProfitOrdersShopByDay']);
 Route::get('/getCountProfitOrdersByWeek/{shopid}', [OrderController::class, 'CountProfitOrdersShopByWeek']);
 Route::get('/getCountProfitOrdersByMonth/{shopid}', [OrderController::class, 'CountProfitOrdersShopByMonth']);
-
+Route::post('/attendance/out', [AttendanceController::class, 'attendanceOut']);
 Route::post('/deletecustomers', [CustomerController::class, 'destroy']);
-Route::post('/attendance', [EmployeeController::class, 'attendance']);
 Route::get('/detailattendance/{userid}', [AttendanceController::class, 'detailAttendance']);
 // route ini untuk memberikan data array attendances berdasarkan di karyawan
 Route::get('attendance/getemployeeattendances/{employeeid}',[AttendanceController::class, 'getEmployeeAttendances']);
@@ -113,6 +113,7 @@ Route::apiResources([
     'attendances' => AttendanceController::class,
     'serviceunits' => ServiceUnitController::class,
     'servicecategories' => ServiceCategoryController::class,
+    'post' => PostController::class,
 ]);
 
 

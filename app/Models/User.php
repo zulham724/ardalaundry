@@ -93,4 +93,12 @@ class User extends \TCG\Voyager\Models\User
     public function order(){
         return $this->hasMany('App\Models\Order', 'customer_id', 'id');
     }
+
+    public function followers(){
+        return $this->belongsToMany("App\Models\User", 'follows', 'child_id', 'parent_id');
+    }
+
+    public function following(){
+        return $this->belongsToMany("App\Models\User", "follows", 'parent_id', 'child_id');
+    }
 }
