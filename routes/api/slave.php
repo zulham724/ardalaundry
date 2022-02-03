@@ -88,6 +88,7 @@ Route::post('/updateStatusService', [ServiceController::class, 'updateStatus']);
 
 Route::post('/deletecategories', [ServiceCategoryController::class, 'delete_categories']);
 Route::post('/updatecustomer', [CustomerController::class, 'update']);
+Route::post('/updateclothesname', [ServiceCategoryController::class, 'updateName']);
 
 
 // Route::post('/update_employee', [EmployeeController::class, 'update']);

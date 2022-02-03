@@ -63,17 +63,17 @@ class ServiceCategoryController extends Controller
      * @param  \App\Models\ServiceCategory  $serviceCategory
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function updateName(Request $request, $id)
     {
         //
         //mencari data sesuai id yang dikirim
-        $category = ServiceCategory::findOrFail($id);
+        $clothes = ServiceCategory::findOrFail($id);
 
         //untuk mengupdate data 
-        $category->name = $request->name;
-        $category->save();
+        $clothes->name = $request->name;
+        $clothes->save();
 
-        return response()->json($category);
+        return response()->json($clothes);
     }
 
     /**
