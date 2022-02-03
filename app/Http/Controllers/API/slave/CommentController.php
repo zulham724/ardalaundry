@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
+use App\Models\Post;
+use App\Models\Like;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -27,6 +29,15 @@ class CommentController extends Controller
     public function store(Request $request)
     {
         //
+        // return response()->json($request->all());
+
+        $post = Post::findOrFail($request->post_id);
+
+        $comment = new Comment($request->all());
+        $comment->user_id = auth('api')->user()->id;
+        $post->comments()->save($comment);
+
+        return response()->json($post->load(["comments.user"]));
     }
 
     /**
@@ -61,5 +72,15 @@ class CommentController extends Controller
     public function destroy(Comment $comment)
     {
         //
+    }
+
+    public function like($commentId){
+        $comment = Comment::findOrFail($commentId);
+
+        $like = new Like();
+        $like->user_id = auth('api')->user()->id;
+        $comment->liked()->save($like);
+
+        return response()->json($comment->loadCount("liked"));
     }
 }

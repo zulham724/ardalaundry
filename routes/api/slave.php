@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\master\OrderController as MasterOrderController;
 use App\Http\Controllers\API\slave\AttendanceController;
 use App\Http\Controllers\API\slave\BranchController;
+use App\Http\Controllers\API\slave\CommentController;
 use App\Http\Controllers\API\slave\OrderController;
 use App\Http\Controllers\API\slave\PackageUserController;
 use App\Http\Controllers\API\slave\ServiceController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\API\slave\UserController;
 use App\Http\Controllers\API\slave\ServiceCategoryController;
 use App\Http\Controllers\API\slave\CustomerController;
 use App\Http\Controllers\API\slave\EmployeeController;
+use App\Http\Controllers\API\slave\LikeController;
 use App\Http\Controllers\API\slave\OrderStatusController;
 use App\Http\Controllers\API\slave\PaymentController;
 use App\Http\Controllers\API\slave\PostController;
@@ -87,6 +89,7 @@ Route::post('/updateStatusService', [ServiceController::class, 'updateStatus']);
 Route::post('/deletecategories', [ServiceCategoryController::class, 'delete_categories']);
 Route::post('/updatecustomer', [CustomerController::class, 'update']);
 
+
 // Route::post('/update_employee', [EmployeeController::class, 'update']);
 Route::post('/searchOrders', [OrderController::class, 'searchOrders']);
 Route::post('/updateorderstatus', [OrderController::class, 'updateStatusOrder']);
@@ -122,3 +125,10 @@ Route::get('/customer/{customerid}/order', [OrderController::class, 'getOrdersCu
 
 // Attendance
 Route::get('/attendance/monthlyattendancereport1/{shopId}', [AttendanceController::class, 'monthlyAttendanceReport1']);
+
+//Post
+Route::get('/post/{id}/like', [PostController::class, 'like']);
+Route::get('/post/{id}/dislike', [PostController::class, 'dislike']);
+    //CommentPost
+Route::post('/addcomment', [CommentController::class, 'store']);
+Route::get('/comment/{commentid}/like', [CommentController::class, 'like']);

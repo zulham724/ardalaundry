@@ -27,6 +27,7 @@ class LikeController extends Controller
     public function store(Request $request)
     {
         //
+        $like = new Like();
     }
 
     /**

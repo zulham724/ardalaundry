@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\slave;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\File;
+use App\Models\Like;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
@@ -28,7 +29,7 @@ class PostController extends Controller
         ])
             ->withCount('comments', 'likes', 'liked', 'readers', 'hasRead as hasRead')
             ->orderBy('id', 'desc')
-            ->paginate(3);
+            ->paginate(2);
     }
 
     /**
@@ -70,9 +71,11 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
+    public function show($id)
     {
         //
+        return Post::with("comments.user", "comments.replies_comment", "comments_from_other", "author")
+        ->findOrFail($id);
     }
 
     /**
@@ -96,5 +99,23 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         //
+    }
+
+    public function like($postid){
+        $post = Post::findOrFail($postid);
+
+        $like = new Like();
+        $like->user_id = auth('api')->user()->id;
+        $post->liked()->save($like);
+
+        return response()->json($post->loadCount(["liked", "likes"]));
+    }
+
+    public function dislike($postid){
+        $post = Post::findOrFail($postid);
+        $like = Like::where('user_id', auth('api')->user()->id)
+                ->where('likeable_id', $postid)->first();
+        $like->delete();
+        return response()->json($post->loadCount(["liked", "likes"]));
     }
 }

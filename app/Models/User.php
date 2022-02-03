@@ -63,7 +63,7 @@ class User extends \TCG\Voyager\Models\User
 
     public function shop(){
         return $this->hasOne('App\Models\Shop');
-    }
+    }   
 
     public function slaves(){
         return $this->belongsToMany('App\Models\User','branches','master_id','slave_id');
