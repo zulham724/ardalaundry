@@ -37,7 +37,7 @@ class CommentController extends Controller
         $comment->user_id = auth('api')->user()->id;
         $post->comments()->save($comment);
 
-        return response()->json($post->load(["comments.user"]));
+        return response()->json($post->load(["comments.user", "comments.replies_comment", "comments_from_other", "author"]));
     }
 
     /**
@@ -81,6 +81,16 @@ class CommentController extends Controller
         $like->user_id = auth('api')->user()->id;
         $comment->liked()->save($like);
 
-        return response()->json($comment->loadCount("liked"));
+        return response()->json($comment->loadCount("liked", "likes"));
+    }
+
+    public function dislike($commentId){
+        $comment = Comment::findOrFail($commentId);
+
+        $like = Like::where('likeable_id', $commentId)
+                ->where('user_id', auth('api')->user()->id);
+        $like->delete();
+
+        return response()->json($comment->loadCount("liked", "likes"));
     }
 }

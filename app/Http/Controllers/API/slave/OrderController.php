@@ -419,4 +419,45 @@ class OrderController extends Controller
         $res->order_status_id = 4;
         $res->save();
     }
+
+    public function filter_orders_in($datefrom, $dateto){
+
+        // return response()->json($date);
+        $from = date("Y-m-d", strtotime($datefrom));
+        $to = date("Y-m-d", strtotime($dateto));
+        $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+        ->whereBetween('created_at', [$from, $to])
+        ->orderBy('id', 'desc')
+        ->paginate();
+
+        foreach ($res as $o => $order) {
+            # code...
+            $order->percentage = 0;
+            // service status id 3 adalah yang status pekerjaan per kaet nya complete
+            if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+        }
+
+        return response()->json($res);
+    }
+
+    public function filter_orders_out($datefrom, $dateto)
+    {
+
+        // return response()->json($date);
+        $from = date("Y-m-d", strtotime($datefrom));
+        $to = date("Y-m-d", strtotime($dateto));
+        $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+        ->whereBetween('updated_at', [$from, $to])
+            ->orderBy('id', 'desc')
+            ->paginate();
+
+        foreach ($res as $o => $order) {
+            # code...
+            $order->percentage = 0;
+            // service status id 3 adalah yang status pekerjaan per kaet nya complete
+            if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+        }
+
+        return response()->json($res);
+    }
 }

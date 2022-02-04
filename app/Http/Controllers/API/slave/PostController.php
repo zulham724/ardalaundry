@@ -25,6 +25,7 @@ class PostController extends Controller
             'bookmarks',
             'bookmarked',
             'author',
+            'comments.user',
             'files'
         ])
             ->withCount('comments', 'likes', 'liked', 'readers', 'hasRead as hasRead')

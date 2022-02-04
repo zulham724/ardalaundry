@@ -69,6 +69,8 @@ Route::get('/shop/{shopid}/getOrdersByShop', [OrderController::class, 'getOrders
 
 Route::post('shop/addOrder', [OrderController::class, 'store']);
 
+Route::get('/filterOrdersIn/{datefrom}/{dateto}', [OrderController::class, 'filter_orders_in']);
+Route::get('/filterOrdersOut/{datefrom}/{dateto}', [OrderController::class, 'filter_orders_out']);
 Route::post('shop/order/{orderid}/payment', [MasterOrderController::class, 'payment']);
 Route::post('/shop/order/report', [OrderController::class, 'order_report']);
 Route::get('/shop/{shopid}/getOrdersReportByShop', [OrderController::class, 'getOrdersReportByShop']);
@@ -88,7 +90,8 @@ Route::post('/updateStatusService', [ServiceController::class, 'updateStatus']);
 
 Route::post('/deletecategories', [ServiceCategoryController::class, 'delete_categories']);
 Route::post('/updatecustomer', [CustomerController::class, 'update']);
-Route::post('/updateclothesname', [ServiceCategoryController::class, 'updateName']);
+Route::post('/updateclothesname/{categoryid}', [ServiceCategoryController::class, 'updateName']);
+Route::post('/updatepackagesname/{paketid}', [ServiceController::class, 'updateName']);
 
 
 // Route::post('/update_employee', [EmployeeController::class, 'update']);
@@ -133,3 +136,4 @@ Route::get('/post/{id}/dislike', [PostController::class, 'dislike']);
     //CommentPost
 Route::post('/addcomment', [CommentController::class, 'store']);
 Route::get('/comment/{commentid}/like', [CommentController::class, 'like']);
+Route::get('/comment/{commentid}/dislike', [CommentController::class, 'dislike']);

@@ -67,13 +67,13 @@ class ServiceCategoryController extends Controller
     {
         //
         //mencari data sesuai id yang dikirim
-        $clothes = ServiceCategory::findOrFail($id);
+        $category = ServiceCategory::findOrFail($id);
 
         //untuk mengupdate data 
-        $clothes->name = $request->name;
-        $clothes->save();
+        $category->name = $request->name;
+        $category->save();
 
-        return response()->json($clothes);
+        return response()->json($category);
     }
 
     /**
