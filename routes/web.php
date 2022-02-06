@@ -19,6 +19,17 @@ Route::get('/', function () {
 
 
 Route::group(['prefix' => 'admin'], function () {
+    Route::group(['middleware' => 'admin.user'], function () {
+        // Route::get('/quasar', function () {
+        //     return 'halo';
+        // });     
+        Route::get('/quasar', function () {
+            return view('quasar/quasar');
+        });
+        Route::get('/module', function(){
+            return view('module/index');
+        });
+    });
     Voyager::routes();
 });
 
@@ -26,7 +37,7 @@ Route::get('/employee/{employeeid}/barcode', function ($user_id) {
     return view('barcode', ['user' => \App\Models\User::findOrFail($user_id)]);
 });
 
-Route::get('/test', fn () => 'asd');
+// Route::get('/test', fn () => 'asd');
 
 // Route::get('/command', function () {
 //     $data = ['User'];
@@ -38,4 +49,12 @@ Route::get('/test', fn () => 'asd');
 //         Artisan::call("make:controller", ['name' => "API\\slave\\" . $val . "Controller", '--api' => true, '--model'=>$val]);
 //     }
 // });
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 

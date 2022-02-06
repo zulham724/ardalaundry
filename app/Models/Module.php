@@ -12,6 +12,6 @@ class Module extends Model
     protected $guarded = ["id"];
 
     public function banner(){
-        return $this->morphOne('App\Model\File', 'fileable')->whereIn('filetype', ['image/jpeg', 'image/png', 'image/jpg']);
+        return $this->morphOne('App\Models\File', 'fileable')->whereIn('filetype', ['image/jpeg', 'image/png', 'image/jpg']);
     }
 }

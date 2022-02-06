@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\ModuleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,4 +20,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::get('/user',function(Request $request){
         return $request->user();
     });
+
+    //Module
+    Route::post('/module/store', [ModuleController::class, 'store']);
 });

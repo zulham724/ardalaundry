@@ -315,7 +315,8 @@ class OrderController extends Controller
             ->where('order_status_id', 4)
             ->where('shop_id', $shopid)
             ->whereMonth('updated_at', \Carbon\Carbon::now()->month)
-            ->get();
+            ->paginate();
+
 
         foreach ($res as $o => $order) {
             # code...
@@ -323,7 +324,7 @@ class OrderController extends Controller
             // service status id 3 adalah yang status pekerjaan per kaet nya complete
             if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
         }
-
+        
         return $res;
     }
 
@@ -334,7 +335,7 @@ class OrderController extends Controller
             ->where('shop_id', $shopid)
             ->where('updated_at', '>', \Carbon\Carbon::now()->startOfWeek())
             ->where('updated_at', '<', \Carbon\Carbon::now()->endOfWeek())
-            ->get();
+            ->paginate();
 
         foreach ($res as $o => $order) {
             # code...

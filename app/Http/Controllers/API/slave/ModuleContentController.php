@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\slave;
 use App\Http\Controllers\Controller;
 use App\Models\ModuleContent;
 use Illuminate\Http\Request;
+use Thumbnail;
 
 class ModuleContentController extends Controller
 {
