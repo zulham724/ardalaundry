@@ -324,7 +324,7 @@ class OrderController extends Controller
             // service status id 3 adalah yang status pekerjaan per kaet nya complete
             if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
         }
-        
+
         return $res;
     }
 
@@ -355,7 +355,7 @@ class OrderController extends Controller
             ->where('order_status_id', 4)
             ->where('shop_id', $shopid)
             ->whereDate('updated_at', \Carbon\Carbon::today())
-            ->get();
+            ->paginate();
 
         foreach ($res as $o => $order) {
             # code...
@@ -417,8 +417,9 @@ class OrderController extends Controller
     public function updateStatusOrder(Request $request)
     {
         $res = Order::findOrFail($request->id);
-        $res->order_status_id = 4;
-        $res->save();
+        $res->update($request->all());
+
+        return response()->json($res);
     }
 
     public function filter_orders_in($datefrom, $dateto){
@@ -426,10 +427,20 @@ class OrderController extends Controller
         // return response()->json($date);
         $from = date("Y-m-d", strtotime($datefrom));
         $to = date("Y-m-d", strtotime($dateto));
-        $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
-        ->whereBetween('created_at', [$from, $to])
-        ->orderBy('id', 'desc')
-        ->paginate();
+
+        if($from == $to){
+            $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+            // ->whereBetween('created_at', [\Carbon\Carbon::today(), \Carbon\Carbon::today()])
+            ->whereDate('created_at', $from)
+            ->orderBy('id', 'desc')
+            ->paginate();
+        }else{
+            $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+            ->whereBetween('created_at', [\Carbon\Carbon::today(), \Carbon\Carbon::today()])
+            // ->whereDate('created_at', $from)
+            ->orderBy('id', 'desc')
+            ->paginate();
+        }
 
         foreach ($res as $o => $order) {
             # code...
@@ -447,6 +458,7 @@ class OrderController extends Controller
         // return response()->json($date);
         $from = date("Y-m-d", strtotime($datefrom));
         $to = date("Y-m-d", strtotime($dateto));
+
         $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
         ->whereBetween('updated_at', [$from, $to])
             ->orderBy('id', 'desc')

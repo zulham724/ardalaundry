@@ -87,6 +87,7 @@ Route::post('/deleteservices', [ServiceController::class, 'delete_service']);
 Route::get('/getservices/{categoryid}', [ServiceController::class, 'getServicesBycategory']);
 Route::post('/getOrderServiceStatus', [OrderController::class, 'getServiceStatusByOrder']);
 Route::post('/updateStatusService', [ServiceController::class, 'updateStatus']);
+Route::post('/updateOrderStatus', [OrderController::class, 'updateStatusOrder']);
 
 Route::post('/deletecategories', [ServiceCategoryController::class, 'delete_categories']);
 Route::post('/updatecustomer', [CustomerController::class, 'update']);
@@ -105,6 +106,7 @@ Route::get('/getCountProfitOrdersByDay/{shopid}', [OrderController:: class, 'Cou
 Route::get('/getCountProfitOrdersByWeek/{shopid}', [OrderController::class, 'CountProfitOrdersShopByWeek']);
 Route::get('/getCountProfitOrdersByMonth/{shopid}', [OrderController::class, 'CountProfitOrdersShopByMonth']);
 Route::post('/attendance/out', [AttendanceController::class, 'attendanceOut']);
+
 Route::post('/deletecustomers', [CustomerController::class, 'destroy']);
 Route::get('/detailattendance/{userid}', [AttendanceController::class, 'detailAttendance']);
 // route ini untuk memberikan data array attendances berdasarkan di karyawan
@@ -137,3 +139,4 @@ Route::get('/post/{id}/dislike', [PostController::class, 'dislike']);
 Route::post('/addcomment', [CommentController::class, 'store']);
 Route::get('/comment/{commentid}/like', [CommentController::class, 'like']);
 Route::get('/comment/{commentid}/dislike', [CommentController::class, 'dislike']);
+
