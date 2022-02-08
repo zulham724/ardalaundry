@@ -4,9 +4,20 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
+
 require('./bootstrap');
 
 window.Vue = require('vue').default;
+
+import VuePlyr from 'vue-plyr';
+import 'vue-plyr/dist/vue-plyr.css';
+import wysiwyg from "vue-wysiwyg";
+
+Vue.use(VuePlyr, {
+    plyr: {}
+});
+
+Vue.use(wysiwyg, {}); // config is optional. more below
 
 /**
  * The following block of code may be used to automatically register your
