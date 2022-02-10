@@ -13,6 +13,8 @@ use App\Http\Controllers\API\slave\ServiceCategoryController;
 use App\Http\Controllers\API\slave\CustomerController;
 use App\Http\Controllers\API\slave\EmployeeController;
 use App\Http\Controllers\API\slave\LikeController;
+use App\Http\Controllers\API\slave\ModuleContentController;
+use App\Http\Controllers\API\slave\ModuleController;
 use App\Http\Controllers\API\slave\OrderStatusController;
 use App\Http\Controllers\API\slave\PaymentController;
 use App\Http\Controllers\API\slave\PostController;
@@ -123,7 +125,16 @@ Route::apiResources([
     'serviceunits' => ServiceUnitController::class,
     'servicecategories' => ServiceCategoryController::class,
     'post' => PostController::class,
+    'modules' => ModuleController::class,
+    'module-contents' => ModuleContentController::class,
 ]);
+
+//Module Content
+Route::get('modulecontent/{id}/like', [ModuleContentController::class, 'like']);
+Route::get('modulecontent/{id}/dislike', [ModuleContentController::class, 'dislike']); 
+    //CommentCourse
+Route::post('/add_comment_course', [CommentController::class, 'add_comment_course']);
+Route::get('/{contentid}/comment', [CommentController::class, 'get_comment_course']);
 
 
 //customer

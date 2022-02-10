@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
 use App\Models\ModuleContent;
+use App\Models\Like;
 use Illuminate\Http\Request;
 use Thumbnail;
 
@@ -36,9 +37,14 @@ class ModuleContentController extends Controller
      * @param  \App\Models\ModuleContent  $moduleContent
      * @return \Illuminate\Http\Response
      */
-    public function show(ModuleContent $moduleContent)
+    public function show($id)
     {
         //
+        $content = ModuleContent::with('thumbnail', 'video')
+        ->withCount('liked')
+        ->findOrFail($id);
+
+        return response()->json($content);
     }
 
     /**
@@ -62,5 +68,24 @@ class ModuleContentController extends Controller
     public function destroy(ModuleContent $moduleContent)
     {
         //
+    }
+
+    public function like($id){
+        // return response()->json($id);
+        $content = ModuleContent::findOrFail($id);
+        $like = new Like();
+        $like->user_id = auth('api')->user()->id;
+        $content->liked()->save($like);
+
+        return response()->json($content->loadCount(['liked']));
+
+    }
+
+    public function dislike($id){
+        $content = ModuleContent::findOrFail($id);
+        $like = Like::where('user_id', auth('api')->user()->id)
+                ->where('likeable_id', $id);
+        $like->delete();
+        return response()->json($content->loadCount(['liked']));
     }
 }

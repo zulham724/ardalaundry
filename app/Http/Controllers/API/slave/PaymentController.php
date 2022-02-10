@@ -27,6 +27,12 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         //
+        return response()->json($request->all());
+        // $payment = new Payment();
+        // $pa
+        // $payment->save();
+
+        
     }
 
     /**

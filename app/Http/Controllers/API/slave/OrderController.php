@@ -44,8 +44,13 @@ class OrderController extends Controller
             $order->services()->attach($chart['package']['id'], ['quantity' => $chart['quantity'], 'start_at' => \Carbon\Carbon::now(), 'end_at' => \Carbon\Carbon::now()->addHours($chart['package']['process_time']), 'service_status_id' => 1]);
         }
 
-
-        return response()->json($order->load('services'));
+        $payment = new Payment();
+        $payment->name = 'Pembayaran';
+        $payment->value = $request->total_price;
+        $payment->status = 'success';
+        $payment->type = 'in';
+        $order->payments()->save($payment);
+        return response()->json($order->load('services', 'payments'));
     }
     /**
      * Display the specified resource.

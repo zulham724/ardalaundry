@@ -86,9 +86,10 @@ class ModuleContentController extends Controller
      * @param  \App\Models\ModuleContent  $moduleContent
      * @return \Illuminate\Http\Response
      */
-    public function show(ModuleContent $moduleContent)
+    public function show($id)
     {
         //
+        return ModuleContent::with('video')->findOrFail($id);
     }
 
     /**
@@ -109,8 +110,9 @@ class ModuleContentController extends Controller
      * @param  \App\Models\ModuleContent  $moduleContent
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ModuleContent $moduleContent)
+    public function destroy($id)
     {
         //
+        return ModuleContent::findOrFail($id)->delete();
     }
 }

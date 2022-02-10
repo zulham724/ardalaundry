@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Like;
+use App\Models\ModuleContent;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -91,6 +92,20 @@ class CommentController extends Controller
                 ->where('user_id', auth('api')->user()->id);
         $like->delete();
 
-        return response()->json($comment->loadCount("liked", "likes"));
+    return response()->json($comment->loadCount("liked", "likes"));
+    }
+
+    public function add_comment_course(Request $request){
+        $content = ModuleContent::findOrFail($request->id);
+
+        $comment = new Comment($request->all());
+        $comment->user_id = auth('api')->user()->id;
+        $content->comments()->save($comment);
+        return response()->json($content->load(["comments.user", "comments.replies_comment", "comments_from_other"]));
+    }
+
+    public function get_comment_course($id){
+        $content = ModuleContent::findOrFail($id);
+        return response()->json($content->load(["comments.user", "comments.replies_comment", "comments_from_other"]));
     }
 }

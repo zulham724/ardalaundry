@@ -32,6 +32,7 @@ Vue.use(wysiwyg, {}); // config is optional. more below
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('module-page', require('./components/ModulePageComponent.vue').default);
+Vue.component('preview-content-component', require('./components/PreviewContentComponent').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

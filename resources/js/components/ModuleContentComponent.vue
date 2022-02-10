@@ -11,7 +11,7 @@
       Launch demo modal
     </button>
 
-    <div class="modal fade" tabindex="-1" id="exampleModal">
+    <div class="modal fade" tabindex="-1" ref="exampleModal" id="exampleModal">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
@@ -21,48 +21,67 @@
             <form ref="form">
               <div class="form-group">
                 <label>Judul</label>
-                <input class="form-control" v-model="content.tittle" required />
-                
+                <input
+                  :disabled="loading"
+                  class="form-control"
+                  v-model="content.tittle"
+                  required
+                />
               </div>
               <div class="form-group">
                 <label>Deskripsi</label>
-                <wysiwyg v-model="content.description"/>
+                <wysiwyg :disabled="loading" v-model="content.description" />
               </div>
               <div class="form-group">
                 <label>Durasi (Menit)</label>
                 <input
-                  disabled
+                  
                   class="form-control"
                   v-model="content.duration"
                 />
               </div>
               <div class="form-group">
                 <label>Video</label>
-                <input type="file" class="form-control" @input="saveVideo" />
+                <input
+                  :disabled="loading"
+                  type="file"
+                  class="form-control"
+                  @input="saveVideo"
+                  ref="inputVideo"
+                />
 
                 <div class="pt-4">
-                  <vue-plyr ref="plyr" id="plyr" v-if="videoPreview">
-                    <video
-                      controls
-                      crossorigin
-                      playsinline
-                      :src="videoPreview"
-                    ></video>
-                  </vue-plyr>
+                  <!-- <vue-plyr ref="plyr" id="plyr" > -->
+                  <video
+                    v-if="videoPreview"
+                    width="250"
+                    height="250"
+                    ref="video"
+                    controls
+                    crossorigin
+                    playsinline
+                  ></video>
+                  <!-- </vue-plyr> -->
                 </div>
               </div>
             </form>
           </div>
           <div class="modal-footer">
             <button
+              :disabled="loading"
               type="button"
               class="btn btn-secondary"
               data-bs-dismiss="modal"
-              @click="content = {}"
+              @click="reset()"
             >
               Batal
             </button>
-            <button type="button"  class="btn btn-primary" @click="save()">
+            <button
+              :disabled="loading"
+              type="button"
+              class="btn btn-primary"
+              @click="save()"
+            >
               Simpan
             </button>
           </div>
@@ -79,7 +98,8 @@ export default {
       dialog: false,
       module_id: null,
       content: {},
-      videoPreview: null,
+      videoPreview: false,
+      loading: false,
     };
   },
   methods: {
@@ -87,26 +107,32 @@ export default {
       this.$refs.openModal.click();
       this.module_id = moduleid;
       // let modal = document.getElementById("exampleModal");
-      // console.log(modal)
+      // console.log(this.$refs.video);
     },
     save() {
+      this.loading = true;
       this.content.module_id = this.module_id;
-
       let formData = this.jsonToFormData(this.content);
-      axios.post("/api/module-content", formData).then((res) => {
-        this.$emit("save-callback", res.data);
+      axios
+        .post("/api/module-content", formData)
+        .then((res) => {
+          this.$emit("save-callback", res.data);
 
-        Swal.fire({
-          icon: "success",
-          title: "Berhasil",
-          text: "Modul berhasil disimpan",
+          Swal.fire({
+            icon: "success",
+            title: "Berhasil",
+            text: "Modul berhasil disimpan",
+          });
+
+          this.$refs.exampleModal.click();
+          this.content = {};
+          this.$refs.inputVideo.value = null;
+          this.$refs.video.src = "";
+          this.videoPreview = false;
+        })
+        .finally(() => {
+          this.loading = false;
         });
-
-        let modal = document.getElementById("exampleModal");
-        modal.toggle();
-        this.content = {}
-        this.videoPreview = null
-      });
     },
     toBase64(file) {
       return new Promise((resolve, reject) => {
@@ -121,16 +147,17 @@ export default {
       });
     },
     async saveVideo(value) {
+      this.videoPreview = true;
       this.content.video = value.target.files[0];
       await this.toBase64(value.target.files[0]).then((res) => {
-        this.videoPreview = res.src;
+        this.$refs.video.src = res.src;
       });
 
-      let vid = document.getElementById("plyr");
-      vid.onloadedmetadata = () => {
-        this.content.duration = (vid.duration / 60).toFixed(2);
-        this.$forceUpdate();
-      };
+      // let vid = document.getElementById("video");
+      // vid.onloadedmetadata = () => {
+      //   this.content.duration = (vid.duration / 60).toFixed(2);
+      //   this.$forceUpdate();
+      // };
     },
     jsonToFormData(data) {
       const formData = new FormData();
@@ -158,6 +185,11 @@ export default {
 
         formData.append(parentKey, value);
       }
+    },
+    reset() {
+      this.content = {};
+      this.$refs.video.value = null;
+      this.videoPreview = null;
     },
   },
 };

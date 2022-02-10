@@ -14,4 +14,8 @@ class Module extends Model
     public function banner(){
         return $this->morphOne('App\Models\File', 'fileable')->whereIn('filetype', ['image/jpeg', 'image/png', 'image/jpg']);
     }
+
+    public function contents(){
+        return $this->hasMany('App\Models\ModuleContent');
+    }
 }
