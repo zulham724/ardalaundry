@@ -35,4 +35,8 @@ class Shop extends Model
     public function attendances(){
         return $this->belongsToMany('App\Models\User','attendances')->withPivot('created_at');
     }
+
+    public function payments(){
+        return $this->morphMany('App\Models\Payment', 'payment');
+    }
 }

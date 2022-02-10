@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Models\Post;
+use App\Models\Shop;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -25,14 +27,15 @@ class PaymentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        //
-        return response()->json($request->all());
-        // $payment = new Payment();
-        // $pa
+    {   
+        $shop = Shop::findOrFail(auth('api')->user()->shop->id);
+        $spend = new Payment($request->all());
+        $spend->type = 'out';
+        $shop->payments()->save($spend);
+        // return response()->json($request->all());
         // $payment->save();
 
-        
+        return response()->json($shop->load('payments'));
     }
 
     /**
@@ -67,5 +70,33 @@ class PaymentController extends Controller
     public function destroy(Payment $payment)
     {
         //
+    }
+
+    public function getSpendingToday($shopid){
+        $payment = Payment::where('type', 'out')
+                    ->where('payment_id', $shopid)
+                    ->where('payment_type', 'App\Models\Shop')
+                    ->whereDate('created_at', \Carbon\Carbon::today())
+                    ->paginate();
+        return response()->json($payment);
+    }
+
+    public function getSpendingThisWeek($shopid){
+        $payment = Payment::where('type', 'out')
+            ->where('payment_id', $shopid)
+            ->where('payment_type', 'App\Models\Shop')
+            ->where('created_at', '>', \Carbon\Carbon::now()->startOfWeek())
+            ->where('created_at', '<', \Carbon\Carbon::now()->endOfWeek())
+            ->paginate();
+        return response()->json($payment);
+    }
+
+    public function getSpendingThisMonth($shopid){
+        $payment = Payment::where('type', 'out')
+            ->where('payment_id', $shopid)
+            ->where('payment_type', 'App\Models\Shop')
+            ->whereMonth('created_at', \Carbon\Carbon::now()->month)
+            ->paginate();
+        return response()->json($payment);
     }
 }

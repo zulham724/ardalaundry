@@ -33,6 +33,12 @@ class Order extends Model
         ->withPivot('quantity', 'start_at', 'end_at', 'service_status_id');
     }
 
+    public function products(){
+        return $this->belongsToMany('App\Models\Product', 'order_products', 'order_id', 'product_id')
+        ->selectRaw('products.*, (order_products.quantity*products.price) as total')
+        ->withPivot('quantity');
+    }
+
     public function service_status(){
         return $this->hasOne('App\Models\OrderService')->orderBy('id', 'desc');
     }

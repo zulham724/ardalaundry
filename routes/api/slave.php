@@ -18,6 +18,7 @@ use App\Http\Controllers\API\slave\ModuleController;
 use App\Http\Controllers\API\slave\OrderStatusController;
 use App\Http\Controllers\API\slave\PaymentController;
 use App\Http\Controllers\API\slave\PostController;
+use App\Http\Controllers\API\slave\ProductController;
 use App\Http\Controllers\API\slave\ServiceUnitController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -108,6 +109,10 @@ Route::get('/getCountProfitOrdersByDay/{shopid}', [OrderController:: class, 'Cou
 Route::get('/getCountProfitOrdersByWeek/{shopid}', [OrderController::class, 'CountProfitOrdersShopByWeek']);
 Route::get('/getCountProfitOrdersByMonth/{shopid}', [OrderController::class, 'CountProfitOrdersShopByMonth']);
 Route::post('/attendance/out', [AttendanceController::class, 'attendanceOut']);
+//spend
+Route::get('getspendbymonth/{shopid}', [PaymentController::class, 'getSpendingThisMonth']);
+Route::get('getspendbyweek/{shopid}', [PaymentController::class, 'getSpendingThisWeek']);
+Route::get('getspendbyday/{shopid}', [PaymentController::class, 'getSpendingToday']);
 
 Route::post('/deletecustomers', [CustomerController::class, 'destroy']);
 Route::get('/detailattendance/{userid}', [AttendanceController::class, 'detailAttendance']);
@@ -127,6 +132,7 @@ Route::apiResources([
     'post' => PostController::class,
     'modules' => ModuleController::class,
     'module-contents' => ModuleContentController::class,
+    'product' => ProductController::class,
 ]);
 
 //Module Content
@@ -135,6 +141,11 @@ Route::get('modulecontent/{id}/dislike', [ModuleContentController::class, 'disli
     //CommentCourse
 Route::post('/add_comment_course', [CommentController::class, 'add_comment_course']);
 Route::get('/{contentid}/comment', [CommentController::class, 'get_comment_course']);
+
+//Payment
+Route::get('/{shopid}/spendingtoday', [PaymentController::class, 'getSpendingToday']);
+Route::get('/{shopid}/spendingthisweek', [PaymentController::class, 'getSpendingThisWeek']);
+Route::get('/{shopid}/spendingthismonth', [PaymentController::class, 'getSpendingThisMonth']);
 
 
 //customer
@@ -150,4 +161,8 @@ Route::get('/post/{id}/dislike', [PostController::class, 'dislike']);
 Route::post('/addcomment', [CommentController::class, 'store']);
 Route::get('/comment/{commentid}/like', [CommentController::class, 'like']);
 Route::get('/comment/{commentid}/dislike', [CommentController::class, 'dislike']);
+
+//Product
+Route::get('/getproductbyshop', [ProductController::class, 'getProductByShop']);
+Route::get('/{shopid}/getproducts', [ProductController::class, 'getAnotherProducts']);
 
