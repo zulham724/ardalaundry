@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Like;
 use App\Models\File;
 use Illuminate\Http\Request;
 
@@ -58,7 +59,9 @@ class ProductController extends Controller
     {
         //
 
-        $product = Product::with('shop.user', 'images')->findOrFail($productId);
+        $product = Product::with('shop.user', 'images')
+        ->withCount('liked')
+        ->findOrFail($productId);
 
         return response()->json($product);
     }
@@ -81,13 +84,14 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy($Id)
     {
         //
+        return Product::where('id', $Id)->delete();
     }
-
     public function getProductByShop()
     {
+        
         $product = Product::with('shop.user', 'images')
             ->where('shop_id', auth('api')->user()->shop->id)
             ->get();
@@ -101,5 +105,23 @@ class ProductController extends Controller
             ->where('shop_id', $shopId)
             ->inRandomOrder()->limit(2)->get();
         return response()->json($product);
+    }
+
+    public function like($productId) {
+        $product = Product::findOrFail($productId);
+
+        $like = new Like(); 
+        $like->user_id = auth('api')->user()->id;
+        $product->liked()->save($like);
+
+        return response()->json($product->loadCount(["liked", "likes"]));
+    }
+
+    public function dislike($productId) {
+        $product = Product::findOrFail($productId);
+        $like = Like::where('user_id', auth('api')->user()->id)
+                ->where('likeable_id', $productId)->first();
+        $like->delete();
+        return response()->json($product->loadCount(["liked", "likes"]));
     }
 }

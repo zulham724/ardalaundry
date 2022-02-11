@@ -117,4 +117,11 @@ class UserController extends Controller
         $customer->password = bcrypt($request->password);
         $customer->save();
     }
+
+    public function add_wa_number(Request $request){
+        // return response()->json($request->all());
+        $user = User::findOrFail(auth('api')->user()->id);
+        $user->update($request->all());
+        return response()->json($user);
+    }
 }

@@ -106,6 +106,24 @@ class OrderController extends Controller
         return DB::table('orders')->join('order_services', 'order_services.order_id', '=', 'orders.id')->where('orders.id', $id)->delete();
     }
 
+    public function order_product(Request $request){
+        // return response()->json($request->all());
+        $order = new Order($request->all());
+        $order->order_status_id = 1;
+        $order->save();
+
+        $order->products()->attach($request->product_id, ['quantity' => $request->quantity]);
+
+        $payment = new Payment();
+        $payment->name = 'Pembayaran';
+        $payment->value = $request->total_price;
+        $payment->status = 'success';
+        $payment->type = 'in';
+        $order->payments()->save($payment);
+
+        return response()->json();
+    }
+
     public function get_order()
     {
         return Order::with('services', 'customer')->orderBy('created_at', 'desc')->first();

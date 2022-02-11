@@ -19,4 +19,13 @@ class Product extends Model
     public function shop(){
         return $this->belongsTo('App\Models\Shop');
     }
+
+    public function likes(){
+        return $this->morphMany('App\Models\Like', 'likeable');
+    }
+
+    public function liked(){
+        $user=auth('api')->user();
+        return $this->morphOne('App\Models\Like', 'likeable')->where('user_id', $user->id);
+    }
 }

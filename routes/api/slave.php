@@ -45,6 +45,7 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/user/register', [UserController::class, 'register_customer']);
 Route::post('/user/update/{userid}', [UserController::class, 'update_customer']);
+Route::post('/inputnumberphone', [UserController::class, 'add_wa_number']);
 Route::post('/shop/user/{userid}', [UserController::class, 'update']);
 Route::post('/user/order/{orderid}/payment', [OrderController::class, 'user_payment']);
 Route::post('/shop/order/search', [OrderController::class, 'searchOrder']);
@@ -132,13 +133,14 @@ Route::apiResources([
     'post' => PostController::class,
     'modules' => ModuleController::class,
     'module-contents' => ModuleContentController::class,
-    'product' => ProductController::class,
 ]);
+
+Route::apiResource('product', ProductController::class)->middleware('checkcontactnumber');
 
 //Module Content
 Route::get('modulecontent/{id}/like', [ModuleContentController::class, 'like']);
 Route::get('modulecontent/{id}/dislike', [ModuleContentController::class, 'dislike']); 
-    //CommentCourse
+//CommentCourse
 Route::post('/add_comment_course', [CommentController::class, 'add_comment_course']);
 Route::get('/{contentid}/comment', [CommentController::class, 'get_comment_course']);
 
@@ -157,7 +159,8 @@ Route::get('/attendance/monthlyattendancereport1/{shopId}', [AttendanceControlle
 //Post
 Route::get('/post/{id}/like', [PostController::class, 'like']);
 Route::get('/post/{id}/dislike', [PostController::class, 'dislike']);
-    //CommentPost
+
+//CommentPost
 Route::post('/addcomment', [CommentController::class, 'store']);
 Route::get('/comment/{commentid}/like', [CommentController::class, 'like']);
 Route::get('/comment/{commentid}/dislike', [CommentController::class, 'dislike']);
@@ -165,4 +168,7 @@ Route::get('/comment/{commentid}/dislike', [CommentController::class, 'dislike']
 //Product
 Route::get('/getproductbyshop', [ProductController::class, 'getProductByShop']);
 Route::get('/{shopid}/getproducts', [ProductController::class, 'getAnotherProducts']);
+Route::get('product/{id}/like', [ProductController::class, 'like']);
+Route::get('product/{id}/dislike', [ProductController::class, 'dislike']);
+Route::post('/orderproduct', [OrderController::class, 'order_product']);
 

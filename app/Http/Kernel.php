@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'checkifmaster'=> \App\Http\Middleware\CheckIfMaster::class,
         'checkifslave'=> \App\Http\Middleware\CheckIfSlave::class,
         'checksubscribe'=> \App\Http\Middleware\CheckSubscribe::class,
+        'checkcontactnumber' => \App\Http\Middleware\checkContactNumberShop::class,
     ];
 }

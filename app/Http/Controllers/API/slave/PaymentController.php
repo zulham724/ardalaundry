@@ -27,7 +27,7 @@ class PaymentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {   
+    {
         $shop = Shop::findOrFail(auth('api')->user()->shop->id);
         $spend = new Payment($request->all());
         $spend->type = 'out';
@@ -72,16 +72,18 @@ class PaymentController extends Controller
         //
     }
 
-    public function getSpendingToday($shopid){
+    public function getSpendingToday($shopid)
+    {
         $payment = Payment::where('type', 'out')
-                    ->where('payment_id', $shopid)
-                    ->where('payment_type', 'App\Models\Shop')
-                    ->whereDate('created_at', \Carbon\Carbon::today())
-                    ->paginate();
+            ->where('payment_id', $shopid)
+            ->where('payment_type', 'App\Models\Shop')
+            ->whereDate('created_at', \Carbon\Carbon::today())
+            ->paginate();
         return response()->json($payment);
     }
 
-    public function getSpendingThisWeek($shopid){
+    public function getSpendingThisWeek($shopid)
+    {
         $payment = Payment::where('type', 'out')
             ->where('payment_id', $shopid)
             ->where('payment_type', 'App\Models\Shop')
@@ -91,7 +93,8 @@ class PaymentController extends Controller
         return response()->json($payment);
     }
 
-    public function getSpendingThisMonth($shopid){
+    public function getSpendingThisMonth($shopid)
+    {
         $payment = Payment::where('type', 'out')
             ->where('payment_id', $shopid)
             ->where('payment_type', 'App\Models\Shop')
