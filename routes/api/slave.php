@@ -136,7 +136,7 @@ Route::apiResources([
 ]);
 
 Route::apiResource('product', ProductController::class)->middleware('checkcontactnumber');
-
+Route::post('/updateproducts/{productid}', [ProductController::class, 'updatetest']);
 //Module Content
 Route::get('modulecontent/{id}/like', [ModuleContentController::class, 'like']);
 Route::get('modulecontent/{id}/dislike', [ModuleContentController::class, 'dislike']); 

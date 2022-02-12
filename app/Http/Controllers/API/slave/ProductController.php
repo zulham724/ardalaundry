@@ -75,8 +75,26 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        //$produk = Product:findOrFail($id);
+
+        
     }
+
+    public function updatetest(Request $request, $id)
+    {
+        $produk = Product::findOrFail($id);
+
+        $produk->tittle = $request->name;
+        $produk->price = $request->price;
+        $produk->description = $request->description;
+        $produk->weight = $request->weight;
+        $produk->is_new = $request->is_new;
+        $produk->save();
+
+        return response()->json($produk);
+    }
+
+    
 
     /**
      * Remove the specified resource from storage.
