@@ -107,10 +107,10 @@ class ProductController extends Controller
         //
         return Product::where('id', $Id)->delete();
     }
+
     public function getProductByShop()
     {
-        
-        $product = Product::with('shop.user', 'images')
+         $product = Product::with('shop.user', 'images')
             ->where('shop_id', auth('api')->user()->shop->id)
             ->get();
 
@@ -141,5 +141,10 @@ class ProductController extends Controller
                 ->where('likeable_id', $productId)->first();
         $like->delete();
         return response()->json($product->loadCount(["liked", "likes"]));
+    }
+
+    public function deleteImage($Id)
+    {
+        //return Product::where('id', $Id)->delete();
     }
 }
