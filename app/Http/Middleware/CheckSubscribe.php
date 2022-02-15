@@ -40,8 +40,8 @@ class CheckSubscribe
             $pass = false;
         }
 
-        return response()->json($pass);
         if ($pass) {
+            return response()->json(new \DateTime($res->expired_date), new \DateTime());
             return $next($request);
         } else {
             return response()->json($res);
