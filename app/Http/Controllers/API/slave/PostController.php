@@ -28,7 +28,7 @@ class PostController extends Controller
             'comments.user',
             'files'
         ])
-            ->where('author_id', '!=', 0)
+            ->has('author')
             ->withCount('comments', 'likes', 'liked', 'readers', 'hasRead as hasRead')
             ->orderBy('id', 'desc')
             ->paginate(2);
