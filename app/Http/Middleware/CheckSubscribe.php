@@ -41,7 +41,7 @@ class CheckSubscribe
         }
 
         if ($pass) {
-            return response()->json($res);
+            return response()->json($res, $pass);
             return $next($request);
         } else {
             return response()->json($res);
