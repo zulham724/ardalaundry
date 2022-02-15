@@ -36,11 +36,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/user', function (Request $request) {
-    if ($request->user()->hasRole('customer')) {
-        return $request->user()->load('customer_shops');
-    } else {
         return $request->user()->load('shop');
-    }
 });
 
 Route::post('/user/register', [UserController::class, 'register_customer']);
@@ -166,6 +162,7 @@ Route::get('/comment/{commentid}/like', [CommentController::class, 'like']);
 Route::get('/comment/{commentid}/dislike', [CommentController::class, 'dislike']);
 
 //Product
+Route::post('/deleteimage/{id}', [ProductController::class, 'deleteImage']);
 Route::get('/getproductbyshop', [ProductController::class, 'getProductByShop']);
 Route::get('/{shopid}/getproducts', [ProductController::class, 'getAnotherProducts']);
 Route::get('product/{id}/like', [ProductController::class, 'like']);

@@ -143,8 +143,8 @@ class ProductController extends Controller
         return response()->json($product->loadCount(["liked", "likes"]));
     }
 
-    public function deleteImage($Id)
+    public function deleteImage($idimg)
     {
-        //return Product::where('id', $Id)->delete();
+        return File::findOrFail($idimg)->delete();
     }
 }
