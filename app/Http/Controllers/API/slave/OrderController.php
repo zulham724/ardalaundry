@@ -146,15 +146,8 @@ class OrderController extends Controller
             if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
         }
 
-
         return response()->json($res);
 
-        // ->withCount(['payments as paid_sum' => function ($query) {
-        //     $query->select(DB::raw("SUM(value) as paidsum"));
-        // }])
-        // ->withCount(['services as total_sum' => function ($query) {
-        //     $query->select(DB::raw("SUM(order_services.quantity*services.price) as total"));
-        // }])
     }
 
     public function getServiceStatusByOrder(Request $request)

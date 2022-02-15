@@ -80,18 +80,18 @@ class ProductController extends Controller
         
     }
 
-    public function updatetest(Request $request, $id)
+    public function updatetest(Request $request)
     {
-        $produk = Product::findOrFail($id);
+        $produk = Product::findOrFail($request->id);
 
-        $produk->tittle = $request->name;
+        $produk->tittle = $request->tittle;
         $produk->price = $request->price;
         $produk->description = $request->description;
         $produk->weight = $request->weight;
         $produk->is_new = $request->is_new;
         $produk->save();
 
-        return response()->json($produk);
+        return response()->json($produk->load('images'));
     }
 
     
@@ -143,8 +143,35 @@ class ProductController extends Controller
         return response()->json($product->loadCount(["liked", "likes"]));
     }
 
-    public function deleteImage($idimg)
+    public function deleteImage(Request $request)
     {
-        return File::findOrFail($idimg)->delete();
+        return response()->json($request->all());
+        //  return File::findOrFail($request)->delete();
+
+    }
+
+    public function addImage(Request $request)
+    {
+        $produk = Product::findOrFail($request->product_id);
+
+        $product = new Product($request->all());
+        $product->shop_id = auth('api')->user()->shop->id;
+        $product->save();
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $i => $image) {
+                # code...
+                $file = new File();
+                $path = $request->file('images')[$i]->store('files', 'public');
+                $file->src = $path;
+                $file->name = $request->file('images')[$i]->getClientOriginalName();
+                $file->filetype = $request->file('images')[$i]->getClientMimeType();
+                $produk->images()->save($file);
+            }
+        }
+        
+        $produk->save();
+
+        return response()->json($produk->load('images'));
     }
 }

@@ -18,14 +18,7 @@ class ServiceCategoryController extends Controller
     public function index()
     {
         //
-        // return ServiceCategory::with(['services'=>fn($query)=>$query->whereHas('shop.user',fn($query)=>$query->where('id',Auth::user()->id))])->get();
-        // return response()->json(auth('api')->user()->shop->id);
-        if(auth('api')->user()->shop){
-            return ServiceCategory::with("service_unit")->where("shop_id", auth('api')->user()->shop->id)->get();
-        }else{
-            return ServiceCategory::with("service_unit")->where("shop_id", 1)->get();
-
-        }
+        return ServiceCategory::with("service_unit")->where("shop_id", auth('api')->user()->shop->id)->get();
     }
 
     /**

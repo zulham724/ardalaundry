@@ -162,7 +162,8 @@ Route::get('/comment/{commentid}/like', [CommentController::class, 'like']);
 Route::get('/comment/{commentid}/dislike', [CommentController::class, 'dislike']);
 
 //Product
-Route::post('/deleteimage/{id}', [ProductController::class, 'deleteImage']);
+Route::post('/addimage', [ProductController::class, 'addImage']);
+Route::post('/deleteimage', [ProductController::class, 'deleteImage']);
 Route::get('/getproductbyshop', [ProductController::class, 'getProductByShop']);
 Route::get('/{shopid}/getproducts', [ProductController::class, 'getAnotherProducts']);
 Route::get('product/{id}/like', [ProductController::class, 'like']);
