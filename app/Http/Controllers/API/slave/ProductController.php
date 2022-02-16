@@ -21,7 +21,7 @@ class ProductController extends Controller
         return Product::with('shop.user', 'images')->get();
     }
 
-    /**
+    /**P
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
