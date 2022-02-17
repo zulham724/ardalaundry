@@ -149,7 +149,7 @@ Route::get('/{shopid}/spendingthisweek', [PaymentController::class, 'getSpending
 Route::get('/{shopid}/spendingthismonth', [PaymentController::class, 'getSpendingThisMonth']);
 
 //home
-Route::get('/dailyTransactionCounter/{shopid}', [OrderController::class, 'ViewDailyTransaction']);
+Route::get('/dailyTransactionCounter/{shopId}', [OrderController::class, 'ViewDailyTransaction']);
 
 //customer
 Route::get('/customer/{customerid}/order', [OrderController::class, 'getOrdersCustomer']);

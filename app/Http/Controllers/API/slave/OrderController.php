@@ -463,9 +463,16 @@ class OrderController extends Controller
         return response()->json($res);
     }
 
-    public function ViewDailyTransaction()
+    public function ViewDailyTransaction($shopid)
     {
-        
+        $res = Order::whereHas('shop',function($query)use($shopid){
+            $query->where('id',$shopid);
+        })
+        ->where('order_status_id', 1)
+        ->whereDate('created_at', \Carbon\Carbon::today())
+        ->count();
+
+        return response()->json($res);;
     }
 
     public function updateStatusOrder(Request $request)
