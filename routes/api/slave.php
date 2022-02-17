@@ -106,6 +106,9 @@ Route::get('/getCountProfitOrdersByDay/{shopid}', [OrderController:: class, 'Cou
 Route::get('/getCountProfitOrdersByWeek/{shopid}', [OrderController::class, 'CountProfitOrdersShopByWeek']);
 Route::get('/getCountProfitOrdersByMonth/{shopid}', [OrderController::class, 'CountProfitOrdersShopByMonth']);
 Route::post('/attendance/out', [AttendanceController::class, 'attendanceOut']);
+Route::get('getCountSpendOrdresByDay/{shopid}', [OrderController::class, 'CountSpendShopToday']);
+Route::get('getCountSpendOrdresByWeek/{shopid}', [OrderController::class, 'CountSpendShopWeekly']);
+Route::get('getCountSpendOrdresByMonth/{shopid}', [OrderController::class, 'CountSpendShopMonthly']);
 //spend
 Route::get('getspendbymonth/{shopid}', [PaymentController::class, 'getSpendingThisMonth']);
 Route::get('getspendbyweek/{shopid}', [PaymentController::class, 'getSpendingThisWeek']);
@@ -145,6 +148,8 @@ Route::get('/{shopid}/spendingtoday', [PaymentController::class, 'getSpendingTod
 Route::get('/{shopid}/spendingthisweek', [PaymentController::class, 'getSpendingThisWeek']);
 Route::get('/{shopid}/spendingthismonth', [PaymentController::class, 'getSpendingThisMonth']);
 
+//home
+Route::get('/dailyTransactionCounter/{shopid}', [OrderController::class, 'ViewDailyTransaction']);
 
 //customer
 Route::get('/customer/{customerid}/order', [OrderController::class, 'getOrdersCustomer']);

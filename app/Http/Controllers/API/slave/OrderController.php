@@ -397,6 +397,16 @@ class OrderController extends Controller
         return response()->json($total_profit);
     }
 
+    public function CountSpendShopToday($shopid)
+    {
+        $res = Payment::
+        whereHas('shop',function($query)use($shopid){
+            $query->where('id',$shopid);
+        })
+        ->where('type','out')->whereDate('created_at', \Carbon\Carbon::today())->sum('value');
+        return response()->json($res);
+    }
+
     public function CountProfitOrdersShopByWeek($shopid)
     {
 
@@ -414,6 +424,18 @@ class OrderController extends Controller
         return response()->json($total_profit);
     }
 
+    public function CountSpendShopWeekly($shopid)
+    {
+        $res = Payment::whereHas('shop', function ($query) use ($shopid) {
+                $query->where('id', $shopid);
+            })
+            ->where('type', 'out')
+            ->where('created_at', '>', \Carbon\Carbon::now()->startOfWeek())
+            ->where('created_at', '<', \Carbon\Carbon::now()->endOfWeek())
+            ->sum('value');
+        return response()->json($res);
+    }
+
     public function CountProfitOrdersShopByMonth($shopid)
     {
 
@@ -428,6 +450,22 @@ class OrderController extends Controller
         }
 
         return response()->json($total_profit);
+    }
+
+    public function CountSpendShopMonthly($shopid)
+    {
+        $res = Payment::whereHas('shop', function ($query) use ($shopid) {
+                $query->where('id', $shopid);
+            })
+            ->where('type', 'out')
+            ->whereMonth('updated_at', \Carbon\Carbon::now()->month)
+            ->sum('value');
+        return response()->json($res);
+    }
+
+    public function ViewDailyTransaction()
+    {
+        
     }
 
     public function updateStatusOrder(Request $request)
@@ -452,8 +490,7 @@ class OrderController extends Controller
             ->paginate();
         }else{
             $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
-            ->whereBetween('created_at', [\Carbon\Carbon::today(), \Carbon\Carbon::today()])
-            // ->whereDate('created_at', $from)
+            ->whereBetween('created_at', [$from, $to])
             ->orderBy('id', 'desc')
             ->paginate();
         }

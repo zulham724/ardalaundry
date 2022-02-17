@@ -15,6 +15,11 @@ class Payment extends Model
         return $this->belongsTo('App\Models\Order','payment_id')->where('payment_type','App\Models\Order');
     }
 
+    public function shop()
+    {
+        return $this->belongsTo('App\Models\Shop', 'payment_id')->where('payment_type', 'App\Models\Shop');
+    }
+
     // public function paymentable(){
     //     return $this->morphTo();
     // }
