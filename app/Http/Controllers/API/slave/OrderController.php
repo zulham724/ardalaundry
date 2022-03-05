@@ -4,10 +4,9 @@ namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Payment;
-
 
 class OrderController extends Controller
 {
@@ -31,26 +30,34 @@ class OrderController extends Controller
     public function store(Request $request)
     {
 
-
         $order = $request->user()->shop()->firstOrFail()->orders()->save(new Order([
             'customer_id' => $request->customer_id,
             'employee_id' => $request->employee_id,
             'order_status_id' => 1,
-            'description' => $request->description
+            'description' => $request->description,
         ]));
-
 
         foreach ($request->charts as $c => $chart) {
             $order->services()->attach($chart['package']['id'], ['quantity' => $chart['quantity'], 'start_at' => \Carbon\Carbon::now(), 'end_at' => \Carbon\Carbon::now()->addHours($chart['package']['process_time']), 'service_status_id' => 1]);
         }
 
-        $payment = new Payment();
-        $payment->name = 'Pembayaran';
-        $payment->value = $request->total_price;
-        $payment->status = 'success';
-        $payment->type = 'in';
-        $order->payments()->save($payment);
-        return response()->json($order->load('services', 'payments'));
+        if ($request->has('payment')) {
+            $label = "";
+            if ($request->payment < $request->total_price) {
+                $label = "DP 1";
+            } else {
+                $label = "Pelunasan";
+            }
+            $payment = new Payment();
+            $payment->name = $label;
+            $payment->value = $request->payment;
+            $payment->status = 'success';
+            $payment->type = 'in';
+            $order->payments()->save($payment);
+
+        }
+
+        return response()->json($order->load('payments', 'products'));
     }
     /**
      * Display the specified resource.
@@ -62,7 +69,7 @@ class OrderController extends Controller
     {
         //
         $order =
-            Order::with('customer', 'employee', 'shop', 'services.category.service_unit',  'status', 'payments')
+        Order::with('customer', 'employee', 'shop', 'services.category.service_unit', 'status', 'payments')
             ->whereHas('shop', function ($query) {
                 $query->where('id', auth('api')->user()->shop->id);
             })
@@ -106,7 +113,8 @@ class OrderController extends Controller
         return DB::table('orders')->join('order_services', 'order_services.order_id', '=', 'orders.id')->where('orders.id', $id)->delete();
     }
 
-    public function order_product(Request $request){
+    public function order_product(Request $request)
+    {
         // return response()->json($request->all());
         $order = new Order($request->all());
         $order->order_status_id = 1;
@@ -114,14 +122,23 @@ class OrderController extends Controller
 
         $order->products()->attach($request->product_id, ['quantity' => $request->quantity]);
 
-        $payment = new Payment();
-        $payment->name = 'Pembayaran';
-        $payment->value = $request->total_price;
-        $payment->status = 'success';
-        $payment->type = 'in';
-        $order->payments()->save($payment);
+        if ($request->has('payment')) {
+            $label = "";
+            if ($request->payment > $request->total_price) {
+                $label = "DP 1";
+            } else {
+                $label = "Pelunasan";
+            }
+            $payment = new Payment();
+            $payment->name = $label;
+            $payment->value = $request->payment;
+            $payment->status = 'success';
+            $payment->type = 'in';
+            $order->payments()->save($payment);
 
-        return response()->json();
+        }
+
+        return response()->json($order->load('payments', 'products'));
     }
 
     public function get_order()
@@ -143,7 +160,10 @@ class OrderController extends Controller
             # code...
             $order->percentage = 0;
             // service status id 3 adalah yang status pekerjaan per kaet nya complete
-            if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            if ($order->services->count()) {
+                $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            }
+
         }
 
         return response()->json($res);
@@ -170,13 +190,16 @@ class OrderController extends Controller
             ->whereHas('customer', function ($query) use ($request) {
                 $query->where('name', 'like', '%' . $request->value . '%');
             })
-            ->orWhere('id', (int)$request->value)
+            ->orWhere('id', (int) $request->value)
             ->paginate();
         foreach ($res as $o => $order) {
             # code...
             $order->percentage = 0;
             // service status id 3 adalah yang status pekerjaan per kaet nya complete
-            if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            if ($order->services->count()) {
+                $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            }
+
         }
         return $res;
     }
@@ -282,13 +305,12 @@ class OrderController extends Controller
             ->join('services', 'order_services.service_id', '=', 'services.id')
             ->where('orders.id', $orderid)->first()->total_price;
         // 2 itung total payment yg masuk
-        (int)$pay = $request->value;
-        (int)$payments = Payment::whereHas('order', function ($query) use ($orderid) {
+        (int) $pay = $request->value;
+        (int) $payments = Payment::whereHas('order', function ($query) use ($orderid) {
             $query->where('id', $orderid);
         })->sum('value');
         // return [(int)$payments,(int)$pay];
         $total_payment = $payments + $pay;
-
 
         // 3 bandingkan nilai yg masuk + payment yg sudah masuk dengan total
         $payment = new Payment();
@@ -301,16 +323,16 @@ class OrderController extends Controller
             $total_price = $total_price - $payments;
             $payment->value = $pay;
             $payment->status = 'success';
-        } else if ($total_payment ==  $total_price) {
+        } else if ($total_payment == $total_price) {
             // kalau hasil jumlah nya sama dengan total nama nya == pelunasan
             $payment->name = 'Pelunasan';
             $payment->value = $pay;
             $payment->status = 'success';
         }
 
-        $order = Order::findOrFail($orderid)->payments()->save($payment);
-        // $res = $request->user()->order()->findOrFail($orderid)->payments()->save($payment);
-        return $order;
+        $order = Order::findOrFail($orderid);
+        $order->payments()->save($payment);
+        return $order->load('payments');
     }
 
     public function getQueueOrderByShop($shopid)
@@ -327,18 +349,20 @@ class OrderController extends Controller
 
     public function getOrdersShopByMonth($shopid)
     {
-        $res = Order::with('customer', 'employee', 'shop', 'services.category.service_unit',  'status', 'payments')
+        $res = Order::with('customer', 'employee', 'shop', 'services.category.service_unit', 'status', 'payments')
             ->where('order_status_id', 4)
             ->where('shop_id', $shopid)
             ->whereMonth('updated_at', \Carbon\Carbon::now()->month)
             ->paginate();
 
-
         foreach ($res as $o => $order) {
             # code...
             $order->percentage = 0;
             // service status id 3 adalah yang status pekerjaan per kaet nya complete
-            if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            if ($order->services->count()) {
+                $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            }
+
         }
 
         return $res;
@@ -346,7 +370,7 @@ class OrderController extends Controller
 
     public function getOrdersShopByWeek($shopid)
     {
-        $res = Order::with('customer', 'employee', 'shop', 'services.category.service_unit',  'status', 'payments')
+        $res = Order::with('customer', 'employee', 'shop', 'services.category.service_unit', 'status', 'payments')
             ->where('order_status_id', 4)
             ->where('shop_id', $shopid)
             ->where('updated_at', '>', \Carbon\Carbon::now()->startOfWeek())
@@ -357,17 +381,18 @@ class OrderController extends Controller
             # code...
             $order->percentage = 0;
             // service status id 3 adalah yang status pekerjaan per kaet nya complete
-            if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            if ($order->services->count()) {
+                $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            }
+
         }
-
-
 
         return $res;
     }
 
     public function getOrdersShopByDay($shopid)
     {
-        $res = Order::with('customer', 'employee', 'shop', 'services.category.service_unit',  'status', 'payments')
+        $res = Order::with('customer', 'employee', 'shop', 'services.category.service_unit', 'status', 'payments')
             ->where('order_status_id', 4)
             ->where('shop_id', $shopid)
             ->whereDate('updated_at', \Carbon\Carbon::today())
@@ -377,7 +402,10 @@ class OrderController extends Controller
             # code...
             $order->percentage = 0;
             // service status id 3 adalah yang status pekerjaan per kaet nya complete
-            if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            if ($order->services->count()) {
+                $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            }
+
         }
         return $res;
     }
@@ -400,10 +428,10 @@ class OrderController extends Controller
     public function CountSpendShopToday($shopid)
     {
         $res = Payment::
-        whereHas('shop',function($query)use($shopid){
-            $query->where('id',$shopid);
+            whereHas('shop', function ($query) use ($shopid) {
+            $query->where('id', $shopid);
         })
-        ->where('type','out')->whereDate('created_at', \Carbon\Carbon::today())->sum('value');
+            ->where('type', 'out')->whereDate('created_at', \Carbon\Carbon::today())->sum('value');
         return response()->json($res);
     }
 
@@ -427,8 +455,8 @@ class OrderController extends Controller
     public function CountSpendShopWeekly($shopid)
     {
         $res = Payment::whereHas('shop', function ($query) use ($shopid) {
-                $query->where('id', $shopid);
-            })
+            $query->where('id', $shopid);
+        })
             ->where('type', 'out')
             ->where('created_at', '>', \Carbon\Carbon::now()->startOfWeek())
             ->where('created_at', '<', \Carbon\Carbon::now()->endOfWeek())
@@ -455,8 +483,8 @@ class OrderController extends Controller
     public function CountSpendShopMonthly($shopid)
     {
         $res = Payment::whereHas('shop', function ($query) use ($shopid) {
-                $query->where('id', $shopid);
-            })
+            $query->where('id', $shopid);
+        })
             ->where('type', 'out')
             ->whereMonth('updated_at', \Carbon\Carbon::now()->month)
             ->sum('value');
@@ -465,14 +493,14 @@ class OrderController extends Controller
 
     public function ViewDailyTransaction($shopid)
     {
-        $res = Order::whereHas('shop',function($query)use($shopid){
-            $query->where('id',$shopid);
+        $res = Order::whereHas('shop', function ($query) use ($shopid) {
+            $query->where('id', $shopid);
         })
-        ->where('order_status_id', 1)
-        ->whereDate('created_at', \Carbon\Carbon::today())
-        ->count();
+            ->where('order_status_id', 1)
+            ->whereDate('created_at', \Carbon\Carbon::today())
+            ->count();
 
-        return response()->json($res);;
+        return response()->json($res);
     }
 
     public function updateStatusOrder(Request $request)
@@ -483,30 +511,34 @@ class OrderController extends Controller
         return response()->json($res);
     }
 
-    public function filter_orders_in($datefrom, $dateto){
+    public function filter_orders_in($datefrom, $dateto)
+    {
 
         // return response()->json($date);
         $from = date("Y-m-d", strtotime($datefrom));
         $to = date("Y-m-d", strtotime($dateto));
 
-        if($from == $to){
+        if ($from == $to) {
             $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
             // ->whereBetween('created_at', [\Carbon\Carbon::today(), \Carbon\Carbon::today()])
-            ->whereDate('created_at', $from)
-            ->orderBy('id', 'desc')
-            ->paginate();
-        }else{
+                ->whereDate('created_at', $from)
+                ->orderBy('id', 'desc')
+                ->paginate();
+        } else {
             $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
-            ->whereBetween('created_at', [$from, $to])
-            ->orderBy('id', 'desc')
-            ->paginate();
+                ->whereBetween('created_at', [$from, $to])
+                ->orderBy('id', 'desc')
+                ->paginate();
         }
 
         foreach ($res as $o => $order) {
             # code...
             $order->percentage = 0;
             // service status id 3 adalah yang status pekerjaan per kaet nya complete
-            if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            if ($order->services->count()) {
+                $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            }
+
         }
 
         return response()->json($res);
@@ -520,7 +552,7 @@ class OrderController extends Controller
         $to = date("Y-m-d", strtotime($dateto));
 
         $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
-        ->whereBetween('updated_at', [$from, $to])
+            ->whereBetween('updated_at', [$from, $to])
             ->orderBy('id', 'desc')
             ->paginate();
 
@@ -528,7 +560,10 @@ class OrderController extends Controller
             # code...
             $order->percentage = 0;
             // service status id 3 adalah yang status pekerjaan per kaet nya complete
-            if ($order->services->count()) $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            if ($order->services->count()) {
+                $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            }
+
         }
 
         return response()->json($res);
