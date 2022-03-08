@@ -568,4 +568,115 @@ class OrderController extends Controller
 
         return response()->json($res);
     }
+
+    public function getOrderByStatus($orderstatusid)
+    {
+        $res = Order::where('order_status_id', $orderstatusid)
+            ->with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+            ->paginate();
+
+        foreach ($res as $o => $order) {
+            # code...
+            $order->percentage = 0;
+            // service status id 3 adalah yang status pekerjaan per kaet nya complete
+            if ($order->services->count()) {
+                $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            }
+
+        }
+
+        return response()->json($res);
+    }
+
+    public function getOrderByPaymentStatus($paymentstatusid)
+    {
+        if ($paymentstatusid == 1) {
+            $res = Order::
+                join('order_services as os', 'orders.id', 'os.order_id')
+                ->join('services as s', 's.id', 'os.service_id')
+                ->join('payments as p', 'orders.id', 'p.payment_id')
+                ->where('p.payment_type', 'App\Models\Order')
+                ->select(
+                    DB::raw('orders.*'),
+                    DB::raw('ceiling(sum(os.quantity*s.price) * count(distinct os.id)/ count(*)) as total'),
+                    DB::raw("p.id as payment_id"),
+                    DB::raw('os.id as order_service_id'),
+                    DB::raw('ceiling(SUM(p.value) * COUNT(DISTINCT p.id) / COUNT(*)) as paid'),
+                    DB::raw('IF(
+                        ceiling(sum(os.quantity*s.price) * count(distinct os.id)/ count(*))
+                        -
+                        ceiling(SUM(p.value) * COUNT(DISTINCT p.id) / COUNT(*)) <= 0,"1","0")
+                        as is_paid_off'),
+                )
+                ->havingRaw('is_paid_off = 1')
+                ->groupBy('orders.id')
+                ->with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+                ->paginate();
+
+        } else {
+            $res = Order::
+                join('order_services as os', 'orders.id', 'os.order_id')
+                ->join('services as s', 's.id', 'os.service_id')
+                ->join('payments as p', 'orders.id', 'p.payment_id')
+                ->where('p.payment_type', 'App\Models\Order')
+                ->select(
+                    DB::raw('orders.*'),
+                    DB::raw('ceiling(sum(os.quantity*s.price) * count(distinct os.id)/ count(*)) as total'),
+                    DB::raw("p.id as payment_id"),
+                    DB::raw('os.id as order_service_id'),
+                    DB::raw('ceiling(SUM(p.value) * COUNT(DISTINCT p.id) / COUNT(*)) as paid'),
+                    DB::raw('IF(
+                        ceiling(sum(os.quantity*s.price) * count(distinct os.id)/ count(*))
+                        -
+                        ceiling(SUM(p.value) * COUNT(DISTINCT p.id) / COUNT(*)) <= 0,"1","0")
+                        as is_paid_off'),
+                )
+                ->havingRaw('is_paid_off = 0')
+                ->groupBy('orders.id')
+                ->with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+                ->paginate();
+        }
+
+        foreach ($res as $o => $order) {
+            # code...
+            $order->percentage = 0;
+            // service status id 3 adalah yang status pekerjaan per kaet nya complete
+            if ($order->services->count()) {
+                $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            }
+
+        }
+
+        return response()->json($res);
+
+    }
+
+    public function filter_orders_pending()
+    {
+
+        // return response()->json($date);
+
+        $res = Order::with('customer', 'employee', 'shop', 'services', 'status', 'payments')
+            ->where('status', 'pending')
+            ->orderBy('id', 'desc')
+            ->paginate();
+
+        foreach ($res as $o => $order) {
+            # code...
+            $order->percentage = 0;
+            // service status id 3 adalah yang status pekerjaan per kaet nya complete
+            if ($order->services->count()) {
+                $order->percentage = (($order->services->where('pivot.service_status_id', 3)->count() / $order->services->count()) * 100);
+            }
+
+        }
+
+        return response()->json($res);
+    }
+
+    public function getPaidOrders()
+    {
+        $res = Order::paginate();
+        return response()->json($res);
+    }
 }

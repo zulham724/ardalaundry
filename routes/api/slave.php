@@ -2,24 +2,21 @@
 
 use App\Http\Controllers\API\master\OrderController as MasterOrderController;
 use App\Http\Controllers\API\slave\AttendanceController;
-use App\Http\Controllers\API\slave\BranchController;
 use App\Http\Controllers\API\slave\CommentController;
-use App\Http\Controllers\API\slave\OrderController;
-use App\Http\Controllers\API\slave\PackageUserController;
-use App\Http\Controllers\API\slave\ServiceController;
-use App\Http\Controllers\API\slave\ShopController;
-use App\Http\Controllers\API\slave\UserController;
-use App\Http\Controllers\API\slave\ServiceCategoryController;
 use App\Http\Controllers\API\slave\CustomerController;
 use App\Http\Controllers\API\slave\EmployeeController;
-use App\Http\Controllers\API\slave\LikeController;
 use App\Http\Controllers\API\slave\ModuleContentController;
 use App\Http\Controllers\API\slave\ModuleController;
+use App\Http\Controllers\API\slave\OrderController;
 use App\Http\Controllers\API\slave\OrderStatusController;
 use App\Http\Controllers\API\slave\PaymentController;
 use App\Http\Controllers\API\slave\PostController;
 use App\Http\Controllers\API\slave\ProductController;
+use App\Http\Controllers\API\slave\ServiceCategoryController;
+use App\Http\Controllers\API\slave\ServiceController;
 use App\Http\Controllers\API\slave\ServiceUnitController;
+use App\Http\Controllers\API\slave\ShopController;
+use App\Http\Controllers\API\slave\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -32,11 +29,10 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
-
+ */
 
 Route::get('/user', function (Request $request) {
-        return $request->user()->load('shop');
+    return $request->user()->load('shop');
 });
 
 Route::post('/user/register', [UserController::class, 'register_customer']);
@@ -46,19 +42,14 @@ Route::post('/shop/user/{userid}', [UserController::class, 'update']);
 Route::post('/user/order/{orderid}/payment', [OrderController::class, 'user_payment']);
 Route::post('/shop/order/search', [OrderController::class, 'searchOrder']);
 
-
 Route::get('/shop/{shopid}/employees', [ShopController::class, 'getEmployeesByShop']);
 Route::post('/shop/addemployee', [ShopController::class, 'add_employee']);
 Route::post('/shop/deleteEmployee/{employeeid}', [ShopController::class, 'delete_employee']);
 Route::post('/shop/editEmployee/{employeeid}', [ShopController::class, 'edit_employee']);
 Route::post('/shop/searchEmployee', [EmployeeController::class, 'searchEmployee']);
 
-
-
 Route::get('/shop/{shopid}/customers', [ShopController::class, 'getCustomersByShop']);
 Route::post('/shop/searchCustomer', [CustomerController::class, 'searchCustomer']);
-
-
 
 Route::get('/shop/{shopid}/getServicesByShop', [ServiceController::class, 'getServicesByShop']);
 Route::get('/shop/getServiceCategories', [ServiceCategoryController::class, 'index']);
@@ -94,7 +85,6 @@ Route::post('/updatecustomer', [CustomerController::class, 'update']);
 Route::post('/updateclothesname/{categoryid}', [ServiceCategoryController::class, 'updateName']);
 Route::post('/updatepackagesname/{paketid}', [ServiceController::class, 'updateName']);
 
-
 // Route::post('/update_employee', [EmployeeController::class, 'update']);
 Route::post('/searchOrders', [OrderController::class, 'searchOrders']);
 Route::post('/updateorderstatus', [OrderController::class, 'updateStatusOrder']);
@@ -102,13 +92,20 @@ Route::post('/updateorderstatus', [OrderController::class, 'updateStatusOrder'])
 Route::get('/getorderbymonth/{shopid}', [OrderController::class, 'getOrdersShopByMonth']);
 Route::get('/getorderbyweek/{shopid}', [OrderController::class, 'getOrdersShopByWeek']);
 Route::get('/getorderbyday/{shopid}', [OrderController::class, 'getOrdersShopByDay']);
-Route::get('/getCountProfitOrdersByDay/{shopid}', [OrderController:: class, 'CountProfitOrdersShopByDay']);
+Route::get('/getCountProfitOrdersByDay/{shopid}', [OrderController::class, 'CountProfitOrdersShopByDay']);
 Route::get('/getCountProfitOrdersByWeek/{shopid}', [OrderController::class, 'CountProfitOrdersShopByWeek']);
 Route::get('/getCountProfitOrdersByMonth/{shopid}', [OrderController::class, 'CountProfitOrdersShopByMonth']);
 Route::post('/attendance/out', [AttendanceController::class, 'attendanceOut']);
 Route::get('getCountSpendOrdresByDay/{shopid}', [OrderController::class, 'CountSpendShopToday']);
 Route::get('getCountSpendOrdresByWeek/{shopid}', [OrderController::class, 'CountSpendShopWeekly']);
 Route::get('getCountSpendOrdresByMonth/{shopid}', [OrderController::class, 'CountSpendShopMonthly']);
+// Income V2
+Route::get('/getpaymentthismonth/{shopid}', [PaymentController::class, 'getPaymentThisMonth']);
+Route::get('/getpaymentthisweek/{shopid}', [PaymentController::class, 'getPaymentThisWeek']);
+Route::get('/getpaymenttoday/{shopid}', [PaymentController::class, 'getPaymentToday']);
+//Transaction V2
+Route::get('/getorderbystatus/{orderstatusid}', [OrderController::class, 'getOrderByStatus']);
+Route::get('/getorderbypaymentstatus/{paymentstatusid}', [OrderController::class, 'getOrderByPaymentStatus']);
 //spend
 Route::get('getspendbymonth/{shopid}', [PaymentController::class, 'getSpendingThisMonth']);
 Route::get('getspendbyweek/{shopid}', [PaymentController::class, 'getSpendingThisWeek']);
@@ -117,7 +114,7 @@ Route::get('getspendbyday/{shopid}', [PaymentController::class, 'getSpendingToda
 Route::post('/deletecustomers', [CustomerController::class, 'destroy']);
 Route::get('/detailattendance/{userid}', [AttendanceController::class, 'detailAttendance']);
 // route ini untuk memberikan data array attendances berdasarkan di karyawan
-Route::get('attendance/getemployeeattendances/{employeeid}',[AttendanceController::class, 'getEmployeeAttendances']);
+Route::get('attendance/getemployeeattendances/{employeeid}', [AttendanceController::class, 'getEmployeeAttendances']);
 
 Route::apiResources([
     'service' => ServiceController::class,
@@ -138,7 +135,7 @@ Route::apiResource('product', ProductController::class)->middleware('checkcontac
 Route::post('/updateproducts/{productid}', [ProductController::class, 'updatetest']);
 //Module Content
 Route::get('modulecontent/{id}/like', [ModuleContentController::class, 'like']);
-Route::get('modulecontent/{id}/dislike', [ModuleContentController::class, 'dislike']); 
+Route::get('modulecontent/{id}/dislike', [ModuleContentController::class, 'dislike']);
 //CommentCourse
 Route::post('/add_comment_course', [CommentController::class, 'add_comment_course']);
 Route::get('/{contentid}/comment', [CommentController::class, 'get_comment_course']);
@@ -174,4 +171,3 @@ Route::get('/{shopid}/getproducts', [ProductController::class, 'getAnotherProduc
 Route::get('product/{id}/like', [ProductController::class, 'like']);
 Route::get('product/{id}/dislike', [ProductController::class, 'dislike']);
 Route::post('/orderproduct', [OrderController::class, 'order_product']);
-

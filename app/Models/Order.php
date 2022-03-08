@@ -4,17 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class Order extends Model
 {
 
     protected $guarded = ['id'];
-    protected $appends = ['total_sum','paid_sum'];
+    protected $appends = ['total_sum', 'paid_sum'];
 
     use HasFactory;
 
-    public function customer(){
+    public function customer()
+    {
         return $this->belongsTo('App\Models\User', 'customer_id');
     }
 
@@ -23,32 +23,43 @@ class Order extends Model
         return $this->belongsTo('App\Models\User', 'employee_id');
     }
 
-    public function shop(){
+    public function shop()
+    {
         return $this->belongsTo('App\Models\Shop');
     }
 
-    public function services(){
+    public function services()
+    {
         return $this->belongsToMany('App\Models\Service', 'order_services', 'order_id', 'service_id')
-        ->selectRaw('services.*, (order_services.quantity*services.price) as total')
-        ->withPivot('quantity', 'start_at', 'end_at', 'service_status_id');
+            ->selectRaw('services.*, (order_services.quantity*services.price) as total')
+            ->withPivot('quantity', 'start_at', 'end_at', 'service_status_id');
     }
 
-    public function products(){
+    public function products()
+    {
         return $this->belongsToMany('App\Models\Product', 'order_products', 'order_id', 'product_id')
-        ->selectRaw('products.*, (order_products.quantity*products.price) as total')
-        ->withPivot('quantity');
+            ->selectRaw('products.*, (order_products.quantity*products.price) as total')
+            ->withPivot('quantity');
     }
 
-    public function service_status(){
+    public function order_services()
+    {
+        return $this->hasMany('App\Models\OrderService');
+    }
+
+    public function service_status()
+    {
         return $this->hasOne('App\Models\OrderService')->orderBy('id', 'desc');
     }
 
-    public function payments(){
-        return $this->morphMany('App\Models\Payment','payment');
+    public function payments()
+    {
+        return $this->morphMany('App\Models\Payment', 'payment');
     }
 
-    public function status(){
-        return $this->belongsTo('App\Models\OrderStatus','order_status_id');
+    public function status()
+    {
+        return $this->belongsTo('App\Models\OrderStatus', 'order_status_id');
     }
 
     // public function getDescriptionAttribute($value){
@@ -66,7 +77,18 @@ class Order extends Model
         return $total;
     }
 
-    public function getPaidSumAttribute(){
-        return (int)$this->payments()->sum('value');
+    public function getPaidSumAttribute()
+    {
+        return (int) $this->payments()->sum('value');
     }
+
+    // public function getIsPaidOffAttribute()
+    // {
+    //     if ((int) $this->total_sum - (int) $this->paid_sum == 0) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    //     // return true;
+    // }
 }
