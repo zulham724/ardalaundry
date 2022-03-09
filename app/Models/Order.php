@@ -82,6 +82,11 @@ class Order extends Model
         return (int) $this->payments()->sum('value');
     }
 
+    public function photo()
+    {
+        return $this->morphOne('App\Models\File', 'fileable');
+    }
+
     // public function getIsPaidOffAttribute()
     // {
     //     if ((int) $this->total_sum - (int) $this->paid_sum == 0) {

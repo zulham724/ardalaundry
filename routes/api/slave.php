@@ -115,6 +115,8 @@ Route::post('/deletecustomers', [CustomerController::class, 'destroy']);
 Route::get('/detailattendance/{userid}', [AttendanceController::class, 'detailAttendance']);
 // route ini untuk memberikan data array attendances berdasarkan di karyawan
 Route::get('attendance/getemployeeattendances/{employeeid}', [AttendanceController::class, 'getEmployeeAttendances']);
+// route untuk simpan hasil foto bukti pesanan
+Route::post('/postorderphoto', [OrderController::class, 'savePhoto']);
 
 Route::apiResources([
     'service' => ServiceController::class,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
+use App\Models\File;
 use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Http\Request;
@@ -69,7 +70,7 @@ class OrderController extends Controller
     {
         //
         $order =
-        Order::with('customer', 'employee', 'shop', 'services.category.service_unit', 'status', 'payments')
+        Order::with('customer', 'photo', 'employee', 'shop', 'services.category.service_unit', 'status', 'payments')
             ->whereHas('shop', function ($query) {
                 $query->where('id', auth('api')->user()->shop->id);
             })
@@ -674,9 +675,20 @@ class OrderController extends Controller
         return response()->json($res);
     }
 
-    public function getPaidOrders()
+    public function savePhoto(Request $request)
     {
-        $res = Order::paginate();
-        return response()->json($res);
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('laundrydigital/photo', env('APP_STORAGE'));
+            $order = Order::findOrFail($request->order_id);
+            $photo = new File();
+            $photo->name = $request->file('photo')->getClientOriginalName();
+            $photo->src = $path;
+            $order->photo()->save($photo);
+            return response()->json($path);
+        } else {
+            return abort('500', 'Tidak ada file');
+        }
+
     }
+
 }
