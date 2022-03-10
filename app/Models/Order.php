@@ -84,7 +84,7 @@ class Order extends Model
 
     public function photo()
     {
-        return $this->morphOne('App\Models\File', 'fileable');
+        return $this->morphOne('App\Models\File', 'fileable')->orderBy('id', 'desc');
     }
 
     // public function getIsPaidOffAttribute()
