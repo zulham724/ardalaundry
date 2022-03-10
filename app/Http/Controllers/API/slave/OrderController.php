@@ -678,7 +678,7 @@ class OrderController extends Controller
     public function savePhoto(Request $request)
     {
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('laundrydigital/photo', env('APP_STORAGE'));
+            $path = $request->file('photo')->store('laundrydigital/photo', env('FILESYSTEM_DRIVER'));
             $order = Order::findOrFail($request->order_id);
             $photo = new File();
             $photo->name = $request->file('photo')->getClientOriginalName();
