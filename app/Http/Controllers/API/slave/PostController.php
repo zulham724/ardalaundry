@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
 use App\Models\File;
 use App\Models\Like;
-use Illuminate\Support\Str;
+use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -26,7 +26,7 @@ class PostController extends Controller
             'bookmarked',
             'author',
             'comments.user',
-            'files'
+            'files',
         ])
             ->has('author')
             ->withCount('comments', 'likes', 'liked', 'readers', 'hasRead as hasRead')
@@ -51,10 +51,10 @@ class PostController extends Controller
             foreach ($request->file('files') as $f => $file) {
                 // return dd($request->file('files')[$f]->getClientMimeType());
                 $file = new File();
-                $path = $request->file('files')[$f]->store('files', 'public');
+                $path = $request->file('files')[$f]->store('files', ENV('FILESYSTEM_DRIVER'));
                 $file->src = $path;
                 $file->name =
-                    $request->file('files')[$f]->getClientOriginalName();
+                $request->file('files')[$f]->getClientOriginalName();
                 $file->filetype = $request->file('files')[$f]->getClientMimeType();
                 $post->files()->save($file);
             }
@@ -63,7 +63,7 @@ class PostController extends Controller
         return response()->json($post->load([
             'images',
             'videos',
-            'files'
+            'files',
         ]));
     }
 
@@ -77,7 +77,7 @@ class PostController extends Controller
     {
         //
         return Post::with("comments.user", "comments.replies_comment", "comments_from_other", "author")
-        ->findOrFail($id);
+            ->findOrFail($id);
     }
 
     /**
@@ -103,7 +103,8 @@ class PostController extends Controller
         //
     }
 
-    public function like($postid){
+    public function like($postid)
+    {
         $post = Post::findOrFail($postid);
 
         $like = new Like();
@@ -113,10 +114,11 @@ class PostController extends Controller
         return response()->json($post->loadCount(["liked", "likes"]));
     }
 
-    public function dislike($postid){
+    public function dislike($postid)
+    {
         $post = Post::findOrFail($postid);
         $like = Like::where('user_id', auth('api')->user()->id)
-                ->where('likeable_id', $postid)->first();
+            ->where('likeable_id', $postid)->first();
         $like->delete();
         return response()->json($post->loadCount(["liked", "likes"]));
     }

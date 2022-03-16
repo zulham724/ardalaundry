@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Branch extends Model
 {
     use HasFactory;
+
+    public function logo()
+    {
+        return $this->morphOne('App\Models\File', 'fileable')->where('description', 'Logo Cabang');
+    }
 }

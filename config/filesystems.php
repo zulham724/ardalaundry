@@ -54,6 +54,7 @@ return [
         ],
         'wasabi' => [
             'driver' => 's3',
+            'root' => 'laundrydigital',
             'key' => env('WAS_ACCESS_KEY_ID'),
             'secret' => env('WAS_SECRET_ACCESS_KEY'),
             'region' => env('WAS_DEFAULT_REGION'),

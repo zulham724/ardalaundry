@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\master\OrderController as MasterOrderController;
 use App\Http\Controllers\API\slave\AttendanceController;
+use App\Http\Controllers\API\slave\BranchController;
 use App\Http\Controllers\API\slave\CommentController;
 use App\Http\Controllers\API\slave\CustomerController;
 use App\Http\Controllers\API\slave\EmployeeController;
@@ -117,6 +118,8 @@ Route::get('/detailattendance/{userid}', [AttendanceController::class, 'detailAt
 Route::get('attendance/getemployeeattendances/{employeeid}', [AttendanceController::class, 'getEmployeeAttendances']);
 // route untuk simpan hasil foto bukti pesanan
 Route::post('/postorderphoto', [OrderController::class, 'savePhoto']);
+// route untuk menambah logo cabang
+Route::post('/addbranchlogo', [BranchController::class, 'addLogo']);
 
 Route::apiResources([
     'service' => ServiceController::class,
