@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $guarded = ["id"];
 
@@ -16,16 +17,19 @@ class Product extends Model
         return $this->morphMany('App\Models\File', "fileable")->whereIn('filetype', ['image/jpeg', 'image/png', 'image/jpg']);
     }
 
-    public function shop(){
+    public function shop()
+    {
         return $this->belongsTo('App\Models\Shop');
     }
 
-    public function likes(){
+    public function likes()
+    {
         return $this->morphMany('App\Models\Like', 'likeable');
     }
 
-    public function liked(){
-        $user=auth('api')->user();
+    public function liked()
+    {
+        $user = auth('api')->user();
         return $this->morphOne('App\Models\Like', 'likeable')->where('user_id', $user->id);
     }
 }
