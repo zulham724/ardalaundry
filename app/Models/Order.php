@@ -72,7 +72,7 @@ class Order extends Model
         $total = 0;
         foreach ($services as $s => $service) {
             # code...
-            $total += $service->price * $service->pivot->quantity;
+            $total += $service->price * $service->quantity;
         }
         return $total;
     }

@@ -21,4 +21,9 @@ class OrderService extends Model
         return $this->belongsTo('App\Models\Order');
     }
 
+    public function service()
+    {
+        return $this->belongsTo('App\Models\Service');
+    }
+
 }

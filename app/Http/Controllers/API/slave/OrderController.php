@@ -154,7 +154,7 @@ class OrderController extends Controller
 
     public function get_order()
     {
-        return Order::with('services', 'customer')->orderBy('created_at', 'desc')->first();
+        return Order::with('services.category', 'customer')->orderBy('created_at', 'desc')->first();
     }
 
     public function getOrdersByShop($shop_id)
