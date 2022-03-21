@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
@@ -35,7 +34,7 @@ class CustomerController extends Controller
         $customer->email = $request->email;
         $customer->contact_number = $request->contact_number;
         $customer->home_address = $request->home_address;
-        if($request->has('password')){
+        if ($request->has('password')) {
             $customer->password = bcrypt($request->password);
         }
         return $request->user()->shop()->firstOrFail()->customers()->save($customer);
@@ -50,7 +49,7 @@ class CustomerController extends Controller
     public function show($id)
     {
         //
-        return User::with("order.services.category.service_unit", "order.status")->findOrFail($id);
+        return User::with("order.services", "order.status")->findOrFail($id);
     }
 
     /**
@@ -77,13 +76,13 @@ class CustomerController extends Controller
     {
         //
         // return response()->json($request->all());
-        return $request->user()->shop()->firstOrFail()->customers()->whereIn('user_id', $request->all())->delete();;
+        return $request->user()->shop()->firstOrFail()->customers()->whereIn('user_id', $request->all())->delete();
     }
 
     public function searchCustomer(Request $request)
     {
-        $res = User::whereHas('role', fn ($query) => $query->where('name', 'customer'))
-            ->whereHas('customer_shops', fn ($query) => $query->where('shop_id', $request->user()->shop()->firstOrFail()->id))
+        $res = User::whereHas('role', fn($query) => $query->where('name', 'customer'))
+            ->whereHas('customer_shops', fn($query) => $query->where('shop_id', $request->user()->shop()->firstOrFail()->id))
             ->where('name', 'like', '%' . $request->name . '%')
             ->get();
         return response()->json($res);

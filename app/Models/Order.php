@@ -28,12 +28,12 @@ class Order extends Model
         return $this->belongsTo('App\Models\Shop');
     }
 
-    public function services()
-    {
-        return $this->belongsToMany('App\Models\Service', 'order_services', 'order_id', 'service_id')
-            ->selectRaw('services.*, (order_services.quantity*services.price) as total')
-            ->withPivot('quantity', 'start_at', 'end_at', 'service_status_id');
-    }
+    // public function services()
+    // {
+    //     return $this->belongsToMany('App\Models\Service', 'order_services', 'order_id', 'service_id')
+    //         ->selectRaw('services.*, (order_services.quantity*services.price) as total')
+    //         ->withPivot('quantity', 'start_at', 'end_at', 'service_status_id');
+    // }
 
     public function products()
     {
@@ -42,7 +42,7 @@ class Order extends Model
             ->withPivot('quantity');
     }
 
-    public function order_services()
+    public function services()
     {
         return $this->hasMany('App\Models\OrderService');
     }

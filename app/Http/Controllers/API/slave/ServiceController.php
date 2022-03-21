@@ -110,10 +110,10 @@ class ServiceController extends Controller
         // return response()->json($request->all());
         $order_service = OrderService::findOrFail($request->id);
         $order_service->update($request->all());
-        $order = Order::withCount(['order_services as belum_selesai_semua' => function ($query) {
+        $order = Order::withCount(['services as belum_selesai_semua' => function ($query) {
             // hitung berapa jumlah order_services yang status nya bukan 3 atau tidak selesai
             $query->where('service_status_id', '!=', 3);
-        }])->whereHas('order_services', function ($query) use ($request) {
+        }])->whereHas('services', function ($query) use ($request) {
             $query->where('id', $request->id);
         })->first();
         //-----------------

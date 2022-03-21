@@ -87,8 +87,9 @@ class PaymentController extends Controller
         $payment = Payment::where('type', 'out')
             ->where('payment_id', $shopid)
             ->where('payment_type', 'App\Models\Shop')
-            ->where('created_at', '>', \Carbon\Carbon::now()->startOfWeek())
-            ->where('created_at', '<', \Carbon\Carbon::now()->endOfWeek())
+        // ->where('created_at', '>', \Carbon\Carbon::now()->startOfWeek()) //updated at tadinya created at
+        // ->where('created_at', '<', \Carbon\Carbon::now()->endOfWeek()) //updated at tadinya created at
+            ->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])
             ->paginate();
         return response()->json($payment);
     }
@@ -133,8 +134,9 @@ class PaymentController extends Controller
                 DB::raw('payments.*'),
                 DB::raw('u.name as customer')
             )
-            ->where('payments.created_at', '>', \Carbon\Carbon::now()->startOfWeek())
-            ->where('payments.created_at', '<', \Carbon\Carbon::now()->endOfWeek())
+            ->whereBetween('payments.created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])
+        // ->where('payments.created_at', '>', \Carbon\Carbon::now()->startOfWeek())
+        // ->where('payments.created_at', '<', \Carbon\Carbon::now()->endOfWeek())
             ->paginate();
         return response()->json($res);
     }

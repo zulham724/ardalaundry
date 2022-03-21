@@ -33,12 +33,12 @@ class DuplicateAttributeFromServicesToOrderServicesTable extends Migration
     {
         Schema::table('order_services', function (Blueprint $table) {
             //
-            $table->dropIfExists('name');
-            $table->dropIfExists('description');
-            $table->dropIfExists('price');
-            $table->dropIfExists('process_time');
-            $table->dropIfExists('service_unit');
-            $table->dropIfExists('category');
+            $table->dropColumn('name');
+            $table->dropColumn('description');
+            $table->dropColumn('price');
+            $table->dropColumn('process_time');
+            $table->dropColumn('service_unit');
+            $table->dropColumn('category');
 
         });
     }
