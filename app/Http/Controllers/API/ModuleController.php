@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Module;
 use App\Models\File;
+use App\Models\Module;
 use Illuminate\Http\Request;
 
 class ModuleController extends Controller
@@ -32,9 +32,9 @@ class ModuleController extends Controller
         $module = new Module($request->all());
         $module->save();
 
-        if($request->hasFile('banner')){
+        if ($request->hasFile('banner')) {
             $file = new File();
-            $path = $request->file('banner')->store('files', 'public');
+            $path = $request->file('banner')->store('files', env('FILESYSTEM_DRIVER'));
             $file->src = $path;
             $file->name = $request->file('banner')->getClientOriginalName();
             $file->filetype = $request->file('banner')->getClientMimeType();
