@@ -39,7 +39,17 @@ class OrderController extends Controller
         ]));
 
         foreach ($request->charts as $c => $chart) {
-            $order->services()->attach($chart['package']['id'], ['quantity' => $chart['quantity'], 'start_at' => \Carbon\Carbon::now(), 'end_at' => \Carbon\Carbon::now()->addHours($chart['package']['process_time']), 'service_status_id' => 1]);
+            $order->services()->attach(
+                $chart['package']['id'],
+                [
+                    'service_name' => $chart['package']['name'],
+                    'service_description' => $chart['package']['description'],
+                    'service_price' => $chart['package']['price'],
+                    'service_process_time' => $chart['package']['process_time'],
+                    'quantity' => $chart['quantity'],
+                    'start_at' => \Carbon\Carbon::now(),
+                    'end_at' => \Carbon\Carbon::now()->addHours($chart['package']['process_time']), 'service_status_id' => 1,
+                ]);
         }
 
         if ($request->has('payment')) {
