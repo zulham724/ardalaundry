@@ -328,6 +328,7 @@ class OrderController extends Controller
 
         // 3 bandingkan nilai yg masuk + payment yg sudah masuk dengan total
         $payment = new Payment();
+        $payment->type = "in";
         if ($total_price > $total_payment) {
             // kalau masih kurang nama = DP. count total payment yg masuk ditambah satu
             $DP = Payment::whereHas('order', function ($query) use ($orderid) {
