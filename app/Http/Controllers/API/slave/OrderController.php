@@ -425,34 +425,21 @@ class OrderController extends Controller
 
     public function CountProfitOrdersShopByDay($shopid)
     {
-        $in = Payment::whereHas('order.shop', function ($query) use ($shopid) {
+        $res = Payment::whereHas('order.shop', function ($query) use ($shopid) {
             $query->where('id', $shopid);
         })
             ->where('type', 'in')
             ->whereDate('updated_at', \Carbon\Carbon::today())
             ->sum('value');
-        $out = Payment::whereHas('shop', function ($query) use ($shopid) {
-            $query->where('id', $shopid);
-        })
-            ->where('type', 'out')->whereDate('created_at', \Carbon\Carbon::today())->sum('value');
-        $res = $in - $out;
         return response()->json($res);
     }
 
     public function CountSpendShopToday($shopid)
     {
-        $in = Payment::whereHas('order.shop', function ($query) use ($shopid) {
-            $query->where('id', $shopid);
-        })
-            ->where('type', 'in')
-            ->whereDate('updated_at', \Carbon\Carbon::today())
-            ->sum('value');
-        $out = Payment::whereHas('shop', function ($query) use ($shopid) {
+        $res = Payment::whereHas('shop', function ($query) use ($shopid) {
             $query->where('id', $shopid);
         })
             ->where('type', 'out')->whereDate('created_at', \Carbon\Carbon::today())->sum('value');
-        $res = $in - $out;
-
         return response()->json($res);
     }
 
