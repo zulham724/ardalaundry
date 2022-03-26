@@ -120,6 +120,10 @@ Route::get('attendance/getemployeeattendances/{employeeid}', [AttendanceControll
 Route::post('/postorderphoto', [OrderController::class, 'savePhoto']);
 // route untuk menambah logo cabang
 Route::post('/addbranchlogo', [BranchController::class, 'addLogo']);
+// route untuk menghitung saldo
+Route::get('/getBalanceToday/{shopid}', [OrderController::class, 'getBalanceToday']);
+Route::get('/getBalanceWeekly/{shopid}', [OrderController::class, 'getBalanceWeekly']);
+Route::get('/getBalanceMonthly/{shopid}', [OrderController::class, 'getBalanceMonthly']);
 
 Route::apiResources([
     'service' => ServiceController::class,
