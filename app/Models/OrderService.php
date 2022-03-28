@@ -26,4 +26,9 @@ class OrderService extends Model
         return $this->belongsTo('App\Models\Service');
     }
 
+    public function pre_order_photo()
+    {
+        return $this->morphOne('App\Models\File', 'fileable')->where('key', 'pre_order_photo');
+    }
+
 }

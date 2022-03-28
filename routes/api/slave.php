@@ -117,6 +117,7 @@ Route::get('/detailattendance/{userid}', [AttendanceController::class, 'detailAt
 // route ini untuk memberikan data array attendances berdasarkan di karyawan
 Route::get('attendance/getemployeeattendances/{employeeid}', [AttendanceController::class, 'getEmployeeAttendances']);
 // route untuk simpan hasil foto bukti pesanan
+Route::post('/preorderphoto', [OrderController::class, 'savePhoto']);
 Route::post('/postorderphoto', [OrderController::class, 'savePhoto']);
 // route untuk menambah logo cabang
 Route::post('/addbranchlogo', [BranchController::class, 'addLogo']);

@@ -31,7 +31,7 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-
+        // return response()->json();
         $order = $request->user()->shop()->firstOrFail()->orders()->save(new Order([
             'customer_id' => $request->customer_id,
             'employee_id' => $request->employee_id,
@@ -53,6 +53,15 @@ class OrderController extends Controller
                 "category" => $chart['name'],
             ]);
             $order->services()->save($order_service);
+            if ($request->hasFile('charts.' . $c . '.pre_order_photo')) {
+                $photo = new File();
+                $photo->name = $request->file('charts')[$c]['pre_order_photo']->getClientOriginalName();
+                $photo->key = "pre_order_photo";
+                $path = $request->file('charts')[$c]['pre_order_photo']->store('photos', ENV('FILESYSTEM_DRIVER'));
+                $photo->src = $path;
+                // return response()->json([$order_service, $path]);
+                $order_service->pre_order_photo()->save($photo);
+            }
         }
 
         if ($request->has('payment')) {
@@ -70,7 +79,7 @@ class OrderController extends Controller
             $order->payments()->save($payment);
         }
 
-        return response()->json($order->load('payments', 'services'));
+        return response()->json($order->load('payments', 'services.pre_order_photo'));
     }
     /**
      * Display the specified resource.
@@ -82,7 +91,7 @@ class OrderController extends Controller
     {
         //
         $order =
-        Order::with('customer', 'photo', 'employee', 'shop', 'services', 'status', 'payments')
+        Order::with('customer', 'photo', 'employee', 'shop', 'services.pre_order_photo', 'status', 'payments')
             ->whereHas('shop', function ($query) {
                 $query->where('id', auth('api')->user()->shop->id);
             })
@@ -676,6 +685,7 @@ class OrderController extends Controller
             $order = Order::findOrFail($request->order_id);
             $photo = new File();
             $photo->name = $request->file('photo')->getClientOriginalName();
+            $photo->key = "bukti_foto_selesai_pesan";
             $photo->src = $path;
             $order->photo()->save($photo);
             return response()->json($path);
