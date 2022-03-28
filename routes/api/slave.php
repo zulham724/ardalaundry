@@ -180,3 +180,10 @@ Route::get('/{shopid}/getproducts', [ProductController::class, 'getAnotherProduc
 Route::get('product/{id}/like', [ProductController::class, 'like']);
 Route::get('product/{id}/dislike', [ProductController::class, 'dislike']);
 Route::post('/orderproduct', [OrderController::class, 'order_product']);
+
+//route untuk update avatar akun
+Route::post('/updateavatar', [UserController::class, 'updateAvatar']);
+Route::post('/updateaccount/{id}', [UserController::class, 'updateAccount']);
+
+// route untuk ganti password
+Route::post('/changepassword', [UserController::class, 'changePassword']);
