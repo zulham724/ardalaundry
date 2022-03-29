@@ -11,16 +11,23 @@ class ModuleContent extends Model
 
     protected $guarded = ["id"];
 
-
-    public function video(){
+    public function video()
+    {
         return $this->morphOne('App\Models\File', 'fileable')->whereIn('filetype', ['video/mp4']);
     }
 
-    public function thumbnail(){
-        return $this->morphOne('App\Models\File', 'fileable')->whereIn('filetype', ['image/jpeg', 'image/png', 'image/jpg']);;
+    public function thumbnail()
+    {
+        return $this->morphOne('App\Models\File', 'fileable')->where('key', 'thumbnail');
     }
 
-    public function liked(){
+    public function image_contents()
+    {
+        return $this->morphMany('App\Mpodels\File', 'fileable')->where('key', 'image_contents');
+    }
+
+    public function liked()
+    {
         $user = auth('api')->user();
         return $this->morphOne('App\Models\Like', 'likeable')->where('user_id', $user->id);
     }
@@ -34,4 +41,10 @@ class ModuleContent extends Model
     {
         return $this->morphMany('App\Models\Comment', "commentable")->withCount('likes', 'liked');
     }
+
+    public function likes()
+    {
+        return $this->morphMany('App\Models\Like', 'likeable');
+    }
+
 }

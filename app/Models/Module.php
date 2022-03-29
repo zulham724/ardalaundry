@@ -11,11 +11,23 @@ class Module extends Model
 
     protected $guarded = ["id"];
 
-    public function banner(){
+    public function banner()
+    {
         return $this->morphOne('App\Models\File', 'fileable')->whereIn('filetype', ['image/jpeg', 'image/png', 'image/jpg']);
     }
 
-    public function contents(){
+    public function contents()
+    {
         return $this->hasMany('App\Models\ModuleContent');
+    }
+
+    public function thumbnail()
+    {
+        return $this->morphOne('App\Models\File', 'fileable')->where('key', 'thumbnail');
+    }
+
+    public function reads()
+    {
+        return $this->morphMany('App\Models\Read', 'readable');
     }
 }

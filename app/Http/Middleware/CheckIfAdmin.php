@@ -16,6 +16,10 @@ class CheckIfAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        return $next($request);
+        if ($request->user()->hasRole('admin')) {
+            return $next($request);
+        }
+        return response('Harus Admin', 500);
+
     }
 }
