@@ -10,6 +10,7 @@ class ModuleContent extends Model
     use HasFactory;
 
     protected $guarded = ["id"];
+    protected $appends = ["type"];
 
     public function video()
     {
@@ -21,9 +22,9 @@ class ModuleContent extends Model
         return $this->morphOne('App\Models\File', 'fileable')->where('key', 'thumbnail');
     }
 
-    public function image_contents()
+    public function image_content()
     {
-        return $this->morphMany('App\Mpodels\File', 'fileable')->where('key', 'image_contents');
+        return $this->morphOne('App\Models\File', 'fileable')->where('key', 'image_content');
     }
 
     public function liked()
@@ -45,6 +46,16 @@ class ModuleContent extends Model
     public function likes()
     {
         return $this->morphMany('App\Models\Like', 'likeable');
+    }
+
+    public function getTypeAttribute()
+    {
+        if ($this->video) {
+            return "Video";
+        } else {
+            return "Materi";
+        }
+
     }
 
 }

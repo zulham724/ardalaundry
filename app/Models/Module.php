@@ -10,6 +10,7 @@ class Module extends Model
     use HasFactory;
 
     protected $guarded = ["id"];
+    protected $appends = ['sum_duration'];
 
     public function banner()
     {
@@ -29,5 +30,10 @@ class Module extends Model
     public function reads()
     {
         return $this->morphMany('App\Models\Read', 'readable');
+    }
+
+    public function getSumDurationAttribute()
+    {
+        return $this->contents()->sum('duration');
     }
 }

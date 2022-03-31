@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
 use App\Models\Module;
-use App\Models\ModuleContent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -19,11 +18,11 @@ class ModuleController extends Controller
     {
         //
 
-        $module = Module::with('banner', 'contents.video', 'contents.thumbnail')
-        ->withCount(['contents as sum_duration'=>function($query){
-            $query->select(DB::raw('SUM(duration) as sum_duration'));
-        }])
-        ->get();
+        $module = Module::has('contents')->with('banner', 'contents.video', 'contents.thumbnail')
+            ->withCount(['contents as sum_duration' => function ($query) {
+                $query->select(DB::raw('SUM(duration) as sum_duration'));
+            }])
+            ->get();
 
         return response()->json($module);
     }
@@ -49,14 +48,14 @@ class ModuleController extends Controller
     {
         //
         $module = Module::with('contents.video', 'contents.thumbnail')
-        ->withCount(['contents as sum_duration' => function ($query) {
-            $query->select(DB::raw('SUM(duration) as sum_duration'));
-        }, "contents as count_contents_video" => function($query){
-            $query->has('video');
-        }, "contents as count_contents_teks" => function ($query) {
-            $query->doesntHave('video');
-        }])
-        ->findOrFail($id);
+            ->withCount(['contents as sum_duration' => function ($query) {
+                $query->select(DB::raw('SUM(duration) as sum_duration'));
+            }, "contents as count_contents_video" => function ($query) {
+                $query->has('video');
+            }, "contents as count_contents_teks" => function ($query) {
+                $query->doesntHave('video');
+            }])
+            ->findOrFail($id);
 
         return response()->json($module);
     }

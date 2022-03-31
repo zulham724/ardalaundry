@@ -34,7 +34,7 @@ class ModuleController extends Controller
     {
         //
         $request->validate([
-            'title' => 'required',
+            'tittle' => 'required',
             'description' => 'required',
             'video' => 'required_if:type,video',
             'thumbnail' => 'required_if:type,image',
@@ -45,27 +45,49 @@ class ModuleController extends Controller
         if ($request->hasFile('thumbnail')) {
             $thumbnail = new File();
             $thumbnail->name = $request->file('thumbnail')->getClientOriginalName();
-            $thumbnail->type = $request->file('thumbnail')->getClientMimeType();
+            $thumbnail->filetype = $request->file('thumbnail')->getClientMimeType();
             $thumbnail->key = "thumbnail";
             $path = $request->file('thumbnail')->store('thumbnails', ENV("FILESYSTEM_DRIVER"));
-            $thumbnail->path = $path;
+            $thumbnail->src = $path;
             $module->thumbnail()->save($thumbnail);
         }
-        foreach ($request->contents as $c => $content) {
+        foreach ($request->contents as $c => $item) {
             # code...
-            $content = new ModuleContent($request->all());
-            $content->save();
+            // return $content['duration'];
+            $content = new ModuleContent($item);
+
+            $module->contents()->save($content);
             if ($request->hasFile('contents.' . $c . '.video')) {
                 $video = new File();
                 $video->name = $request->file('contents.' . $c . '.video')->getClientOriginalName();
-                $video->type = $request->file('contents.' . $c . '.video')->getClientMimeType();
+                $video->filetype = $request->file('contents.' . $c . '.video')->getClientMimeType();
                 $video->key = "video";
                 $path = $request->file('contents.' . $c . '.video')->store('videos', ENV("FILESYSTEM_DRIVER"));
-                $video->path = $path;
+                $video->src = $path;
                 $content->video()->save($video);
             }
+            if ($request->hasFile('contents.' . $c . '.image_content')) {
+                $image_content = new File();
+                $image_content->name = $request->file('contents.' . $c . '.image_content')->getClientOriginalName();
+                $image_content->filetype = $request->file('contents.' . $c . '.image_content')->getClientMimeType();
+                $image_content->key = "image_content";
+                $path = $request->file('contents.' . $c . '.image_content')->store('image_content', ENV("FILESYSTEM_DRIVER"));
+                $image_content->src = $path;
+                $content->image_content()->save($image_content);
+            }
+
+            if ($request->hasFile('contents.' . $c . '.thumbnail')) {
+                $thumbnail = new File();
+                $thumbnail->name = $request->file('contents.' . $c . '.thumbnail')->getClientOriginalName();
+                $thumbnail->filetype = $request->file('contents.' . $c . '.thumbnail')->getClientMimeType();
+                $thumbnail->key = "thumbnail";
+                $path = $request->file('contents.' . $c . '.thumbnail')->store('thumbnails', ENV("FILESYSTEM_DRIVER"));
+                $thumbnail->src = $path;
+                $content->thumbnail()->save($thumbnail);
+            }
+
         }
-        return response()->json($module->load('contents.video'));
+        return response()->json($module->load(['contents.video', 'contents.image_content', 'contents.thumbnail', 'thumbnail']));
     }
 
     /**
