@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
-use App\Models\ModuleContent;
 use App\Models\Like;
+use App\Models\ModuleContent;
+use App\Models\Read;
 use Illuminate\Http\Request;
-use Thumbnail;
 
 class ModuleContentController extends Controller
 {
@@ -41,8 +41,8 @@ class ModuleContentController extends Controller
     {
         //
         $content = ModuleContent::with('thumbnail', 'video')
-        ->withCount('liked')
-        ->findOrFail($id);
+            ->withCount('liked')
+            ->findOrFail($id);
 
         return response()->json($content);
     }
@@ -70,7 +70,8 @@ class ModuleContentController extends Controller
         //
     }
 
-    public function like($id){
+    public function like($id)
+    {
         // return response()->json($id);
         $content = ModuleContent::findOrFail($id);
         $like = new Like();
@@ -81,11 +82,22 @@ class ModuleContentController extends Controller
 
     }
 
-    public function dislike($id){
+    public function dislike($id)
+    {
         $content = ModuleContent::findOrFail($id);
         $like = Like::where('user_id', auth('api')->user()->id)
-                ->where('likeable_id', $id);
+            ->where('likeable_id', $id);
         $like->delete();
         return response()->json($content->loadCount(['liked']));
+    }
+
+    public function read(Request $request, $id)
+    {
+        $content = ModuleContent::findOrFail($id);
+        $read = new Read();
+        $read->user_id = auth('api')->user()->id;
+        $content->reads()->save($read);
+
+        return response()->json($content->loadCount(['reads']));
     }
 }

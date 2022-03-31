@@ -22,6 +22,12 @@ class ModuleController extends Controller
             ->withCount(['contents as sum_duration' => function ($query) {
                 $query->select(DB::raw('SUM(duration) as sum_duration'));
             }])
+            ->withCount(['contents as count_is_read' => function ($query) {
+                $query->select(DB::raw('COUNT(*) as count_is_read'))
+                    ->whereHas('reads', function ($query) {
+                        $query->where('user_id', auth('api')->user()->id);
+                    });
+            }])
             ->get();
 
         return response()->json($module);
@@ -47,15 +53,7 @@ class ModuleController extends Controller
     public function show($id)
     {
         //
-        $module = Module::with('contents.video', 'contents.thumbnail')
-            ->withCount(['contents as sum_duration' => function ($query) {
-                $query->select(DB::raw('SUM(duration) as sum_duration'));
-            }, "contents as count_contents_video" => function ($query) {
-                $query->has('video');
-            }, "contents as count_contents_teks" => function ($query) {
-                $query->doesntHave('video');
-            }])
-            ->findOrFail($id);
+        $module = Module::with('contents.video', 'contents.thumbnail')->findOrFail($id);
 
         return response()->json($module);
     }

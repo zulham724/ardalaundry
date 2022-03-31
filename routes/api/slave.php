@@ -146,6 +146,7 @@ Route::post('/updateproducts/{productid}', [ProductController::class, 'updatetes
 //Module Content
 Route::get('modulecontent/{id}/like', [ModuleContentController::class, 'like']);
 Route::get('modulecontent/{id}/dislike', [ModuleContentController::class, 'dislike']);
+Route::post('modulecontent/{id}/read', [ModuleContentController::class, 'read']);
 //CommentCourse
 Route::post('/add_comment_course', [CommentController::class, 'add_comment_course']);
 Route::get('/{contentid}/comment', [CommentController::class, 'get_comment_course']);

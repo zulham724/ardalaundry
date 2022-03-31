@@ -10,7 +10,7 @@ class Module extends Model
     use HasFactory;
 
     protected $guarded = ["id"];
-    protected $appends = ['sum_duration'];
+    protected $appends = ['sum_duration', 'count_content_video', 'count_content_text', 'count_contents', 'count_content_is_read'];
 
     public function banner()
     {
@@ -36,4 +36,28 @@ class Module extends Model
     {
         return $this->contents()->sum('duration');
     }
+
+    public function getCountContentIsReadAttribute()
+    {
+        return $this->contents()->whereHas('reads', function ($query) {
+            $query->where('user_id', auth('api')->user()->id);
+        })->count();
+
+    }
+
+    public function getCountContentVideoAttribute()
+    {
+        return $this->contents()->has('video')->count();
+    }
+
+    public function getCountContentTextAttribute()
+    {
+        return $this->contents()->doesntHave('video')->count();
+    }
+
+    public function getCountContentsAttribute()
+    {
+        return $this->contents()->count();
+    }
+
 }

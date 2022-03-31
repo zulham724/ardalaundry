@@ -10,7 +10,7 @@ class ModuleContent extends Model
     use HasFactory;
 
     protected $guarded = ["id"];
-    protected $appends = ["type"];
+    protected $appends = ["type", 'is_read'];
 
     public function video()
     {
@@ -48,6 +48,11 @@ class ModuleContent extends Model
         return $this->morphMany('App\Models\Like', 'likeable');
     }
 
+    public function reads()
+    {
+        return $this->morphMany('App\Models\Read', 'readable');
+    }
+
     public function getTypeAttribute()
     {
         if ($this->video) {
@@ -56,6 +61,21 @@ class ModuleContent extends Model
             return "Materi";
         }
 
+    }
+
+    public function getIsReadAttribute()
+    {
+        $user = auth('api')->user();
+        if ($user) {
+            $read = $this->reads()->where('user_id', $user->id)->first();
+            if ($read) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
 }
