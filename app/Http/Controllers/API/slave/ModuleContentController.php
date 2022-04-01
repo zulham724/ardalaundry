@@ -40,7 +40,7 @@ class ModuleContentController extends Controller
     public function show($id)
     {
         //
-        $content = ModuleContent::with('thumbnail', 'video')
+        $content = ModuleContent::with('thumbnail', 'video', 'image_content')
             ->withCount('liked')
             ->findOrFail($id);
 

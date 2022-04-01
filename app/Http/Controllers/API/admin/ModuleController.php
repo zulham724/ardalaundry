@@ -102,7 +102,7 @@ class ModuleController extends Controller
     {
         //
         $module = Module::with(['thumbnail', 'contents' => function ($query) {
-            $query->with(['video', 'thumbnail', 'image_contents']);
+            $query->with(['video', 'thumbnail', 'image_content']);
         }])->find($module->id);
         return response()->json($module);
     }
