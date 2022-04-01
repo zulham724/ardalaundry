@@ -19,7 +19,7 @@ class ModuleController extends Controller
     {
         //
         $res = Module::with(['thumbnail', 'contents' => function ($query) {
-            $query->with(['video', 'thumbnail', 'image_contents']);
+            $query->with(['video', 'thumbnail', 'image_content']);
         }])->get();
         return response()->json($res);
     }
@@ -36,9 +36,11 @@ class ModuleController extends Controller
         $request->validate([
             'tittle' => 'required',
             'description' => 'required',
-            'video' => 'required_if:type,video',
-            'thumbnail' => 'required_if:type,image',
+            'is_public' => 'required',
             'contents' => 'required',
+            'contents.*.tittle' => 'required',
+            'contents.*.description' => 'required',
+            'contents.*.duration' => 'required',
         ]);
         $module = new Module($request->all());
         $module->save();
