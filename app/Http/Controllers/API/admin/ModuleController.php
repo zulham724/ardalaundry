@@ -145,7 +145,7 @@ class ModuleController extends Controller
     public function destroy(Module $module)
     {
         //
-        $module->delete();
-        return response()->json(['message' => 'Module deleted']);
+        $res = $module->delete();
+        return response()->json(['message' => 'Module deleted', 'status' => $res]);
     }
 }
