@@ -3,14 +3,11 @@
 namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Package;
-use App\Models\PackageUser;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-
 
 class UserController extends Controller
 {
@@ -69,17 +66,29 @@ class UserController extends Controller
         //
     }
 
-    public function register(Request $request){
+    public function register(Request $request)
+    {
         $user = new User($request->all());
         $user->password = bcrypt($request->password);
         $user->role_id = 3;
         $user->save();
 
-        $package_user = new PackageUser();
-        $package_user->user_id = $user->id;
-        $package_user->package_id = 1;
-        $package_user->expired_date = Carbon::now()->addDays(7);
-        $package_user->save();
+        // $freePackage = Package::where('id', 1)->firstOrFail();
+
+        // $package_user = new PackageUser();
+        // $package_user->user_id = $user->id;
+        // $package_user->package_id = $freePackage->id;
+        // $package_user->expired_date = Carbon::now()->addDays(7);
+        // $package_user->save();
+
+        // $payment = new Payment();
+        // $payment->value = $freePackage->price;
+        // $payment->name = "Register";
+        // $payment->status = "success";
+
+        // $package_user->payment()->save($payment);
+
+        return response()->json($user->load('active_package_user.payment', 'package_users.payment'));
     }
 
     public function branches()
@@ -87,8 +96,8 @@ class UserController extends Controller
         // return 'asd';
         $res = User::with('shop')
             ->has('shop')
-            ->whereHas('role', fn ($query) => $query->where('id', 4))
-            ->whereHas('master', fn ($query) => $query->where('master_id', auth('api')->user()->id))
+            ->whereHas('role', fn($query) => $query->where('id', 4))
+            ->whereHas('master', fn($query) => $query->where('master_id', auth('api')->user()->id))
             ->withCount(['orders'])
             ->withCount(['orders as payment_count' => function ($query) {
                 $query
@@ -127,18 +136,18 @@ class UserController extends Controller
     {
         // return response()->json($request->all());
         $res = $request->user()
-        ->loadCount(['slaves', 'orders'])
-        ->load(['packages','active_package_user' => function ($query) {
-            $query->with('payment', 'package.package_limits', 'package.package_contents' );
-        }]);
+            ->loadCount(['slaves', 'orders'])
+            ->load(['packages', 'active_package_user' => function ($query) {
+                $query->with('payment', 'package.package_limits', 'package.package_contents');
+            }]);
 
-        if($res->active_package_user !== null){
+        if ($res->active_package_user !== null) {
             foreach ($res->active_package_user->package->package_limits as $limit) {
                 if ($res->{$limit->entity} > $limit->limit) {
                     $res->apiStatus = "Mati";
                 } else {
                     $res->apiStatus = "Hidup";
-                    
+
                 }
             }
             if ($res->active_package_user) {
@@ -151,8 +160,7 @@ class UserController extends Controller
                 $res->apiStatus = "Mati";
             }
 
-            
-        }else{
+        } else {
             $res->apiStatus = "Mati";
         }
 
