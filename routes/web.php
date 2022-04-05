@@ -11,22 +11,24 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-
 Route::group(['prefix' => 'admin'], function () {
     Route::group(['middleware' => 'admin.user'], function () {
         // Route::get('/quasar', function () {
         //     return 'halo';
-        // });     
+        // });
+        Route::get('/user/{id}/get-free-package', [App\Http\Controllers\API\admin\UserController::class, 'getFreePackage']);
+        Route::get('/user/{id}/rollback-package', [App\Http\Controllers\API\admin\UserController::class, 'rollbackPackage']);
+
         Route::get('/quasar', function () {
             return view('quasar/quasar');
         });
-        Route::get('/module', function(){
+        Route::get('/module', function () {
             return view('module/index');
         });
     });
@@ -57,7 +59,6 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
 
 Auth::routes();
 

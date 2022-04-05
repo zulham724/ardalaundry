@@ -70,6 +70,9 @@ class UserController extends Controller
     public function getFreePackage($id)
     {
         $user = User::findOrFail($id);
+        if (!$user->hasRole('master')) {
+            return response()->json(['message' => 'Harus Owner', 'data' => $user->load('role')], 500);
+        }
         $freePackage = Package::where('id', 1)->firstOrFail();
 
         $package_user = new PackageUser();
@@ -91,6 +94,10 @@ class UserController extends Controller
     public function rollbackPackage($id)
     {
         $user = User::findOrFail($id);
+        if (!$user->hasRole('master')) {
+            return response()->json(['message' => 'Harus Owner', 'data' => $user->load('role')], 500);
+        }
+
         $package_user = $user->active_package_user;
         $package_user->delete();
         return response()->json(['message' => 'Berhasil menghapus package gratis', 'status' => 'success', 'data' => $user->load('active_package_user.payment', 'package_users.payment')]);
