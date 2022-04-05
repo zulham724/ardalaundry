@@ -28,13 +28,16 @@ class ModuleContentController extends Controller
     public function store(Request $request)
     {
         //
+        // return response()->json($request->hasFile('thumbnail'));
+        // return response()->json($request->all());
+
         $request->validate([
             'module_id' => 'required',
-            'title' => 'required',
+            'tittle' => 'required',
             'description' => 'required',
-            'image_contents' => 'required_if:type,image',
-            'video' => 'required_if:type,video',
-            'thumbnail' => 'required_if:type,image',
+            // 'image_content' => 'required_if:type,image',
+            // 'video' => 'required_if:type,video',
+            // 'thumbnail' => 'required_if:type,image',
         ]);
 
         $content = new ModuleContent($request->all());
@@ -42,35 +45,31 @@ class ModuleContentController extends Controller
         if ($request->hasFile('video')) {
             $video = new File();
             $video->name = $request->file('video')->getClientOriginalName();
-            $video->type = $request->file('video')->getClientMimeType();
+            $video->filetype = $request->file('video')->getClientMimeType();
             $video->key = "video";
             $path = $request->file('video')->store('videos', ENV("FILESYSTEM_DRIVER"));
-            $video->path = $path;
+            $video->src = $path;
             $content->video()->save($video);
         }
-        if ($request->hasFile('image_contents')) {
-            foreach ($request->file('image_contents') as $ic => $imageContent) {
-                # code...
-                $image_content = new File();
-                $image_content->name = $request->file('image_contents')[$ic]->getClientOriginalName();
-                $image_content->type = $request->file('image_contents')[$ic]->getClientMimeType();
-                $image_content->key = "image_contents";
-                $path = $request->file('image_contents')[$ic]->store('images', ENV("FILESYSTEM_DRIVER"));
-                $image_content->path = $path;
-                $content->image_contents()->save($image_content);
-            }
+        if ($request->hasFile('image_content')) {
+            $image_content = new File();
+            $image_content->name = $request->file('image_content')->getClientOriginalName();
+            $image_content->filetype = $request->file('image_content')->getClientMimeType();
+            $image_content->key = "image_content";
+            $path = $request->file('image_content')->store('images', ENV("FILESYSTEM_DRIVER"));
+            $image_content->src = $path;
+            $content->image_content()->save($image_content);
         }
         if ($request->hasFile('thumbnail')) {
             $thumbnail = new File();
             $thumbnail->name = $request->file('thumbnail')->getClientOriginalName();
-            $thumbnail->type = $request->file('thumbnail')->getClientMimeType();
+            $thumbnail->filetype = $request->file('thumbnail')->getClientMimeType();
             $thumbnail->key = "thumbnail";
             $path = $request->file('thumbnail')->store('thumbnails', ENV("FILESYSTEM_DRIVER"));
-            $thumbnail->path = $path;
+            $thumbnail->src = $path;
             $content->thumbnail()->save($thumbnail);
         }
-        return response()->json($content->load('video', 'image_contents', 'thumbnail'));
-
+        return response()->json($content->load('video', 'image_content', 'thumbnail'));
     }
 
     /**
@@ -93,17 +92,22 @@ class ModuleContentController extends Controller
      * @param  \App\Models\ModuleContent  $moduleContent
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ModuleContent $moduleContent)
+    public function update(Request $request, $id)
     {
         //
+        // return response()->json($request->all());
+        // return response()->json($request->hasFile('image_content'));
         $request->validate([
-            'module_id' => 'required',
-            'title' => 'required',
+            // 'module_id' => 'required',
+            'tittle' => 'required',
             'description' => 'required',
-            'image_contents' => 'required_if:type,image',
+            'duration' => 'required',
+            'image_content' => 'required_if:type,image',
             'video' => 'required_if:type,video',
             'thumbnail' => 'required_if:type,image',
         ]);
+
+        $moduleContent = ModuleContent::find($id);
         $moduleContent->update($request->all());
         if ($request->hasFile('video')) {
             $video = new File();
@@ -111,7 +115,7 @@ class ModuleContentController extends Controller
             $video->type = $request->file('video')->getClientMimeType();
             $video->key = "video";
             $path = $request->file('video')->store('videos', ENV("FILESYSTEM_DRIVER"));
-            $video->path = $path;
+            $video->src = $path;
             $moduleContent->video()->save($video);
         }
         if ($request->hasFile('thumbnail')) {
@@ -120,10 +124,19 @@ class ModuleContentController extends Controller
             $thumbnail->type = $request->file('thumbnail')->getClientMimeType();
             $thumbnail->key = "thumbnail";
             $path = $request->file('thumbnail')->store('thumbnails', ENV("FILESYSTEM_DRIVER"));
-            $thumbnail->path = $path;
+            $thumbnail->src = $path;
             $moduleContent->thumbnail()->save($thumbnail);
         }
-        return response()->json($moduleContent->load('video', 'thumbnail'));
+        if ($request->hasFile('image_content')) {
+            $image_content = new File();
+            $image_content->name = $request->file('image_content')->getClientOriginalName();
+            $image_content->filetype = $request->file('image_content')->getClientMimeType();
+            $image_content->key = "image_content";
+            $path = $request->file('image_content')->store('images', ENV("FILESYSTEM_DRIVER"));
+            $image_content->src = $path;
+            $moduleContent->image_content()->save($image_content);
+        }
+        return response()->json($moduleContent->load('video', 'thumbnail', 'image_content'));
     }
 
     /**
@@ -132,10 +145,45 @@ class ModuleContentController extends Controller
      * @param  \App\Models\ModuleContent  $moduleContent
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ModuleContent $moduleContent)
+    public function destroy($id)
     {
         //
-        $moduleContent->delete();
-        return response()->json($moduleContent);
+        $moduleContent = ModuleContent::findOrFail($id);
+        $delete = $moduleContent->delete();
+        return response()->json($delete);
+    }
+
+    public function add_module_content(Request $request)
+    {
+        $content = new ModuleContent($request->all());
+        $content->save();
+    }
+
+    public function delete_image_content($id)
+    {
+        $image_content = File::findOrFail($id);
+        $delete = $image_content->delete();
+        return response()->json($delete);
+    }
+
+    public function delete_thumbnail_content($id)
+    {
+        $thumbnail = File::findOrFail($id);
+        $delete = $thumbnail->delete();
+        return response()->json($delete);
+    }
+
+    public function delete_video_content($id)
+    {
+        $video = File::findOrFail($id);
+        $delete = $video->delete();
+        return response()->json($delete);
+    }
+
+    public function get_module_content_by_id($id)
+    {
+        $module_content = ModuleContent::findOrFail($id);
+        // ->with(['video', 'thumbnail', 'image_content']);
+        return response()->json($module_content->load('thumbnail', 'image_content'));
     }
 }
