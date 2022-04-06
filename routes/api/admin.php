@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\admin\ModuleContentController;
 use App\Http\Controllers\API\admin\ModuleController;
+use App\Http\Controllers\API\admin\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
