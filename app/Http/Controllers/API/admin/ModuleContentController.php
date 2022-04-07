@@ -35,9 +35,10 @@ class ModuleContentController extends Controller
             'module_id' => 'required',
             'tittle' => 'required',
             'description' => 'required',
-            // 'image_content' => 'required_if:type,image',
-            // 'video' => 'required_if:type,video',
-            // 'thumbnail' => 'required_if:type,image',
+            'type' => 'required',
+            'image_content' => 'required_if:type,image',
+            'video' => 'required_if:type,video',
+            'thumbnail' => 'required_if:type,image',
         ]);
 
         $content = new ModuleContent($request->all());
@@ -69,7 +70,7 @@ class ModuleContentController extends Controller
             $thumbnail->src = $path;
             $content->thumbnail()->save($thumbnail);
         }
-        return response()->json($content->load('video', 'image_content', 'thumbnail'));
+        return response()->json($content->load(['video', 'image_content', 'thumbnail']));
     }
 
     /**
@@ -98,36 +99,42 @@ class ModuleContentController extends Controller
         // return response()->json($request->all());
         // return response()->json($request->hasFile('image_content'));
         $request->validate([
-            // 'module_id' => 'required',
+            'module_id' => 'required',
             'tittle' => 'required',
             'description' => 'required',
             'duration' => 'required',
-            'image_content' => 'required_if:type,image',
-            'video' => 'required_if:type,video',
-            'thumbnail' => 'required_if:type,image',
+            'type' => 'required',
+            // 'image_content' => 'required_if:type,image',
+            // 'video' => 'required_if:type,video',
+            // 'thumbnail' => 'required_if:type,image',
         ]);
 
-        $moduleContent = ModuleContent::find($id);
+        $moduleContent = ModuleContent::findOrFail($id);
         $moduleContent->update($request->all());
+
         if ($request->hasFile('video')) {
+            // return 'ada video';
+            $moduleContent->video()->delete();
             $video = new File();
             $video->name = $request->file('video')->getClientOriginalName();
-            $video->type = $request->file('video')->getClientMimeType();
+            $video->filetype = $request->file('video')->getClientMimeType();
             $video->key = "video";
             $path = $request->file('video')->store('videos', ENV("FILESYSTEM_DRIVER"));
             $video->src = $path;
-            $moduleContent->video()->save($video);
+            $moduleContent->video()->save($video);                
         }
         if ($request->hasFile('thumbnail')) {
+            $moduleContent->thumbnail()->delete();
             $thumbnail = new File();
             $thumbnail->name = $request->file('thumbnail')->getClientOriginalName();
-            $thumbnail->type = $request->file('thumbnail')->getClientMimeType();
+            $thumbnail->filetype = $request->file('thumbnail')->getClientMimeType();
             $thumbnail->key = "thumbnail";
             $path = $request->file('thumbnail')->store('thumbnails', ENV("FILESYSTEM_DRIVER"));
             $thumbnail->src = $path;
             $moduleContent->thumbnail()->save($thumbnail);
         }
         if ($request->hasFile('image_content')) {
+            $moduleContent->image_content()->delete();
             $image_content = new File();
             $image_content->name = $request->file('image_content')->getClientOriginalName();
             $image_content->filetype = $request->file('image_content')->getClientMimeType();

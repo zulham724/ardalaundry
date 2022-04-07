@@ -14,7 +14,8 @@ class ModuleContent extends Model
 
     public function video()
     {
-        return $this->morphOne('App\Models\File', 'fileable')->whereIn('filetype', ['video/mp4']);
+        // return $this->morphOne('App\Models\File', 'fileable')->whereIn('filetype', ['video/mp4']);
+        return $this->morphOne('App\Models\File', 'fileable')->where('key', 'video');
     }
 
     public function thumbnail()

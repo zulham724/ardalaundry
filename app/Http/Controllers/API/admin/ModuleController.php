@@ -155,7 +155,7 @@ class ModuleController extends Controller
     public function get_module_by_id($id)
     {
         $module = Module::with(['thumbnail', 'contents' => function ($query) {
-            $query->with(['video', 'thumbnail', 'image_content']);
+            $query->with(['video', 'thumbnail', 'image_content', 'liked']);
         }])->find($id);
         return response()->json($module);
     }
