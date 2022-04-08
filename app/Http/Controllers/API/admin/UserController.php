@@ -78,12 +78,12 @@ class UserController extends Controller
         $package_user = new PackageUser();
         $package_user->user_id = $user->id;
         $package_user->package_id = $freePackage->id;
-        $package_user->expired_date = Carbon::now()->addDays(7);
+        $package_user->expired_date = Carbon::now()->addDays(14);
         $package_user->save();
 
         $payment = new Payment();
         $payment->value = $freePackage->price;
-        $payment->name = "Register";
+        $payment->name = "Trial";
         $payment->status = "success";
 
         $package_user->payment()->save($payment);
