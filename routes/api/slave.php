@@ -33,8 +33,14 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::get('/user', function (Request $request) {
+    
+
+    // return response()->json($request->all());
     return $request->user()->load('shop');
 });
+
+// Route::get('/user', [UserController::class, 'login']);
+
 
 Route::post('/user/register', [UserController::class, 'register_customer']);
 Route::post('/user/update/{userid}', [UserController::class, 'update_customer']);

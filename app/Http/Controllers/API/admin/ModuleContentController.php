@@ -37,7 +37,8 @@ class ModuleContentController extends Controller
             'description' => 'required',
             'type' => 'required',
             'image_content' => 'required_if:type,image',
-            'video' => 'required_if:type,video',
+            // 'video' => 'required|mimes:mp4,mov,ogg,qt|max:30000',
+            'video' => 'required_if:type,video|max:30000',
             'thumbnail' => 'required_if:type,image',
         ]);
 
@@ -104,6 +105,8 @@ class ModuleContentController extends Controller
             'description' => 'required',
             'duration' => 'required',
             'type' => 'required',
+            'video' => 'required_if:type,video|max:30000',
+
             // 'image_content' => 'required_if:type,image',
             // 'video' => 'required_if:type,video',
             // 'thumbnail' => 'required_if:type,image',

@@ -164,4 +164,8 @@ class UserController extends Controller
             return response()->json(['message' => 'Password lama tidak sesuai'], 422);
         }
     }
+
+    public function login(Request $request) {
+        return response()->json($request->all());
+    }
 }

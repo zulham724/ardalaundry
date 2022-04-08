@@ -18,7 +18,7 @@ class CheckIfSlave
     {
         if($request->user()->hasRole('slave')){
             return $next($request);
-        }
+        } 
         return response('Role ini tidak dijinkan',500);
     }
 }

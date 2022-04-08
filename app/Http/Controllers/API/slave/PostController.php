@@ -27,6 +27,7 @@ class PostController extends Controller
             'author',
             'comments.user',
             'files',
+            'user.shop'
         ])
             ->has('author')
             ->withCount('comments', 'likes', 'liked', 'readers', 'hasRead as hasRead')
@@ -76,7 +77,7 @@ class PostController extends Controller
     public function show($id)
     {
         //
-        return Post::with("comments.user", "comments.replies_comment", "comments_from_other", "author")
+        return Post::with("comments.user.shop", "comments.replies_comment", "comments_from_other", "author.shop")
             ->findOrFail($id);
     }
 
