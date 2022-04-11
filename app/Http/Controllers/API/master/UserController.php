@@ -69,21 +69,18 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-        return response()->json($request->all());
+        // return response()->json($request->all());
         $user = new User($request->all());
         $user->password = bcrypt($request->password);
         $user->role_id = 3;
         $user->affiliate_code = Str::random(5);
-       
+
 
         if ($request->has('affiliate_code')) {
             $affiliate_code = $request->affiliate_code;
             $affiliate = User::where('affiliate_code', $affiliate_code)->firstOrFail();
             $user->save();
-            if ($affiliate) {
-                $user->affiliate_by()->associate($affiliate); // dicoba2 kalau ngga ya pakai sync atau attach
-                $user->save();
-            }
+            $user->affiliate_by()->sync([$affiliate->id], false); // dicoba2 kalau ngga ya pakai sync atau attach
         } else {
             $user->save();
         }
