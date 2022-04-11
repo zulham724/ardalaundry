@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\master\AffiliateController;
 use App\Http\Controllers\API\master\BranchController;
 use App\Http\Controllers\API\master\CustomerController;
 use App\Http\Controllers\API\master\OrderController;
@@ -66,12 +67,16 @@ Route::get('test',function(){
     return $res;
 });
 
+// Route untuk cek affiliate code
+Route::get('/get-user-affiliate-code/{affiliate_code}', [AffiliateController::class, 'getUserByAffiliateCode']);
+
 Route::apiResources([
     'branch' => BranchController::class,
     'branch_service' => ServiceController::class,
     'branch_employee' => EmployeeController::class,
     'branch_customer' => CustomerController::class,
     'branch_service_category' => ServiceCategoryController::class,
-    'master_payment' => PaymentController::class
+    'master_payment' => PaymentController::class,
+    'affiliate' => AffiliateController::class,  
 ]);
 

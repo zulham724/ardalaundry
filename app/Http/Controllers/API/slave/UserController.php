@@ -168,4 +168,9 @@ class UserController extends Controller
     public function login(Request $request) {
         return response()->json($request->all());
     }
+
+    public function getProfileById($userid) {
+        $user = User::findOrFail($userid);
+        return response()->json($user->load('shop', 'master'));
+    }
 }

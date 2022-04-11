@@ -101,4 +101,12 @@ class User extends \TCG\Voyager\Models\User
     public function following(){
         return $this->belongsToMany("App\Models\User", "follows", 'parent_id', 'child_id');
     }
+
+    public function affiliates(){
+        return $this->belongsToMany("App\Models\User", 'affiliates', 'user_id', 'affiliate_id');
+    }
+
+    public function affiliate_by(){
+        return $this->belongsToMany("App\Models\User", 'affiliates', 'affiliate_id', 'user_id');
+    }
 }

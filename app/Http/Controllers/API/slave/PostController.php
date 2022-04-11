@@ -123,4 +123,42 @@ class PostController extends Controller
         $like->delete();
         return response()->json($post->loadCount(["liked", "likes"]));
     }
+
+    public function getPostByUser($userid)
+    {
+        return Post::with([
+            'images',
+            'videos',
+            'bookmarks',
+            'bookmarked',
+            'author',
+            'comments.user',
+            'files',
+            'user.shop'
+        ])
+            ->has('author')
+            ->withCount('comments', 'likes', 'liked', 'readers', 'hasRead as hasRead')
+            ->where('author_id', $userid)
+            ->orderBy('id', 'desc')
+            ->paginate(2);
+    }
+
+    public function getLikedPostByUser($userid)
+    {
+        return Post::with([
+            'images',
+            'videos',
+            'bookmarks',
+            'bookmarked',
+            'author',
+            'comments.user',
+            'files',
+            'user.shop'
+        ])
+            ->has('author')
+            ->withCount('comments', 'likes', 'liked', 'readers', 'hasRead as hasRead')
+            ->whereHas('liked')
+            ->orderBy('id', 'desc')
+            ->paginate(2);
+    }
 }

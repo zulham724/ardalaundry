@@ -36,7 +36,7 @@ Route::get('/user', function (Request $request) {
     
 
     // return response()->json($request->all());
-    return $request->user()->load('shop');
+    return $request->user()->load(['shop']);
 });
 
 // Route::get('/user', [UserController::class, 'login']);
@@ -195,3 +195,12 @@ Route::post('/updateaccount/{id}', [UserController::class, 'updateAccount']);
 
 // route untuk ganti password
 Route::post('/changepassword', [UserController::class, 'changePassword']);
+
+// Route untuk mengambil data post berdasarkan user akun
+Route::get('/getpostbyuser/{userid}', [PostController::class, 'getPostByUser']);
+
+// Route untuk mengambil data post berdasarkan like dan user akun
+Route::get('/getlikedpostbyuser/{userid}', [PostController::class, 'getLikedPostByUser']);
+
+// Route untuk mengambil data profile user berdasarkan user akun (id)
+// Route::get('/get_profile_by_id/{userid}', [UserController::class, 'getProfileById']);

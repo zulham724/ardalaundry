@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Str;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,6 +31,15 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/module', function () {
             return view('module/index');
         });
+    });
+
+    Route::get('/generate_affiliate_code', function () {
+        $users = \App\Models\User::get();
+        foreach ($users as $user) {
+            $user->affiliate_code = Str::random(5);
+            $user->save();
+        }
+        return response()->json($users);
     });
     Voyager::routes();
 });

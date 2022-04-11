@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -68,10 +69,24 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
+        return response()->json($request->all());
         $user = new User($request->all());
         $user->password = bcrypt($request->password);
         $user->role_id = 3;
-        $user->save();
+        $user->affiliate_code = Str::random(5);
+       
+
+        if ($request->has('affiliate_code')) {
+            $affiliate_code = $request->affiliate_code;
+            $affiliate = User::where('affiliate_code', $affiliate_code)->firstOrFail();
+            $user->save();
+            if ($affiliate) {
+                $user->affiliate_by()->associate($affiliate); // dicoba2 kalau ngga ya pakai sync atau attach
+                $user->save();
+            }
+        } else {
+            $user->save();
+        }
 
         // $freePackage = Package::where('id', 1)->firstOrFail();
 
@@ -96,8 +111,8 @@ class UserController extends Controller
         // return 'asd';
         $res = User::with('shop')
             ->has('shop')
-            ->whereHas('role', fn($query) => $query->where('id', 4))
-            ->whereHas('master', fn($query) => $query->where('master_id', auth('api')->user()->id))
+            ->whereHas('role', fn ($query) => $query->where('id', 4))
+            ->whereHas('master', fn ($query) => $query->where('master_id', auth('api')->user()->id))
             ->withCount(['orders'])
             ->withCount(['orders as payment_count' => function ($query) {
                 $query
@@ -147,7 +162,6 @@ class UserController extends Controller
                     $res->apiStatus = "Mati";
                 } else {
                     $res->apiStatus = "Hidup";
-
                 }
             }
             if ($res->active_package_user) {
@@ -159,7 +173,6 @@ class UserController extends Controller
             } else {
                 $res->apiStatus = "Mati";
             }
-
         } else {
             $res->apiStatus = "Mati";
         }
