@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserController extends Controller
@@ -175,5 +176,43 @@ class UserController extends Controller
         }
 
         return response()->json($res);
+    }
+
+    public function updateAvatar(Request $request, $id)
+    {
+        // return response()->json($request->all());
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        $user = User::findOrFail($id);
+        $user->fill($request->all());
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatar', ENV("FILESYSTEM_DRIVER"));
+            // $avatar->src = $path;
+            $user->avatar = $path;
+        }
+        $user->save();
+        return response()->json($user);
+    }
+
+    public function updateProfile(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        $user->fill($request->all());
+        $user->save();
+        return response()->json($user);
+    }
+
+    public function changePassword(Request $request)
+    {
+        // return response()->json($request->all());
+        $user = User::findOrFail(auth('api')->user()->id);
+        if (Hash::check($request->old_password, $user->password)) {
+            $user->password = bcrypt($request->new_password);
+            $user->update();
+            return response()->json(['message' => 'Password berhasil diubah']);
+        } else {
+            return response()->json(['message' => 'Password lama tidak sesuai'], 422);
+        }
     }
 }

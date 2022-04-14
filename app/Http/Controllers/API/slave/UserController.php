@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
+use App\Models\File;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -129,12 +130,17 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function updateavatar(Request $request)
+    public function updateAvatar(Request $request, $id)
     {
-        $user = User::findOrFail(auth('api')->user()->id);
-        $path = $request->file('avatar')->store('avatar', ENV("FILESYSTEM_DRIVER"));
-        $user->avatar = $path;
-        $user->update();
+        // return response()->json($request->hasFile('avatar'));
+        $user = User::findOrFail($id);
+        $user->fill($request->all());
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatar', ENV("FILESYSTEM_DRIVER"));
+            // $avatar->src = $path;
+            $user->avatar = $path;
+        }
+        $user->save();
         return response()->json($user);
     }
 
@@ -165,11 +171,13 @@ class UserController extends Controller
         }
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         return response()->json($request->all());
     }
 
-    public function getProfileById($userid) {
+    public function getProfileById($userid)
+    {
         $user = User::findOrFail($userid);
         return response()->json($user->load('shop', 'master'));
     }

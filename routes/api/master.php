@@ -70,6 +70,15 @@ Route::get('test',function(){
 // Route untuk cek affiliate code
 Route::get('/get-user-affiliate-code/{affiliate_code}', [AffiliateController::class, 'getUserByAffiliateCode']);
 
+// Route untuk update avatar
+Route::post('/update-avatar/{id}', [UserController::class, 'updateAvatar']);
+
+// Route untuk update profile
+Route::post('/update-profile/{id}', [UserController::class, 'updateProfile']);
+
+// Route untuk ganti password
+Route::post('/change-password', [UserController::class, 'changePassword']);
+
 Route::apiResources([
     'branch' => BranchController::class,
     'branch_service' => ServiceController::class,

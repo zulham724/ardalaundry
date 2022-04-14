@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\API\master;
+namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
-use App\Models\Affiliate;
-use App\Models\User;
+use App\Models\Location;
 use Illuminate\Http\Request;
 
-class AffiliateController extends Controller
+class LocationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,8 +16,6 @@ class AffiliateController extends Controller
     public function index()
     {
         //
-        $res = Affiliate::all();
-        return response()->json($res);
     }
 
     /**
@@ -35,27 +32,22 @@ class AffiliateController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Affiliate  $affiliate
+     * @param  \App\Models\Location  $location
      * @return \Illuminate\Http\Response
      */
-    public function show($userid)
+    public function show(Location $location)
     {
         //
-    
-        $res = User::with('active_package_user')->whereHas('affiliate_by', function ($q) use ($userid) {
-            $q->where('user_id', $userid);
-        })->get();
-        return response()->json($res);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Affiliate  $affiliate
+     * @param  \App\Models\Location  $location
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Affiliate $affiliate)
+    public function update(Request $request, Location $location)
     {
         //
     }
@@ -63,17 +55,11 @@ class AffiliateController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Affiliate  $affiliate
+     * @param  \App\Models\Location  $location
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Affiliate $affiliate)
+    public function destroy(Location $location)
     {
         //
-    }
-
-    public function getUserByAffiliateCode($affiliate_code)
-    {
-        $res = User::where('affiliate_code',$affiliate_code)->firstOrFail();
-        return response()->json($res);
     }
 }

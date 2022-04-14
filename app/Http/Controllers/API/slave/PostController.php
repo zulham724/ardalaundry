@@ -88,9 +88,23 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $id)
     {
         //
+        $post = Post::findOrFail($id);
+        $post->update($request->all());
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $f => $file) {
+                // return dd($request->file('files')[$f]->getClientMimeType());
+                $file = new File();
+                $path = $request->file('files')[$f]->store('files', ENV('FILESYSTEM_DRIVER'));
+                $file->src = $path;
+                $file->name =
+                $request->file('files')[$f]->getClientOriginalName();
+                $file->filetype = $request->file('files')[$f]->getClientMimeType();
+                $post->files()->save($file);
+            }
+        }
     }
 
     /**
@@ -99,9 +113,14 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
         //
+        // return response()->json($id);
+        $post = Post::findOrFail($id);
+        $delete = $post->delete();
+        return response()->json($delete);
+
     }
 
     public function like($postid)
@@ -141,6 +160,25 @@ class PostController extends Controller
             ->where('author_id', $userid)
             ->orderBy('id', 'desc')
             ->paginate(2);
+    }
+
+    public function getPostByPostId($postid)
+    {
+        return Post::with([
+            'images',
+            'videos',
+            'bookmarks',
+            'bookmarked',
+            'author',
+            'comments.user',
+            'files',
+            'user.shop'
+        ])
+            ->has('author')
+            ->withCount('comments', 'likes', 'liked', 'readers', 'hasRead as hasRead')
+            ->where('id', $postid)
+            ->orderBy('id', 'desc')
+            ->get();
     }
 
     public function getLikedPostByUser($userid)

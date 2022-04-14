@@ -190,7 +190,7 @@ Route::get('product/{id}/dislike', [ProductController::class, 'dislike']);
 Route::post('/orderproduct', [OrderController::class, 'order_product']);
 
 //route untuk update avatar akun
-Route::post('/updateavatar', [UserController::class, 'updateAvatar']);
+Route::post('/updateavatar/{id}', [UserController::class, 'updateAvatar']);
 Route::post('/updateaccount/{id}', [UserController::class, 'updateAccount']);
 
 // route untuk ganti password
@@ -202,5 +202,14 @@ Route::get('/getpostbyuser/{userid}', [PostController::class, 'getPostByUser']);
 // Route untuk mengambil data post berdasarkan like dan user akun
 Route::get('/getlikedpostbyuser/{userid}', [PostController::class, 'getLikedPostByUser']);
 
+// Route untuk mengambil data post berdasarkan post id
+Route::get('/getpostbypostid/{postid}', [PostController::class, 'getPostByPostId']);
+
 // Route untuk mengambil data profile user berdasarkan user akun (id)
-// Route::get('/get_profile_by_id/{userid}', [UserController::class, 'getProfileById']);
+Route::get('/get_profile_by_id/{userid}', [UserController::class, 'getProfileById']);
+
+// ROute untuk mengambil data poduk yanng di sukai
+Route::get('/get_liked_product_by_user/{userid}', [ProductController::class, 'getLikedProductByUser']);
+
+// Route untuk search product liked
+Route::post('/search_liked_product_by_user', [ProductController::class, 'searchLikedProductByUser']);

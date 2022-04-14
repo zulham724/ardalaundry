@@ -211,9 +211,11 @@ class OrderController extends Controller
             DB::raw("DATE_FORMAT(created_at, '%b %Y') time_period"),
             DB::raw('YEAR(created_at) year, MONTH(created_at) month')
         )
+            
             ->whereHas('shop.user.master', function ($query) {
                 $query->where('branches.master_id', auth('api')->user()->id);
             })
+            ->whereYear('created_at', date('Y'))
             ->groupby('year', 'month')
             ->get();
         return $res;

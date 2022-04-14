@@ -60,7 +60,7 @@ class ProductController extends Controller
         //
 
         $product = Product::with('shop.user', 'images')
-            ->withCount('liked')
+            ->withCount('liked', 'likes')
             ->findOrFail($productId);
 
         return response()->json($product);
@@ -110,6 +110,18 @@ class ProductController extends Controller
         $product = Product::with('shop.user', 'images')
             ->where('shop_id', auth('api')->user()->shop->id)
             ->get();
+
+        return response()->json($product);
+    }
+
+    public function getLikedProduct($productId)
+    {
+        //
+
+        $product = Product::with('shop.user', 'images')
+            ->withCount('liked', 'likes')
+            ->whereHas('liked')
+            ->findOrFail($productId);
 
         return response()->json($product);
     }
@@ -172,5 +184,29 @@ class ProductController extends Controller
         $produk->save();
 
         return response()->json($produk->load('images'));
+    }
+
+    public function getLikedProductByUser($userid)
+    {
+        $product = Product::whereHas('liked', function ($query) use ($userid) {
+            $query->where('user_id', $userid);
+        })->with('shop.user', 'images')
+            ->withCount('liked', 'likes')
+            ->get();
+
+        return response()->json($product);
+    }
+
+    public function searchLikedProductByUser(Request $request)
+    {
+        // return response()->json($request->all());
+        $product = Product::whereHas('liked', function ($query) use ($request) {
+            $query->where('user_id', $request->id);
+        })->with('shop.user', 'images')
+            ->withCount('liked', 'likes')
+            ->where('tittle', 'like', '%' . $request->value . '%')
+            ->get();
+
+        return response()->json($product);
     }
 }
