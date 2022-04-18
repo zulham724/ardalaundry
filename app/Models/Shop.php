@@ -46,7 +46,8 @@ class Shop extends Model
         return $this->morphMany('App\Models\Payment', 'payment');
     }
 
-    public function location(){
+    public function location()
+    {
         return $this->morphOne('App\Models\Location', 'locationable');
     }
 }

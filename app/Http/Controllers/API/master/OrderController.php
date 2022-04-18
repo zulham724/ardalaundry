@@ -95,9 +95,9 @@ class OrderController extends Controller
         $res = Payment::select(
             DB::raw('sum(value) as `total`'),
         )
-        ->whereHas('order.shop', function ($query) use ($shopId) {
-            $query->where('id', $shopId);
-        })->first();
+            ->whereHas('order.shop', function ($query) use ($shopId) {
+                $query->where('id', $shopId);
+            })->first();
 
         return $res->total;
     }
@@ -211,7 +211,7 @@ class OrderController extends Controller
             DB::raw("DATE_FORMAT(created_at, '%b %Y') time_period"),
             DB::raw('YEAR(created_at) year, MONTH(created_at) month')
         )
-            
+
             ->whereHas('shop.user.master', function ($query) {
                 $query->where('branches.master_id', auth('api')->user()->id);
             })

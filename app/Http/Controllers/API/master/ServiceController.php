@@ -36,8 +36,8 @@ class ServiceController extends Controller
             'process_time' => 'required'
 
         ]);
-        
-        return Shop::whereHas('user.master',function($query){
+
+        return Shop::whereHas('user.master', function ($query) {
             $query->where('master_id', auth('api')->user()->id);
         })->findOrFail($request->shop_id)->services()->save(new Service($request->all()));
     }
@@ -78,12 +78,12 @@ class ServiceController extends Controller
         //
         $res = Service::findOrFail($id)->delete();
         return $res;
-
     }
 
-    public function getServiceBySlave($shopId){
-        $res = Service::with('category')->whereHas('shop',function($query)use($shopId){
-            $query->where('id',$shopId);
+    public function getServiceBySlave($shopId)
+    {
+        $res = Service::with('category')->whereHas('shop', function ($query) use ($shopId) {
+            $query->where('id', $shopId);
         })->get();
         return response()->json($res);
     }

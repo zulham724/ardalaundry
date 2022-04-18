@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\master\AffiliateController;
+use App\Http\Controllers\API\master\AttendanceController;
 use App\Http\Controllers\API\master\BranchController;
 use App\Http\Controllers\API\master\CustomerController;
 use App\Http\Controllers\API\master\OrderController;
@@ -29,31 +30,32 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:api', 'checkifmaster'])->get('/user', [UserController::class, 'login']);
 
-Route::get('/totalorders',[OrderController::class,'totalOrders']);
-Route::get('/profit',[OrderController::class,'getProfit']);
-Route::get('/growth',[OrderController::class,'getGrowth']);
-Route::get('/ordercountbymonths',[OrderController::class,'orderCountByMonths']);
+Route::get('/totalorders', [OrderController::class, 'totalOrders']);
+Route::get('/profit', [OrderController::class, 'getProfit']);
+Route::get('/growth', [OrderController::class, 'getGrowth']);
+Route::get('/ordercountbymonths', [OrderController::class, 'orderCountByMonths']);
 Route::get('/ordercountbranchbymonth/{shopid}', [OrderController::class, 'orderCountBranchByMonth']);
-Route::get('/paymentcountbymonths',[OrderController::class,'paymentCountByMonths']);
+Route::get('/paymentcountbymonths', [OrderController::class, 'paymentCountByMonths']);
 Route::get('/branchpaymentcountbymonth/{shopid}', [OrderController::class, 'branchPaymentCountByMonth']);
-Route::get('/ordercountbymonthseachbranches',[OrderController::class,'orderCountByMonthsEachBranches']);
-Route::get('/paymentcountbymonthseachbranches',[OrderController::class,'paymentCountByMonthsEachBranches']);
+Route::get('/ordercountbymonthseachbranches', [OrderController::class, 'orderCountByMonthsEachBranches']);
+Route::get('/paymentcountbymonthseachbranches', [OrderController::class, 'paymentCountByMonthsEachBranches']);
 
-Route::get('/getsubscribestatus',[PackageUserController::class,'getsubscribestatus']);
+Route::get('/getsubscribestatus', [PackageUserController::class, 'getsubscribestatus']);
 
-Route::get('/slaves',[UserController::class,'slaves']);
-Route::get('/shops',[ShopController::class,'index']);
-Route::get('/branches',[UserController::class,'branches']);
-Route::get('/slave/{shopid}/services',[ServiceController::class,'getServiceBySlave']);
+Route::get('/slaves', [UserController::class, 'slaves']);
+Route::get('/shops', [ShopController::class, 'index']);
+Route::get('/branches', [UserController::class, 'branches']);
+Route::get('/slave/{shopid}/services', [ServiceController::class, 'getServiceBySlave']);
 
-Route::get('/slave/{slaveid}/orders',[OrderController::class,'getOrdersBySlave']);
-Route::get('/shop/{shopid}/customers',[ShopController::class,'getCustomersByShop']);
-Route::get('/shop/{shopid}/employee',[ShopController::class,'getEmployeesByShop']);
+Route::get('/slave/{slaveid}/orders', [OrderController::class, 'getOrdersBySlave']);
+Route::get('/shop/{shopid}/customers', [ShopController::class, 'getCustomersByShop']);
+Route::get('/shop/{shopid}/employee', [ShopController::class, 'getEmployeesByShop']);
+
 Route::get('/shop/{shopid}/orderscount', [OrderController::class, 'geOrderCountByShop']);
 Route::get('/shop/{shopid}/gettotalprice', [OrderController::class, 'getTotalPriceByShop']);
 Route::get('/shop/{shopid}/getcurrentprofit', [OrderController::class, 'getCurrentProfitByShop']);
 // -----------
-Route::post('/branch',[BranchController::class,'store']);
+Route::post('/branch', [BranchController::class, 'store']);
 //------------
 Route::post('/register', [UserController::class, 'register']);
 
@@ -62,7 +64,7 @@ Route::get('/packages', [PackageController::class, 'index']);
 Route::post('/packages/payment', [PaymentController::class, 'store']);
 Route::get('/payments/history', [PaymentController::class, 'show']);
 
-Route::get('test',function(){
+Route::get('test', function () {
     $res = \App\Models\User::with('packages')->find(2);
     return $res;
 });
@@ -79,6 +81,10 @@ Route::post('/update-profile/{id}', [UserController::class, 'updateProfile']);
 // Route untuk ganti password
 Route::post('/change-password', [UserController::class, 'changePassword']);
 
+// Route untuk menghapus branch
+Route::post('/branch/delete-branch', [BranchController::class, 'destroy']);
+
+
 Route::apiResources([
     'branch' => BranchController::class,
     'branch_service' => ServiceController::class,
@@ -86,6 +92,6 @@ Route::apiResources([
     'branch_customer' => CustomerController::class,
     'branch_service_category' => ServiceCategoryController::class,
     'master_payment' => PaymentController::class,
-    'affiliate' => AffiliateController::class,  
+    'affiliate' => AffiliateController::class,
+    'attendance' => AttendanceController::class,
 ]);
-

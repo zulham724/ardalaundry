@@ -31,14 +31,15 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
+        // return response()->json($request->all());
         // dd(User::orderBy('created_at','desc')->first());
         $user = auth('api')->user()->loadCount(['slaves'])->load(['active_package_user' => function ($query) {
             $query->with('payment', 'package.slave_limit');
         }]);
-        
-       if($user->slaves_count > $user->active_package_user->package->slave_limit->limit){
-           return response('Cabang anda sudah mencapai batas', 500);
-       }
+
+        if ($user->slaves_count > $user->active_package_user->package->slave_limit->limit) {
+            return response('Cabang anda sudah mencapai batas', 500);
+        }
         $request->validate([
             'name' => 'required',
             'email' => 'required|unique:users',
@@ -71,6 +72,8 @@ class BranchController extends Controller
     public function show(Branch $branch)
     {
         //
+        $res = Branch::where('master_id', auth('api')->user()->id);
+        return response()->json($res);
     }
 
     /**
@@ -91,11 +94,16 @@ class BranchController extends Controller
      * @param  \App\Models\Branch  $branch
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
         //
-        $res = User::findOrFail($id)->delete();
+        // return response()->json($request->all());
+        $shop = Shop::findOrFail($request->shop_id);
+        $delete = $shop->delete();
 
-        return $res;
+        $user = User::findOrFail($request->user_id);
+        $delete = $user->delete();
+
+        return response()->json($delete);
     }
 }

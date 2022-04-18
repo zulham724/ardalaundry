@@ -41,10 +41,12 @@ class AffiliateController extends Controller
     public function show($userid)
     {
         //
-    
-        $res = User::with('active_package_user')->whereHas('affiliate_by', function ($q) use ($userid) {
+
+        $res = User::with(['active_package_user'])->whereHas('affiliate_by', function ($q) use ($userid) {
             $q->where('user_id', $userid);
-        })->get();
+        })->with('slaves.shop')
+
+            ->get();
         return response()->json($res);
     }
 
@@ -73,7 +75,7 @@ class AffiliateController extends Controller
 
     public function getUserByAffiliateCode($affiliate_code)
     {
-        $res = User::where('affiliate_code',$affiliate_code)->firstOrFail();
+        $res = User::where('affiliate_code', $affiliate_code)->firstOrFail();
         return response()->json($res);
     }
 }

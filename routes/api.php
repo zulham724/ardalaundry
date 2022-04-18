@@ -16,14 +16,45 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware'=>'auth:api'],function(){
+Route::group(['middleware' => 'auth:api'], function () {
 
-    Route::get('/user',function(Request $request){
-        return $request->user()->load(['shop', 'master', 'followers', 'following']);
+    Route::get('/user', function (Request $request) {
+        if ($request->user()->role_id == 3) {
+            $res = $request->user()
+                ->loadCount(['slaves', 'orders'])
+                ->load(['packages', 'active_package_user' => function ($query) {
+                    $query->with('payment', 'package.package_limits', 'package.package_contents');
+                }]);
+
+            if ($res->active_package_user !== null) {
+                foreach ($res->active_package_user->package->package_limits as $limit) {
+                    if ($res->{$limit->entity} > $limit->limit) {
+                        $res->apiStatus = "Mati";
+                    } else {
+                        $res->apiStatus = "Hidup";
+                    }
+                }
+                if ($res->active_package_user) {
+                    if (new \DateTime($res->active_package_user->expired_date) > new \DateTime() && $res->{$limit->entity} < $limit->limit) {
+                        $res->apiStatus = "Hidup";
+                    } else {
+                        $res->apiStatus = "Mati";
+                    }
+                } else {
+                    $res->apiStatus = "Mati";
+                }
+            } else {
+                $res->apiStatus = "Mati";
+            }
+
+            return response()->json($res);
+        } else if ($request->user()->role_id == 4) {
+            return $request->user()->load(['shop', 'master', 'followers', 'following']);
+        }
     });
 
-   Route::apiResources([
-       'module' => ModuleController::class,
-       'module-content' => ModuleContentController::class,
-   ]);
+    Route::apiResources([
+        'module' => ModuleController::class,
+        'module-content' => ModuleContentController::class,
+    ]);
 });
