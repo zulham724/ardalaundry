@@ -23,8 +23,8 @@ class PaymentController extends Controller
         // $res = PackageUser::with('package', 'payment')->whereHas('payment', function ($query) {
         //     $query->where('user_id', auth('api')->user()->id);
         // })->orderBy('created_at', 'desc')->get();
-        
-        return $res = Payment::with('package_user')->whereHas('package_user.user', function($query){
+
+        return $res = Payment::with('package_user')->whereHas('package_user.user', function ($query) {
             $query->where('user_id', auth('api')->user()->id);
         })->orderBy('created_at', 'desc')->get();
 
@@ -43,7 +43,7 @@ class PaymentController extends Controller
         // return response()->json($request->all());
         $packageuser = new PackageUser();
         $packageuser->user_id = auth('api')->user()->id;
-        $packageuser->package_id = $request->id; 
+        $packageuser->package_id = $request->id;
         $packageuser->expired_date = Carbon::now()->addDays(30);
         $packageuser->save();
 
@@ -51,10 +51,10 @@ class PaymentController extends Controller
         $payment->value = $request->price;
         $payment->status = "pending";
         $payment->name = "Lunas";
-        
-      $res = auth('api')->user()->package_users()->findOrFail($packageuser->id)->payment()->save($payment);
 
-      return $res;
+        $res = auth('api')->user()->package_users()->findOrFail($packageuser->id)->payment()->save($payment);
+
+        return $res;
     }
 
     /**
@@ -68,9 +68,12 @@ class PaymentController extends Controller
         //
 
         $res = Payment::with('package_user',)->where('id', $id)->first();
+        if ($res->value < 1000) {
+            $res->status = "success";
+            $res->save();
+        }
 
-        return $res;    
-      
+        return $res;
     }
 
     /**

@@ -70,6 +70,13 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
+        $exist = User::where('email', $request->email)->exists();
+        if ($exist) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Email has been taken'
+            ], 500);
+        }
         // return response()->json($request->all());
         $user = new User($request->all());
         $user->password = bcrypt($request->password);

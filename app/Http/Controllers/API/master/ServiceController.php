@@ -64,7 +64,11 @@ class ServiceController extends Controller
     public function update(Request $request, $id)
     {
         //
-        return Service::findOrFail($id)->update($request->all());
+        // return response()->json($request->has('category'));
+        $res =  Service::findOrFail($id);
+        $res->update($request->all());
+        // $res->category()->attach($request->category->id);
+        return response()->json($res);
     }
 
     /**
