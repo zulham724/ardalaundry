@@ -98,11 +98,24 @@ class BranchController extends Controller
     {
         //
         // return response()->json($request->all());
-        $shop = Shop::findOrFail($request->shop_id);
-        $delete = $shop->delete();
+        // $shop = Shop::findOrFail($request->shop_id);
+        // $delete = $shop->delete();
 
-        $user = User::findOrFail($request->user_id);
-        $delete = $user->delete();
+        // $user = User::findOrFail($request->user_id);
+        // $delete = $user->delete();
+        $slave = User::findOrFail($request->user_id);
+        $slave->shop()->delete();
+        $delete = $slave->delete();
+
+        return response()->json($delete);
+    }
+
+    public function deleteBranch(Request $request){
+        // return abort(500);
+        // return response()->json($request->all());
+        $slave = User::findOrFail($request->user_id);
+        $slave->shop()->delete();
+        $delete = $slave->delete();
 
         return response()->json($delete);
     }

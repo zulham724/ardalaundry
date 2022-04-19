@@ -82,7 +82,7 @@ Route::post('/update-profile/{id}', [UserController::class, 'updateProfile']);
 Route::post('/change-password', [UserController::class, 'changePassword']);
 
 // Route untuk menghapus branch
-Route::post('/branch/delete-branch', [BranchController::class, 'destroy']);
+Route::post('/branch/delete-branch', [BranchController::class, 'deleteBranch']);
 
 
 Route::apiResources([
