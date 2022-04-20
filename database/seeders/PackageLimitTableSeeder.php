@@ -16,6 +16,8 @@ class PackageLimitTableSeeder extends Seeder
     {
         //
 
+        // PackageLimit::truncate();
+
         $arrays = [
             [
                 'package_id' => 1,
@@ -32,7 +34,7 @@ class PackageLimitTableSeeder extends Seeder
         foreach ($arrays as $a => $array) {
             # code...
             $packageLimit = PackageLimit::firstOrNew($array);
-            if(!$packageLimit->exists){
+            if (!$packageLimit->exists) {
                 $packageLimit->save();
             }
         }
@@ -53,12 +55,12 @@ class PackageLimitTableSeeder extends Seeder
         foreach ($arrays2 as $a => $array) {
             # code...
             $packageLimit = PackageLimit::firstOrNew($array);
-            if(!$packageLimit->exists){
+            if (!$packageLimit->exists) {
                 $packageLimit->save();
             }
         }
 
-         $arrays3 = [
+        $arrays3 = [
             [
                 'package_id' => 3,
                 'entity' => 'slaves_count',
@@ -69,7 +71,7 @@ class PackageLimitTableSeeder extends Seeder
         foreach ($arrays3 as $a => $array) {
             # code...
             $packageLimit = PackageLimit::firstOrNew($array);
-            if(!$packageLimit->exists){
+            if (!$packageLimit->exists) {
                 $packageLimit->save();
             }
         }

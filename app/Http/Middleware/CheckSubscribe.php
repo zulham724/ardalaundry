@@ -43,7 +43,7 @@ class CheckSubscribe
         if ($pass) {
             return $next($request);
         } else {
-            return response('Masa Pakai Habis atau Melebihi syarat paket', 500);
+            return response()->json(['message' => 'Masa Pakai Habis atau Melebihi syarat paket'], 500);
         }
     }
 }

@@ -15,21 +15,23 @@ class PackageTableSeeder extends Seeder
     public function run()
     {
         //
-        $package = Package::firstOrNew(['name' => 'Paket Reguler']);
+
+        // Package::truncate();
+        $package = Package::firstOrNew(['name' => 'Paket Trial']);
         if (!$package->exists) {
             $package->fill([
-                'price' => '100',
+                'price' => '0',
             ])->save();
         }
 
-        $package = Package::firstOrNew(['name' => 'Paket Premium']);
+        $package = Package::firstOrNew(['name' => 'Paket Bisnis']);
         if (!$package->exists) {
             $package->fill([
                 'price' => '200',
             ])->save();
         }
 
-        $package = Package::firstOrNew(['name' => 'Paket Enterpreneur']);
+        $package = Package::firstOrNew(['name' => 'Paket ultimate']);
         if (!$package->exists) {
             $package->fill([
                 'price' => '300',

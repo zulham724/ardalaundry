@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
@@ -97,5 +98,51 @@ class PaymentController extends Controller
     public function destroy(Payment $payment)
     {
         //
+    }
+
+    public function getSpending(Request $request)
+    {
+        // return response()->json($request->all());
+        $payment = Payment::where('type', 'out')
+            ->where('payment_id', 1)
+            ->where('payment_type', 'App\Models\Shop')
+            ->get();
+        return response()->json($payment);
+    }
+
+    public function getPayment($shopid)
+    {
+        // return response()->json($shopid);
+
+        $res = DB::table('payments')
+            ->where('payment_type', 'App\Models\Order')
+            ->join('orders as o', 'payments.payment_id', 'o.id')
+            ->join('users as u', 'o.customer_id', 'u.id')
+            ->where('o.shop_id', [$shopid])
+            ->where('type', 'in')
+            ->select(
+                DB::raw('payments.*'),
+                DB::raw('u.name as customer')
+            )
+            ->orderBy('payments.created_at', 'desc')
+            ->get();
+        return response()->json($res);
+    }
+
+    public function getTotalSum($shopid)
+    {
+        $in = Payment::whereHas('order.shop', function ($query) use ($shopid) {
+            $query->where('id', $shopid);
+        })
+            ->where('type', 'in')
+            ->sum('value');
+        $out = Payment::whereHas('shop', function ($query) use ($shopid) {
+            $query->where('id', $shopid);
+        })
+            ->where('type', 'out')
+            ->sum('value');
+
+        $res = $in - $out;
+        return response()->json($res);
     }
 }

@@ -87,8 +87,8 @@ class PaymentController extends Controller
         $payment = Payment::where('type', 'out')
             ->where('payment_id', $shopid)
             ->where('payment_type', 'App\Models\Shop')
-        // ->where('created_at', '>', \Carbon\Carbon::now()->startOfWeek()) //updated at tadinya created at
-        // ->where('created_at', '<', \Carbon\Carbon::now()->endOfWeek()) //updated at tadinya created at
+            // ->where('created_at', '>', \Carbon\Carbon::now()->startOfWeek()) //updated at tadinya created at
+            // ->where('created_at', '<', \Carbon\Carbon::now()->endOfWeek()) //updated at tadinya created at
             ->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])
             ->paginate();
         return response()->json($payment);
@@ -96,8 +96,7 @@ class PaymentController extends Controller
 
     public function getSpendingThisMonth($shopid)
     {
-        $payment = Payment::
-            where('type', 'out')
+        $payment = Payment::where('type', 'out')
             ->where('payment_id', $shopid)
             ->where('payment_type', 'App\Models\Shop')
             ->whereMonth('created_at', \Carbon\Carbon::now()->month)
@@ -135,8 +134,8 @@ class PaymentController extends Controller
                 DB::raw('u.name as customer')
             )
             ->whereBetween('payments.created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])
-        // ->where('payments.created_at', '>', \Carbon\Carbon::now()->startOfWeek())
-        // ->where('payments.created_at', '<', \Carbon\Carbon::now()->endOfWeek())
+            // ->where('payments.created_at', '>', \Carbon\Carbon::now()->startOfWeek())
+            // ->where('payments.created_at', '<', \Carbon\Carbon::now()->endOfWeek())
             ->paginate();
         return response()->json($res);
     }

@@ -84,6 +84,14 @@ Route::post('/change-password', [UserController::class, 'changePassword']);
 // Route untuk menghapus branch
 Route::post('/branch/delete-branch', [BranchController::class, 'deleteBranch']);
 
+// Route untuk mengambil jumlah pengeluaran cabang
+Route::get('/payment/get-spending/{shopid}', [PaymentController::class, 'getSpending']);
+
+// Route untuk mengambil jumlah pemasukan cabang
+Route::get('/payment/get-income/{shopid}', [PaymentController::class, 'getPayment']);
+
+// Route untuk mengambil total sum cabang
+Route::get('/payment/get-total-sum/{shopid}', [PaymentController::class, 'getTotalSum']);
 
 Route::apiResources([
     'branch' => BranchController::class,

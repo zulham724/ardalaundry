@@ -15,6 +15,7 @@ class PackageContentTableSeeder extends Seeder
     public function run()
     {
         //
+        // PackageContents::truncate();
         $arrays = [
             [
                 'package_id' => 1, 'value' => '1 Cabang'
@@ -68,22 +69,22 @@ class PackageContentTableSeeder extends Seeder
         }
 
         $arrays3 = [
-                [
-                    'package_id' => 3, 'value' => '10 Cabang'
-                ],
-                [
-                    'package_id' => 3, 'value' => 'unlimited transaksi'
-                ],
-                [
-                    'package_id' => 3, 'value' => 'unlimited employee'
-                ],
-                [
-                    'package_id' => 3, 'value' => 'unlimited customer'
-                ],
-                [
-                    'package_id' => 3, 'value' => 'unlimited paket'
-                ]
-            ];
+            [
+                'package_id' => 3, 'value' => '10 Cabang'
+            ],
+            [
+                'package_id' => 3, 'value' => 'unlimited transaksi'
+            ],
+            [
+                'package_id' => 3, 'value' => 'unlimited employee'
+            ],
+            [
+                'package_id' => 3, 'value' => 'unlimited customer'
+            ],
+            [
+                'package_id' => 3, 'value' => 'unlimited paket'
+            ]
+        ];
 
         foreach ($arrays3 as $a => $array) {
             # code...

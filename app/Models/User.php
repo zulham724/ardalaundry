@@ -127,4 +127,13 @@ class User extends \TCG\Voyager\Models\User
     {
         return $this->morphOne('App\Models\File', 'fileable')->where('key', 'avatar');
     }
+
+    public function order_served_by_employee()
+    {
+        return $this->hasMany('App\Models\Order', 'employee_id');
+    }
+    public function order_served_by_customer()
+    {
+        return $this->hasMany('App\Models\Order', 'customer_id');
+    }
 }

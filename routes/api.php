@@ -47,7 +47,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 $res->apiStatus = "Mati";
             }
 
-            return response()->json($res);
+            return response()->json($res->load('slaves.shop'));
         } else if ($request->user()->role_id == 4) {
             return $request->user()->load(['shop', 'master', 'followers', 'following']);
         }

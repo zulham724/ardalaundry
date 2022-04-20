@@ -43,7 +43,7 @@ class EmployeeController extends Controller
         $user->role_id = 5;
         $user->save();
 
-        $res = Shop::whereHas('user.master', function($query){
+        $res = Shop::whereHas('user.master', function ($query) {
             $query->where('master_id', auth('api')->user()->id);
         })->findOrFail($request->shop_id)->employees()->attach($user->id);
         return $res;
@@ -82,6 +82,8 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         //
+        // $user = User::findOrFail($id)->update($request->all());
+        // return response()->json($user);
         return User::findOrFail($id)->update($request->all());
     }
 
@@ -94,10 +96,10 @@ class EmployeeController extends Controller
     public function destroy(Request $request, $id)
     {
         //
-      $user = User::whereHas('employee_shops.user.master',function($query){
-        $query->where("master_id",auth('api')->user()->id);
-      })->findOrFail($id)->delete();
+        $user = User::whereHas('employee_shops.user.master', function ($query) {
+            $query->where("master_id", auth('api')->user()->id);
+        })->findOrFail($id)->delete();
 
-      return $user;
+        return $user;
     }
 }

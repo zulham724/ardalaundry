@@ -148,7 +148,9 @@ class UserController extends Controller
     {
         $res = User::with('employee')->whereHas('shop.user', function ($query) use ($slaiveId) {
             $query->where('id', $slaiveId);
-        })->get();
+        })
+
+            ->get();
         return response()->json($res);
     }
 

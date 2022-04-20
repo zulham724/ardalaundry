@@ -28,30 +28,30 @@ class UsersTableSeeder extends Seeder
         //     ]);
         // }
 
-        $user = User::firstOrNew(['name' => 'admin']);
+        $user = User::firstOrNew(['email' => 'admin@admin.com']);
         if (!$user->exists) {
             $user->fill([
-                'email'          => 'admin@admin.com',
+                'name'          => 'admin',
                 'password'       => bcrypt('password'),
                 'remember_token' => Str::random(60),
                 'role_id'        => 1,
             ])->save();
         }
 
-        $user = User::firstOrNew(['name' => 'master1']);
+        $user = User::firstOrNew(['email' => 'master1@master1.com']);
         if (!$user->exists) {
             $user->fill([
-                'email' => 'master1@master1.com',
+                'name' => 'master1',
                 'password' => bcrypt('password'),
                 'remember_token' => Str::random(60),
                 'role_id' => 3,
             ])->save();
         }
 
-        $user = User::firstOrNew(['name' => 'Slave 1']);
+        $user = User::firstOrNew(['email' => 'slave1@slave1.com']);
         if (!$user->exists) {
             $user->fill([
-                'email' => 'slave1@slave1.com',
+                'name' => 'Slave 1',
                 'password' => bcrypt('password'),
                 'remember_token' => Str::random(60),
                 'role_id' => 4,
