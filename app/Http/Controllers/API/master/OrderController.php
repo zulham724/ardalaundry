@@ -231,6 +231,7 @@ class OrderController extends Controller
             ->whereHas('shop', function ($query) use ($shop_id) {
                 $query->where('id', $shop_id);
             })
+            ->whereYear('created_at', date('Y'))
             ->groupby('year', 'month')
             ->get();
         return $res;
@@ -245,6 +246,7 @@ class OrderController extends Controller
             ->whereHas('order.shop.user.master', function ($query) {
                 $query->where('branches.master_id', auth('api')->user()->id);
             })
+            ->whereYear('created_at', date('Y'))
             ->groupby('year', 'month')
             ->get();
         return $res;
@@ -260,6 +262,7 @@ class OrderController extends Controller
             ->whereHas('order.shop', function ($query) use ($shop_id) {
                 $query->where('id', $shop_id);
             })
+            ->whereYear('created_at', date('Y'))
             ->groupby('year', 'month')
             ->get();
         return $res;
@@ -290,8 +293,13 @@ class OrderController extends Controller
             }])
             ->withCount(['orders as total' => function ($query) {
                 $query
-                    ->join('payments', 'orders.id', '=', 'payments.payment_id')->where('payments.payment_type', 'App\Models\Order')
-                    ->select(DB::raw("SUM(payments.value) as total"));
+                    ->join('payments', 'orders.id', '=', 'payments.payment_id')
+                    ->where('payments.payment_type', 'App\Models\Order')
+                    ->select(
+                        DB::raw("SUM(payments.value) as total"),
+                        DB::raw('DATE_FORMAT(payments.created_at, "%b %Y") time_period'),
+                        DB::raw('YEAR(payments.created_at) year, MONTH(payments.created_at) month'),
+                    );
             }])
             ->get();
         return $res;

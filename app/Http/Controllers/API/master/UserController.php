@@ -68,6 +68,14 @@ class UserController extends Controller
         //
     }
 
+    public function add_wa_number(Request $request)
+    {
+        // return response()->json($request->all());
+        $user = User::findOrFail(auth('api')->user()->id);
+        $user->update($request->all());
+        return response()->json($user);
+    }
+
     public function register(Request $request)
     {
         $exist = User::where('email', $request->email)->exists();

@@ -14,6 +14,9 @@ use App\Http\Controllers\API\master\UserController;
 use App\Http\Controllers\API\master\EmployeeController;
 use App\Http\Controllers\API\master\ServiceCategory;
 use App\Http\Controllers\API\master\ServiceCategoryController;
+// use App\Http\Controllers\API\slave\ProductController;
+use App\Http\Controllers\API\master\ProductController;
+use App\Http\Controllers\ProductController as ControllersProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +33,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:api', 'checkifmaster'])->get('/user', [UserController::class, 'login']);
 
+Route::post('/inputnumberphone', [UserController::class, 'add_wa_number']);
+
 Route::get('/totalorders', [OrderController::class, 'totalOrders']);
 Route::get('/profit', [OrderController::class, 'getProfit']);
 Route::get('/growth', [OrderController::class, 'getGrowth']);
@@ -40,7 +45,13 @@ Route::get('/branchpaymentcountbymonth/{shopid}', [OrderController::class, 'bran
 Route::get('/ordercountbymonthseachbranches', [OrderController::class, 'orderCountByMonthsEachBranches']);
 Route::get('/paymentcountbymonthseachbranches', [OrderController::class, 'paymentCountByMonthsEachBranches']);
 
+Route::get('/{shopid}/getproducts', [ProductController::class, 'getAnotherProducts']);
 Route::get('/getsubscribestatus', [PackageUserController::class, 'getsubscribestatus']);
+
+Route::get('product/{id}/like', [ProductController::class, 'like']);
+Route::get('product/{id}/dislike', [ProductController::class, 'dislike']);
+Route::post('/deleteimage', [ProductController::class, 'deleteImage']);
+Route::post('/addimage', [ProductController::class, 'addImage']);
 
 Route::get('/slaves', [UserController::class, 'slaves']);
 Route::get('/shops', [ShopController::class, 'index']);
@@ -102,4 +113,7 @@ Route::apiResources([
     'master_payment' => PaymentController::class,
     'affiliate' => AffiliateController::class,
     'attendance' => AttendanceController::class,
+    // 'product' => ProductController::class,
 ]);
+
+Route::apiResource('product', ProductController::class);
