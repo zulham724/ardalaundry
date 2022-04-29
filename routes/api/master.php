@@ -14,6 +14,7 @@ use App\Http\Controllers\API\master\UserController;
 use App\Http\Controllers\API\master\EmployeeController;
 use App\Http\Controllers\API\master\ServiceCategory;
 use App\Http\Controllers\API\master\ServiceCategoryController;
+use App\Http\Controllers\API\master\PostController;
 // use App\Http\Controllers\API\slave\ProductController;
 use App\Http\Controllers\API\master\ProductController;
 use App\Http\Controllers\ProductController as ControllersProductController;
@@ -45,6 +46,7 @@ Route::get('/branchpaymentcountbymonth/{shopid}', [OrderController::class, 'bran
 Route::get('/ordercountbymonthseachbranches', [OrderController::class, 'orderCountByMonthsEachBranches']);
 Route::get('/paymentcountbymonthseachbranches', [OrderController::class, 'paymentCountByMonthsEachBranches']);
 
+Route::get('/getproductbyshop', [ProductController::class, 'getProductByShop']);
 Route::get('/{shopid}/getproducts', [ProductController::class, 'getAnotherProducts']);
 Route::get('/getsubscribestatus', [PackageUserController::class, 'getsubscribestatus']);
 
@@ -57,6 +59,9 @@ Route::get('/slaves', [UserController::class, 'slaves']);
 Route::get('/shops', [ShopController::class, 'index']);
 Route::get('/branches', [UserController::class, 'branches']);
 Route::get('/slave/{shopid}/services', [ServiceController::class, 'getServiceBySlave']);
+
+// ROute untuk mengambil data poduk yanng di sukai
+Route::get('/get_liked_product_by_user/{userid}', [ProductController::class, 'getLikedProductByUser']);
 
 Route::get('/slave/{slaveid}/orders', [OrderController::class, 'getOrdersBySlave']);
 Route::get('/shop/{shopid}/customers', [ShopController::class, 'getCustomersByShop']);
@@ -113,7 +118,21 @@ Route::apiResources([
     'master_payment' => PaymentController::class,
     'affiliate' => AffiliateController::class,
     'attendance' => AttendanceController::class,
+    'post' => PostController::class,
     // 'product' => ProductController::class,
 ]);
 
+//Post
+Route::get('/post/{id}/like', [PostController::class, 'like']);
+Route::get('/post/{id}/dislike', [PostController::class, 'dislike']);
+
 Route::apiResource('product', ProductController::class);
+
+Route::get('/getlikedpostbyuser/{userid}', [PostController::class, 'getLikedPostByUser']);
+
+Route::get('/getpostbyuser/{userid}', [PostController::class, 'getPostByUser']);
+// ROute untuk mengambil data poduk yanng di sukai
+Route::get('/get_liked_product_by_user/{userid}', [ProductController::class, 'getLikedProductByUser']);
+
+// Route untuk search product liked
+Route::post('/search_liked_product_by_user', [ProductController::class, 'searchLikedProductByUser']);
