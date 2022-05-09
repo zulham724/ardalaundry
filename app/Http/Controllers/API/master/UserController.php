@@ -144,6 +144,12 @@ class UserController extends Controller
         return response()->json($res);
     }
 
+    public function getProfileById($userid)
+    {
+        $user = User::findOrFail($userid);
+        return response()->json($user->load('shop', 'master'));
+    }
+
     public function getCustomersBySlave($slaiveId)
     {
         $res = User::with('customer')->whereHas('shop.user', function ($query) use ($slaiveId) {

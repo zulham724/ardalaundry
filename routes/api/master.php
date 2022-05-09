@@ -15,6 +15,7 @@ use App\Http\Controllers\API\master\EmployeeController;
 use App\Http\Controllers\API\master\ServiceCategory;
 use App\Http\Controllers\API\master\ServiceCategoryController;
 use App\Http\Controllers\API\master\PostController;
+use App\Http\Controllers\API\master\CommentController;
 // use App\Http\Controllers\API\slave\ProductController;
 use App\Http\Controllers\API\master\ProductController;
 use App\Http\Controllers\ProductController as ControllersProductController;
@@ -122,7 +123,17 @@ Route::apiResources([
     // 'product' => ProductController::class,
 ]);
 
+//CommentPost
+Route::post('/addcomment', [CommentController::class, 'store']);
+Route::get('/comment/{commentid}/like', [CommentController::class, 'like']);
+Route::get('/comment/{commentid}/dislike', [CommentController::class, 'dislike']);
+
+Route::get('/getpostbypostid/{postid}', [PostController::class, 'getPostByPostId']);
+
+Route::post('/updateproducts/{productid}', [ProductController::class, 'updatetest']);
+
 //Post
+Route::get('/get_profile_by_id/{userid}', [UserController::class, 'getProfileById']);
 Route::get('/post/{id}/like', [PostController::class, 'like']);
 Route::get('/post/{id}/dislike', [PostController::class, 'dislike']);
 
