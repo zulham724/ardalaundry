@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\master;
 use App\Http\Controllers\Controller;
 use App\Models\Package;
 use App\Models\User;
+use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -78,6 +79,8 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
+
+
         $exist = User::where('email', $request->email)->exists();
         if ($exist) {
             return response()->json([
@@ -92,6 +95,8 @@ class UserController extends Controller
         $user->affiliate_code = Str::random(5);
 
 
+
+
         if ($request->has('affiliate_code')) {
             $affiliate_code = $request->affiliate_code;
             $affiliate = User::where('affiliate_code', $affiliate_code)->firstOrFail();
@@ -100,6 +105,11 @@ class UserController extends Controller
         } else {
             $user->save();
         }
+
+        $shop = new Shop();
+        $shop->user_id = $user->id;
+        $shop->name = $user->name;
+        $shop->save();
 
         // $freePackage = Package::where('id', 1)->firstOrFail();
 
@@ -116,7 +126,7 @@ class UserController extends Controller
 
         // $package_user->payment()->save($payment);
 
-        return response()->json($user->load('active_package_user.payment', 'package_users.payment'));
+        return response()->json($user->load('active_package_user.payment', 'package_users.payment', 'shop'));
     }
 
     public function branches()
@@ -220,10 +230,17 @@ class UserController extends Controller
 
     public function updateProfile(Request $request, $id)
     {
+
         $user = User::findOrFail($id);
         $user->fill($request->all());
         $user->save();
-        return response()->json($user);
+
+        if ($request->has('shop')) {
+            $user->shop()->firstOrFail()->update([
+                'description' => $request->shop['description'],
+            ]);
+        }
+        return response()->json($user->load('shop'));
     }
 
     public function changePassword(Request $request)
