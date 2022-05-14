@@ -32,6 +32,8 @@ class PaymentController extends Controller
         return $res;
     }
 
+
+
     /**
      * Store a newly created resource in storage.
      *

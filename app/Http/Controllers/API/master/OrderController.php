@@ -252,10 +252,12 @@ class OrderController extends Controller
         return $res;
     }
 
+
+
     public function branchPaymentCountByMonth($shop_id)
     {
         $res = Payment::select(
-            DB::raw('sum(value) as `total`'),
+            DB::raw('sum(value) as `total_sum`'),
             DB::raw("DATE_FORMAT(created_at, '%b %Y') time_period"),
             DB::raw('YEAR(created_at) year, MONTH(created_at) month')
         )
