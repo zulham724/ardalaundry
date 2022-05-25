@@ -181,6 +181,7 @@ Route::get('/comment/{commentid}/like', [CommentController::class, 'like']);
 Route::get('/comment/{commentid}/dislike', [CommentController::class, 'dislike']);
 
 //Product
+Route::post('/storeProduct', [ProductController::class, 'store']);
 Route::post('/addimage', [ProductController::class, 'addImage']);
 Route::post('/deleteimage', [ProductController::class, 'deleteImage']);
 Route::get('/getproductbyshop', [ProductController::class, 'getProductByShop']);
