@@ -181,4 +181,10 @@ class UserController extends Controller
         $user = User::findOrFail($userid);
         return response()->json($user->load('shop', 'master'));
     }
+
+    public function getAllProfile()
+    {
+        $user = User::with('shop')->has('shop')->get();
+        return response()->json($user);
+    }
 }
