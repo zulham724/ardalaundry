@@ -50,18 +50,20 @@ class RouteServiceProvider extends ServiceProvider
             Route::prefix('api/master')
                 ->middleware('api')
                 ->namespace($this->namespace)
+                ->name('master.')
                 ->group(base_path('routes/api/master.php'));
 
             Route::prefix('api/slave')
                 ->middleware(['auth:api', 'checkifslave', 'checksubscribe'])
                 ->namespace($this->namespace)
+                ->name('slave.')
                 ->group(base_path('routes/api/slave.php'));
 
             Route::prefix('api/admin')
                 ->middleware(['auth:api', 'checkifadmin'])
                 ->namespace($this->namespace)
+                ->name('admin.')
                 ->group(base_path('routes/api/admin.php'));
-
         });
     }
 

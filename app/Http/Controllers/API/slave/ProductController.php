@@ -30,6 +30,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         //
+        // return response()->json($request->all());
         $product = new Product($request->all());
         $product->shop_id = auth('api')->user()->shop->id;
         $product->save();
