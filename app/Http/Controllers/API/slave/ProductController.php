@@ -157,18 +157,21 @@ class ProductController extends Controller
 
     public function deleteImage(Request $request)
     {
-        return response()->json($request->all());
-        //  return File::findOrFail($request)->delete();
-
+        $image = File::findOrFail($request->id);
+        $delete = $image->delete();
+        return response()->json($delete);
     }
 
     public function addImage(Request $request)
     {
         $produk = Product::findOrFail($request->product_id);
 
-        $product = new Product($request->all());
-        $product->shop_id = auth('api')->user()->shop->id;
-        $product->save();
+        // $product = new Product($request->all());
+        // $product->shop_id = auth('api')->user()->shop->id;
+        // $product->save();
+
+        // $produk->$request->all();
+        // $produk->update();
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $i => $image) {
@@ -182,7 +185,7 @@ class ProductController extends Controller
             }
         }
 
-        $produk->save();
+        // $produk->save();
 
         return response()->json($produk->load('images'));
     }

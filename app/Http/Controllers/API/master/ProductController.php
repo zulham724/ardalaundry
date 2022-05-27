@@ -156,18 +156,42 @@ class ProductController extends Controller
 
     public function deleteImage(Request $request)
     {
-        return response()->json($request->all());
-        //  return File::findOrFail($request)->delete();
-
+        $image = File::findOrFail($request->id);
+        $delete = $image->delete();
+        return response()->json($delete);
     }
 
     public function addImage(Request $request)
     {
+        // $produk = Product::findOrFail($request->product_id);
+
+        // $product = new Product($request->all());
+        // $product->shop_id = auth('api')->user()->shop->id;
+        // $product->save();
+
+        // if ($request->hasFile('images')) {
+        //     foreach ($request->file('images') as $i => $image) {
+        //         # code...
+        //         $file = new File();
+        //         $path = $request->file('images')[$i]->store('files', env('FILESYSTEM_DRIVER'));
+        //         $file->src = $path;
+        //         $file->name = $request->file('images')[$i]->getClientOriginalName();
+        //         $file->filetype = $request->file('images')[$i]->getClientMimeType();
+        //         $produk->images()->save($file);
+        //     }
+        // }
+
+        // $produk->save();
+
+        // return response()->json($produk->load('images'));
         $produk = Product::findOrFail($request->product_id);
 
-        $product = new Product($request->all());
-        $product->shop_id = auth('api')->user()->shop->id;
-        $product->save();
+        // $product = new Product($request->all());
+        // $product->shop_id = auth('api')->user()->shop->id;
+        // $product->save();
+
+        // $produk->$request->all();
+        // $produk->update();
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $i => $image) {
@@ -181,7 +205,7 @@ class ProductController extends Controller
             }
         }
 
-        $produk->save();
+        // $produk->save();
 
         return response()->json($produk->load('images'));
     }
