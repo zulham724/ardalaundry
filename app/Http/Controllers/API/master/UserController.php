@@ -246,12 +246,19 @@ class UserController extends Controller
     public function changePassword(Request $request)
     {
         // return response()->json($request->all());
+
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
         $user = User::findOrFail(auth('api')->user()->id);
-        if (Hash::check($request->old_password, $user->password)) {
-            $user->password = bcrypt($request->new_password);
+        if (Hash::check($request->current_password, $user->password)) {
+            $user->password = bcrypt($request->password);
             $user->update();
-            return response()->json(['message' => 'Password berhasil diubah']);
+            return response(['message' => 'Password berhasil diubah'], 200);
+            return response()->json(['message' => 'Password berhasil diubah'], 200);
         } else {
+            return response(['message' => 'Password lama tidak sesuai'], 422);
             return response()->json(['message' => 'Password lama tidak sesuai'], 422);
         }
     }
