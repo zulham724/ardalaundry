@@ -39,6 +39,10 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'email' => 'required|string|email|max:255|unique:users',
+        ]);
+
         $user = new User($request->all());
         $user->role_id = 5;
         $user->save();

@@ -39,6 +39,10 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'email' => 'required|string|email|max:255|unique:users',
+        ]);
+        
         $user = new User($request->all());
         $user->role_id = 6;
         $user->save();
@@ -47,7 +51,7 @@ class CustomerController extends Controller
             $query->where('master_id', auth('api')->user()->id);
         })->findOrFail($request->shop_id)->customers()->attach($user->id);
 
-        return $res;
+        return response()->json($user);
     }
 
     /**
