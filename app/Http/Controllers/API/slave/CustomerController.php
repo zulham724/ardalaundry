@@ -28,24 +28,17 @@ class CustomerController extends Controller
     {
         // return response()->json($request->all());
         // return $request->user()->shop()->firstOrFail()->customers()->get();
-        $request->validate([
-            'email' => 'required|email|unique:users',
-        ]);
-        if ($request->user()->shop()->firstOrFail()->customers()->where('email', $request->email)->first()) {
-            return response(['message' => 'Password berhasil diubah'], 200);
-        } else {
-            $customer = new User();
-            $customer->name = $request->name;
-            $customer->role_id = 6;
-            $customer->email = $request->email;
-            $customer->contact_number = $request->contact_number;
-            $customer->home_address = $request->home_address;
-            if ($request->has('password')) {
-                $customer->password = bcrypt($request->password);
-            }
-            return $request->user()->shop()->firstOrFail()->customers()->save($customer);
-            return response(['message' => 'Password lama tidak sesuai'], 422);
+
+        $customer = new User();
+        $customer->name = $request->name;
+        $customer->role_id = 6;
+        $customer->email = $request->email;
+        $customer->contact_number = $request->contact_number;
+        $customer->home_address = $request->home_address;
+        if ($request->has('password')) {
+            $customer->password = bcrypt($request->password);
         }
+        return $request->user()->shop()->firstOrFail()->customers()->save($customer);
     }
 
     /**
@@ -89,8 +82,8 @@ class CustomerController extends Controller
 
     public function searchCustomer(Request $request)
     {
-        $res = User::whereHas('role', fn ($query) => $query->where('name', 'customer'))
-            ->whereHas('customer_shops', fn ($query) => $query->where('shop_id', $request->user()->shop()->firstOrFail()->id))
+        $res = User::whereHas('role', fn($query) => $query->where('name', 'customer'))
+            ->whereHas('customer_shops', fn($query) => $query->where('shop_id', $request->user()->shop()->firstOrFail()->id))
             ->where('name', 'like', '%' . $request->name . '%')
             ->get();
         return response()->json($res);
