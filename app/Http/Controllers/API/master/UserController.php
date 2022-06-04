@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Package;
-use App\Models\User;
 use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -80,22 +80,18 @@ class UserController extends Controller
     public function register(Request $request)
     {
 
-
         $exist = User::where('email', $request->email)->exists();
         if ($exist) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Email has been taken'
+                'message' => 'Email has been taken',
             ], 500);
         }
         // return response()->json($request->all());
         $user = new User($request->all());
         $user->password = bcrypt($request->password);
         $user->role_id = 3;
-        $user->affiliate_code = Str::random(5);
-
-
-
+        $user->affiliate_code = Str::lower(Str::random(5));
 
         if ($request->has('affiliate_code')) {
             $affiliate_code = $request->affiliate_code;
@@ -134,8 +130,8 @@ class UserController extends Controller
         // return 'asd';
         $res = User::with('shop')
             ->has('shop')
-            ->whereHas('role', fn ($query) => $query->where('id', 4))
-            ->whereHas('master', fn ($query) => $query->where('master_id', auth('api')->user()->id))
+            ->whereHas('role', fn($query) => $query->where('id', 4))
+            ->whereHas('master', fn($query) => $query->where('master_id', auth('api')->user()->id))
             ->withCount(['orders'])
             ->withCount(['orders as payment_count' => function ($query) {
                 $query

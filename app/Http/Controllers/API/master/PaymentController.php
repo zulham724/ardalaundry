@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
-use App\Models\Payment;
 use App\Models\PackageUser;
+use App\Models\Payment;
 use App\Models\User;
+use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
@@ -32,8 +33,6 @@ class PaymentController extends Controller
         return $res;
     }
 
-
-
     /**
      * Store a newly created resource in storage.
      *
@@ -50,9 +49,21 @@ class PaymentController extends Controller
         $packageuser->expired_date = Carbon::now()->addDays(30);
         $packageuser->save();
 
+        $client = new Client();
+        $json_data = ['value' => $request->price, 'payment_vendor' => 1]; // 1 dibuat langsung BNI
+        $res = $client->post(env('MASTER_PAYMENT_URL') . '/createpayment', [
+            'json' => $json_data,
+        ]);
+        $master_payment = json_decode($res->getBody());
+        if (json_last_error() != JSON_ERROR_NONE) {
+            return response('Format JSON salah', 422);
+        }
+
         $payment = new Payment();
-        $payment->value = $request->price;
-        $payment->status = "pending";
+        $payment->master_payment_id = $master_payment->id;
+        $payment->value = $master_payment->value;
+        $payment->status = $master_payment->status;
+        $payment->service_code = 1; // dibuat langsung BNI
         $payment->name = "Lunas";
 
         $res = auth('api')->user()->package_users()->findOrFail($packageuser->id)->payment()->save($payment);
@@ -70,10 +81,13 @@ class PaymentController extends Controller
     {
         //
 
-        $res = Payment::with('package_user',)->where('id', $id)->first();
-        if ($res->value < 1000) {
+        $res = Payment::with('package_user')->where('id', $id)->first();
+        if ($res->name == 'Paket Trial') {
             $res->status = "success";
             $res->save();
+        } else if ($res->status != "success") {
+            $payment = $this->getStatus($res->id);
+            return $payment->load('package_user');
         }
 
         return $res;
@@ -146,5 +160,24 @@ class PaymentController extends Controller
 
         $res = $in - $out;
         return response()->json($res);
+    }
+
+    public function getStatus($payment_id)
+    {
+
+        $payment = Payment::findOrFail($payment_id);
+
+        $client = new Client();
+        $res = $client->get(env('MASTER_PAYMENT_URL') . "/checkstatus/{$payment->master_payment_id}");
+        $result_json = json_decode($res->getBody());
+        if (json_last_error() != JSON_ERROR_NONE) {
+            return response('Format JSON salah', 422);
+        }
+
+        $payment->status = $result_json->status;
+        $payment->save();
+
+        return $payment;
+
     }
 }
