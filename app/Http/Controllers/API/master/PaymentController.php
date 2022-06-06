@@ -81,8 +81,8 @@ class PaymentController extends Controller
     {
         //
 
-        $res = Payment::with('package_user')->where('id', $id)->first();
-        if ($res->name == 'Paket Trial') {
+        $res = Payment::with('package_user.package')->has('package_user.package')->where('id', $id)->first();
+        if ($res->package_user->package->name == 'Paket Trial') {
             $res->status = "success";
             $res->save();
         } else if ($res->status != "success") {
