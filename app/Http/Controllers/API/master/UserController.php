@@ -258,4 +258,9 @@ class UserController extends Controller
             return response()->json(['message' => 'Password lama tidak sesuai'], 422);
         }
     }
+    public function getAllProfile()
+    {
+        $user = User::with('shop')->has('shop')->get();
+        return response()->json($user);
+    }
 }

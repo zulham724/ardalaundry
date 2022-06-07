@@ -147,3 +147,5 @@ Route::get('/get_liked_product_by_user/{userid}', [ProductController::class, 'ge
 
 // Route untuk search product liked
 Route::post('/search_liked_product_by_user', [ProductController::class, 'searchLikedProductByUser']);
+// Route untuk ambil semua user
+Route::get('/user/get-all-user', [UserController::class, 'getAllProfile']);
