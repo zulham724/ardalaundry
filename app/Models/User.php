@@ -140,7 +140,7 @@ class User extends \TCG\Voyager\Models\User
     {
         $active_package_user = $this->active_package_user;
         if ($active_package_user) {
-            return $active_package_user->expired_date > now();
+            return $active_package_user->expired_date < now();
         }
         return false;
     }
