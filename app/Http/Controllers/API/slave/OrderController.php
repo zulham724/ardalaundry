@@ -510,7 +510,7 @@ class OrderController extends Controller
             $query->where('id', $shopid);
         })
             ->where('order_status_id', 1)
-            // ->whereDate('created_at', \Carbon\Carbon::today())
+        // ->whereDate('created_at', \Carbon\Carbon::today())
             ->count();
 
         return response()->json($res);
@@ -734,7 +734,10 @@ class OrderController extends Controller
 
     public function getBalanceMonthly($shopid)
     {
-        $in = Payment::where('type', 'in')
+        $in = Payment::whereHas('order.shop', function ($query) use ($shopid) {
+            $query->where('id', $shopid);
+        })
+            ->where('type', 'in')
             ->whereBetween('created_at', [\Carbon\Carbon::now()->startOfMonth(), \Carbon\Carbon::now()->endOfMonth()])
             ->sum('value');
         $out = Payment::whereHas('shop', function ($query) use ($shopid) {
