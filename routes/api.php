@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\ModuleController;
 use App\Http\Controllers\API\ModuleContentController;
+use App\Http\Controllers\API\slave\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -57,4 +58,9 @@ Route::group(['middleware' => 'auth:api'], function () {
         'module' => ModuleController::class,
         'module-content' => ModuleContentController::class,
     ]);
+
+
 });
+
+Route::get('/order/{orderid}', [OrderController::class, 'show']);
+
