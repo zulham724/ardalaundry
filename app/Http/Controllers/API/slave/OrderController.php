@@ -109,6 +109,28 @@ class OrderController extends Controller
         return $order;
     }
 
+    public function show2($shopid, $orderid)
+    {
+        //
+        $order =
+        Order::with('customer', 'photo', 'employee', 'shop', 'services.pre_order_photo', 'status', 'payments')
+            ->whereHas('shop', function ($query) use ($shopid) {
+                $query->where('id', $shopid);
+            })
+            ->findOrFail($orderid);
+        $count = 0;
+        foreach ($order->services as $s => $service) {
+
+            if ($order->services->count()) {
+                if ($service->service_status_id == 3) {
+                    $count++;
+                }
+                $order->percentage = (($count / $order->services->count()) * 100);
+            }
+        }
+        return $order;
+    }
+
     /**
      * Update the specified resource in storage.
      *

@@ -62,5 +62,5 @@ Route::group(['middleware' => 'auth:api'], function () {
 
 });
 
-Route::get('/order/{orderid}', [OrderController::class, 'show']);
+Route::get('/order/{shopid}/{orderid}', [OrderController::class, 'show2']);
 
