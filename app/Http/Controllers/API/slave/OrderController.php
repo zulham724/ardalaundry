@@ -184,9 +184,10 @@ class OrderController extends Controller
         return response()->json($order->load('payments', 'products'));
     }
 
-    public function get_order()
+    public function get_order($orderid)
     {
-        return Order::with('services', 'customer')->orderBy('created_at', 'desc')->first();
+
+        return Order::with('services', 'customer')->orderBy('created_at', 'desc')->where('id', $orderid)->first();
     }
 
     public function getOrdersByShop($shop_id)

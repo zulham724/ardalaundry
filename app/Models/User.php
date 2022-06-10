@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Notifications\Notifiable;
+// use Illuminate\Database\Eloquent\SoftDeletes;
 // use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
 class User extends \TCG\Voyager\Models\User
@@ -153,4 +154,5 @@ class User extends \TCG\Voyager\Models\User
         }
         return null;
     }
+
 }
