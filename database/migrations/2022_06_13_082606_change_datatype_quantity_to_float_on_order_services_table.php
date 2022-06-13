@@ -15,7 +15,7 @@ class ChangeDatatypeQuantityToFloatOnOrderServicesTable extends Migration
     {
         Schema::table('order_services', function (Blueprint $table) {
             //
-            $table->float('quantity')->change();
+            $table->float('quantity', 8, 2)->change();
         });
     }
 
