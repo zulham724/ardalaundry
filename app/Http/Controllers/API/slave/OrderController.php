@@ -109,6 +109,28 @@ class OrderController extends Controller
         return $order;
     }
 
+    public function show2($shopid, $orderid)
+    {
+        //
+        $order =
+        Order::with('customer', 'photo', 'employee', 'shop', 'services.pre_order_photo', 'status', 'payments')
+            ->whereHas('shop', function ($query) use ($shopid) {
+                $query->where('id', $shopid);
+            })
+            ->findOrFail($orderid);
+        $count = 0;
+        foreach ($order->services as $s => $service) {
+
+            if ($order->services->count()) {
+                if ($service->service_status_id == 3) {
+                    $count++;
+                }
+                $order->percentage = (($count / $order->services->count()) * 100);
+            }
+        }
+        return $order;
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -162,9 +184,10 @@ class OrderController extends Controller
         return response()->json($order->load('payments', 'products'));
     }
 
-    public function get_order()
+    public function get_order($orderid)
     {
-        return Order::with('services', 'customer')->orderBy('created_at', 'desc')->first();
+
+        return Order::with('services', 'customer')->orderBy('created_at', 'desc')->where('id', $orderid)->first();
     }
 
     public function getOrdersByShop($shop_id)
@@ -510,7 +533,7 @@ class OrderController extends Controller
             $query->where('id', $shopid);
         })
             ->where('order_status_id', 1)
-            // ->whereDate('created_at', \Carbon\Carbon::today())
+        // ->whereDate('created_at', \Carbon\Carbon::today())
             ->count();
 
         return response()->json($res);
@@ -734,7 +757,10 @@ class OrderController extends Controller
 
     public function getBalanceMonthly($shopid)
     {
-        $in = Payment::where('type', 'in')
+        $in = Payment::whereHas('order.shop', function ($query) use ($shopid) {
+            $query->where('id', $shopid);
+        })
+            ->where('type', 'in')
             ->whereBetween('created_at', [\Carbon\Carbon::now()->startOfMonth(), \Carbon\Carbon::now()->endOfMonth()])
             ->sum('value');
         $out = Payment::whereHas('shop', function ($query) use ($shopid) {

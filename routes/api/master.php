@@ -3,23 +3,21 @@
 use App\Http\Controllers\API\master\AffiliateController;
 use App\Http\Controllers\API\master\AttendanceController;
 use App\Http\Controllers\API\master\BranchController;
+use App\Http\Controllers\API\master\CommentController;
 use App\Http\Controllers\API\master\CustomerController;
+use App\Http\Controllers\API\master\EmployeeController;
 use App\Http\Controllers\API\master\OrderController;
 use App\Http\Controllers\API\master\PackageController;
 use App\Http\Controllers\API\master\PackageUserController;
 use App\Http\Controllers\API\master\PaymentController;
+use App\Http\Controllers\API\master\PostController;
+use App\Http\Controllers\API\master\ProductController;
+use App\Http\Controllers\API\master\ServiceCategoryController;
 use App\Http\Controllers\API\master\ServiceController;
 use App\Http\Controllers\API\master\ShopController;
-use App\Http\Controllers\API\master\UserController;
-use App\Http\Controllers\API\master\EmployeeController;
-use App\Http\Controllers\API\master\ServiceCategory;
-use App\Http\Controllers\API\master\ServiceCategoryController;
-use App\Http\Controllers\API\master\PostController;
-use App\Http\Controllers\API\master\CommentController;
+use App\Http\Controllers\API\master\ShopPaymentVendorController;
 // use App\Http\Controllers\API\slave\ProductController;
-use App\Http\Controllers\API\master\ProductController;
-use App\Http\Controllers\ProductController as ControllersProductController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\master\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,7 +29,7 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+ */
 
 Route::middleware(['auth:api', 'checkifmaster'])->get('/user', [UserController::class, 'login']);
 
@@ -120,6 +118,7 @@ Route::apiResources([
     'affiliate' => AffiliateController::class,
     'attendance' => AttendanceController::class,
     'post' => PostController::class,
+    'shops.payment_vendors' => ShopPaymentVendorController::class,
     // 'product' => ProductController::class,
 ]);
 
@@ -147,3 +146,5 @@ Route::get('/get_liked_product_by_user/{userid}', [ProductController::class, 'ge
 
 // Route untuk search product liked
 Route::post('/search_liked_product_by_user', [ProductController::class, 'searchLikedProductByUser']);
+// Route untuk ambil semua user
+Route::get('/user/get-all-user', [UserController::class, 'getAllProfile']);

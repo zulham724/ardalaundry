@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+// use Illuminate\Database\Eloquent\SoftDeletes;
 // use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
-
 
 class User extends \TCG\Voyager\Models\User
 {
@@ -25,8 +23,10 @@ class User extends \TCG\Voyager\Models\User
         'password',
         'home_address',
         'contact_number',
-        'role_id'
+        'role_id',
     ];
+
+    protected $appends = ['is_expired', 'expired_diff'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -136,4 +136,23 @@ class User extends \TCG\Voyager\Models\User
     {
         return $this->hasMany('App\Models\Order', 'customer_id');
     }
+
+    public function getIsExpiredAttribute()
+    {
+        $active_package_user = $this->active_package_user;
+        if ($active_package_user) {
+            return $active_package_user->expired_date < now();
+        }
+        return false;
+    }
+
+    public function getExpiredDiffAttribute()
+    {
+        $active_package_user = $this->active_package_user;
+        if ($active_package_user) {
+            return date_diff(now(), date_create($active_package_user->expired_date));
+        }
+        return null;
+    }
+
 }

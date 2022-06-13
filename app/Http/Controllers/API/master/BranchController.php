@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
-use App\Models\User;
 use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,8 +42,8 @@ class BranchController extends Controller
         }
         $request->validate([
             'name' => 'required',
-            'email' => 'required|unique:users',
-            'password' => 'required'
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required',
 
         ]);
 
@@ -58,7 +58,6 @@ class BranchController extends Controller
         $shop->description = $request->shop_desc ?? null;
         $slave->shop()->save($shop);
         auth('api')->user()->slaves()->attach($slave->id);
-
 
         return auth('api')->user()->load('slaves.shop');
     }
@@ -110,7 +109,8 @@ class BranchController extends Controller
         return response()->json($delete);
     }
 
-    public function deleteBranch(Request $request){
+    public function deleteBranch(Request $request)
+    {
         // return abort(500);
         // return response()->json($request->all());
         $slave = User::findOrFail($request->user_id);

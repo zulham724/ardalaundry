@@ -34,13 +34,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
 
-
     // return response()->json($request->all());
     return $request->user()->load(['shop']);
 });
 
 // Route::get('/user', [UserController::class, 'login']);
-
 
 Route::post('/user/register', [UserController::class, 'register_customer']);
 Route::post('/user/update/{userid}', [UserController::class, 'update_customer']);
@@ -73,7 +71,7 @@ Route::post('shop/order/{orderid}/payment', [MasterOrderController::class, 'paym
 Route::post('/shop/order/report', [OrderController::class, 'order_report']);
 Route::get('/shop/{shopid}/getOrdersReportByShop', [OrderController::class, 'getOrdersReportByShop']);
 Route::get('/shop/{shopid}/queueorder', [OrderController::class, 'getQueueOrderByShop']);
-Route::get('/getorder', [OrderController::class, 'get_order']);
+Route::get('/getorder/{orderid}', [OrderController::class, 'get_order']);
 Route::post('/shop/searchAttendances', [AttendanceController::class, 'searchAttendance']);
 //chart
 Route::get('shop/orderscountbymonth/{shopid}', [OrderController::class, 'getOrdersCountByMonth']);
@@ -217,3 +215,9 @@ Route::post('/search_liked_product_by_user', [ProductController::class, 'searchL
 
 // Route untuk ambil semua user
 Route::get('/user/get-all-user', [UserController::class, 'getAllProfile']);
+
+// Route untuk ambil rekening bank
+// Route::get('/users/bank/getbankaccount', [MasterPaymentController::class, 'index']);
+
+// Route untuk menambah rekening bank
+// Route::post('/users/bank/addbankaccount', [MasterPaymentController::class, 'store']);
