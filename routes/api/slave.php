@@ -154,6 +154,7 @@ Route::post('modulecontent/{id}/read', [ModuleContentController::class, 'read'])
 //CommentCourse
 Route::post('/add_comment_course', [CommentController::class, 'add_comment_course']);
 Route::get('/{contentid}/comment', [CommentController::class, 'get_comment_course']);
+Route::post('/comment/{commentId}/deletecomment', [CommentController::class, 'destroy']);
 
 //Payment
 Route::get('/{shopid}/spendingtoday', [PaymentController::class, 'getSpendingToday']);
