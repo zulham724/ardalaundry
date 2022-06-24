@@ -15,7 +15,7 @@ class ServiceUnitController extends Controller
      */
     public function index()
     {
-        //
+        return ServiceUnit::get();
     }
 
     /**

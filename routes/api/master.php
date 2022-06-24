@@ -14,6 +14,7 @@ use App\Http\Controllers\API\master\PostController;
 use App\Http\Controllers\API\master\ProductController;
 use App\Http\Controllers\API\master\ServiceCategoryController;
 use App\Http\Controllers\API\master\ServiceController;
+use App\Http\Controllers\API\master\ServiceUnitController;
 use App\Http\Controllers\API\master\ShopController;
 use App\Http\Controllers\API\master\ShopPaymentVendorController;
 // use App\Http\Controllers\API\slave\ProductController;
@@ -132,6 +133,7 @@ Route::get('/comment/{commentid}/dislike', [CommentController::class, 'dislike']
 Route::get('/getpostbypostid/{postid}', [PostController::class, 'getPostByPostId']);
 
 Route::post('/updateproducts/{productid}', [ProductController::class, 'updatetest']);
+Route::get('/get_service_units', [ServiceUnitController::class, 'index']);
 
 //Post
 Route::get('/get_profile_by_id/{userid}', [UserController::class, 'getProfileById']);
