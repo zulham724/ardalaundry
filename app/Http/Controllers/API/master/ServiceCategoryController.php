@@ -39,7 +39,8 @@ class ServiceCategoryController extends Controller
     public function show($id)
     {
         //
-        $res = ServiceCategory::findOrFail($id);
+        $res = ServiceCategory::with("service_unit")
+        ->findOrFail($id);
 
         return response()->json($res);
     }
