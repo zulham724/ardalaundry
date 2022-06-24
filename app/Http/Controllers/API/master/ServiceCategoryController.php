@@ -36,9 +36,12 @@ class ServiceCategoryController extends Controller
      * @param  \App\Models\ServiceCategory  $serviceCategory
      * @return \Illuminate\Http\Response
      */
-    public function show(ServiceCategory $serviceCategory)
+    public function show($id)
     {
         //
+        $res = ServiceCategory::findOrFail($id);
+
+        return response()->json($res);
     }
 
     /**
@@ -68,5 +71,5 @@ class ServiceCategoryController extends Controller
     {
         $res = ServiceCategory::with("service_unit")->where('shop_id', $shopId)->get();
         return response()->json($res);
-    }
+    } 
 }

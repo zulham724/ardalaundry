@@ -62,6 +62,8 @@ Route::get('/slave/{shopid}/services', [ServiceController::class, 'getServiceByS
 
 Route::get('/slave/{shopid}/servicecategories', [ServiceCategoryController::class, 'getServiceCategoryBySlave']);
 
+Route::get('/servicecategories/{id}/byid', [ServiceCategoryController::class, 'show']);
+
 // ROute untuk mengambil data poduk yanng di sukai
 Route::get('/get_liked_product_by_user/{userid}', [ProductController::class, 'getLikedProductByUser']);
 
