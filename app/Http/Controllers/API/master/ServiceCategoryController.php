@@ -66,7 +66,7 @@ class ServiceCategoryController extends Controller
 
     public function getServiceCategoryBySlave($shopId)
     {
-        $res = ServiceCategory::where('shop_id', $shopId)->get();
+        $res = ServiceCategory::with("service_unit")->where('shop_id', $shopId)->get();
         return response()->json($res);
     }
 }
