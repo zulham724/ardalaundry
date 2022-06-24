@@ -59,6 +59,8 @@ Route::get('/shops', [ShopController::class, 'index']);
 Route::get('/branches', [UserController::class, 'branches']);
 Route::get('/slave/{shopid}/services', [ServiceController::class, 'getServiceBySlave']);
 
+Route::get('/slave/{shopid}/servicecategories', [ServiceCategoryController::class, 'getServiceCategoryBySlave']);
+
 // ROute untuk mengambil data poduk yanng di sukai
 Route::get('/get_liked_product_by_user/{userid}', [ProductController::class, 'getLikedProductByUser']);
 

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
-use App\Models\ServiceCategory;
+use App\Models\ServiceUnit;
 use Illuminate\Http\Request;
 
-class ServiceCategoryController extends Controller
+class ServiceUnitController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,6 @@ class ServiceCategoryController extends Controller
     public function index()
     {
         //
-        return ServiceCategory::get();
     }
 
     /**
@@ -33,10 +32,10 @@ class ServiceCategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ServiceCategory  $serviceCategory
+     * @param  \App\Models\ServiceUnit  $serviceUnit
      * @return \Illuminate\Http\Response
      */
-    public function show(ServiceCategory $serviceCategory)
+    public function show(ServiceUnit $serviceUnit)
     {
         //
     }
@@ -45,10 +44,10 @@ class ServiceCategoryController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ServiceCategory  $serviceCategory
+     * @param  \App\Models\ServiceUnit  $serviceUnit
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ServiceCategory $serviceCategory)
+    public function update(Request $request, ServiceUnit $serviceUnit)
     {
         //
     }
@@ -56,17 +55,11 @@ class ServiceCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ServiceCategory  $serviceCategory
+     * @param  \App\Models\ServiceUnit  $serviceUnit
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ServiceCategory $serviceCategory)
+    public function destroy(ServiceUnit $serviceUnit)
     {
         //
-    }
-
-    public function getServiceCategoryBySlave($shopId)
-    {
-        $res = ServiceCategory::where('shop_id', $shopId)->get();
-        return response()->json($res);
     }
 }
