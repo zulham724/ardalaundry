@@ -27,7 +27,7 @@ class ServiceCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**

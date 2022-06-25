@@ -35,6 +35,7 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         //
+        // return response()->json(['message' => 'tes']);
         $request->validate([
             'name' => 'required',
             'email' => 'required|unique:users',
@@ -44,6 +45,13 @@ class EmployeeController extends Controller
         $employee->role_id = 5;
         $employee->name = $request->name;
         $employee->email = $request->email;
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatar', ENV("FILESYSTEM_DRIVER"));
+            // $avatar->src = $path;
+            $employee->avatar = $path;
+        }
+
         if($request->has("password")){
             $employee->password = bcrypt($request->password);
         }
