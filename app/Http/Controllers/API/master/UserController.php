@@ -179,7 +179,7 @@ class UserController extends Controller
         // return response()->json($request->all());
         $res = $request->user()
             ->loadCount(['slaves', 'orders'])
-            ->load(['packages', 'active_package_user' => function ($query) {
+            ->load(['shop', 'packages', 'active_package_user' => function ($query) {
                 $query->with('payment', 'package.package_limits', 'package.package_contents');
             }]);
 
