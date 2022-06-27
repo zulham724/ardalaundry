@@ -36,6 +36,11 @@ class Shop extends Model
         return $this->hasMany('App\Models\Service');
     }
 
+    public function service_categories()
+    {
+        return $this->hasMany('App\Models\ServiceCategory');
+    }
+
     public function attendances()
     {
         return $this->belongsToMany('App\Models\User', 'attendances')->withPivot(['created_at', 'in_at', 'out_at']);

@@ -64,6 +64,11 @@ class User extends \TCG\Voyager\Models\User
         })->orderBy('created_at', 'desc');
     }
 
+    public function posts()
+    {
+        return $this->hasMany('App\Models\Post', 'author_id');
+    }
+
     public function shop()
     {
         return $this->hasOne('App\Models\Shop');

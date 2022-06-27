@@ -18,6 +18,7 @@ use App\Http\Controllers\API\master\ServiceUnitController;
 use App\Http\Controllers\API\master\ShopController;
 use App\Http\Controllers\API\master\ShopPaymentVendorController;
 // use App\Http\Controllers\API\slave\ProductController;
+use App\Http\Controllers\API\master\ShopServiceCategoryController;
 use App\Http\Controllers\API\master\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -124,6 +125,7 @@ Route::apiResources([
     'attendance' => AttendanceController::class,
     'post' => PostController::class,
     'shops.payment_vendors' => ShopPaymentVendorController::class,
+    'shops.servicecategories' => ShopServiceCategoryController::class,
     // 'product' => ProductController::class,
 ]);
 
@@ -154,3 +156,7 @@ Route::get('/get_liked_product_by_user/{userid}', [ProductController::class, 'ge
 Route::post('/search_liked_product_by_user', [ProductController::class, 'searchLikedProductByUser']);
 // Route untuk ambil semua user
 Route::get('/user/get-all-user', [UserController::class, 'getAllProfile']);
+// GET Route untuk search user post dengan parameter key
+Route::get('/user/search-user-post/{key}', [UserController::class, 'searchUserPostByKey']);
+
+Route::post('/orderproduct', [OrderController::class, 'order_product']);

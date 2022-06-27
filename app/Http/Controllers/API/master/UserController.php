@@ -263,4 +263,15 @@ class UserController extends Controller
         $user = User::with('shop')->has('shop')->get();
         return response()->json($user);
     }
+
+    public function searchUserPostByKey($key)
+    {
+        // cari postingan user
+        $res = \App\Models\Post::where('title', 'like', '%' . $key . '%')
+            ->orWhere('body', 'like', '%' . $key . '%')
+            ->with('author')
+            ->has('author')
+            ->get();
+        return response()->json($res);
+    }
 }

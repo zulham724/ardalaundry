@@ -4,12 +4,12 @@ namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Models\Shop;
 use App\Models\Payment;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Shop;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -79,7 +79,7 @@ class OrderController extends Controller
 
     public function geOrderCountByShop($shopId)
     {
-        $res = Order::whereHas('shop', fn ($query) => $query->where('id', $shopId))->count();
+        $res = Order::whereHas('shop', fn($query) => $query->where('id', $shopId))->count();
 
         return response()->json($res);
     }
@@ -117,12 +117,12 @@ class OrderController extends Controller
             ->whereMonth('created_at', date("n", strtotime("-1 month")))
             ->sum('value');
 
-        if ((int)$thismonth == 0 && (int)$lastmonth == 0) {
+        if ((int) $thismonth == 0 && (int) $lastmonth == 0) {
             return 0;
-        } else if ((int)$lastmonth == 0) {
+        } else if ((int) $lastmonth == 0) {
             return 100;
         } else {
-            return ((int)$thismonth / (int)$lastmonth) * 100;
+            return ((int) $thismonth / (int) $lastmonth) * 100;
         }
     }
 
@@ -134,13 +134,12 @@ class OrderController extends Controller
             ->join('services', 'order_services.service_id', '=', 'services.id')
             ->where('orders.id', $orderid)->first()->total_price;
         // 2 itung total payment yg masuk
-        (int)$pay = $request->value;
-        (int)$payments = Payment::whereHas('order', function ($query) use ($orderid) {
+        (int) $pay = $request->value;
+        (int) $payments = Payment::whereHas('order', function ($query) use ($orderid) {
             $query->where('id', $orderid);
         })->sum('value');
         // return [(int)$payments,(int)$pay];
         $total_payment = $payments + $pay;
-
 
         // 3 bandingkan nilai yg masuk + payment yg sudah masuk dengan total
         $payment = new Payment();
@@ -153,7 +152,7 @@ class OrderController extends Controller
             $total_price = $total_price - $payments;
             $payment->value = $pay;
             $payment->status = 'success';
-        } else if ($total_payment ==  $total_price) {
+        } else if ($total_payment == $total_price) {
             // kalau hasil jumlah nya sama dengan total nama nya == pelunasan
             $payment->name = 'Pelunasan';
             $payment->value = $pay;
@@ -195,12 +194,12 @@ class OrderController extends Controller
             ->sum('value');
 
         // return response()->json([(int)$thismonth,$lastmonth]);
-        if ((int)$thismonth == 0 && (int)$lastmonth == 0) {
+        if ((int) $thismonth == 0 && (int) $lastmonth == 0) {
             return 0;
-        } else if ((int)$lastmonth == 0) {
+        } else if ((int) $lastmonth == 0) {
             return 100;
         } else {
-            return ((int)$thismonth / (int)$lastmonth) * 100;
+            return ((int) $thismonth / (int) $lastmonth) * 100;
         }
     }
 
@@ -251,8 +250,6 @@ class OrderController extends Controller
             ->get();
         return $res;
     }
-
-
 
     public function branchPaymentCountByMonth($shop_id)
     {
@@ -305,5 +302,32 @@ class OrderController extends Controller
             }])
             ->get();
         return $res;
+    }
+
+    public function order_product(Request $request)
+    {
+        // return response()->json($request->all());
+        $order = new Order($request->all());
+        $order->order_status_id = 1;
+        $order->save();
+
+        $order->products()->attach($request->product_id, ['quantity' => $request->quantity]);
+
+        if ($request->has('payment')) {
+            $label = "";
+            if ($request->payment > $request->total_price) {
+                $label = "DP 1";
+            } else {
+                $label = "Pelunasan";
+            }
+            $payment = new Payment();
+            $payment->name = $label;
+            $payment->value = $request->payment;
+            $payment->status = 'success';
+            $payment->type = 'in';
+            $order->payments()->save($payment);
+        }
+
+        return response()->json($order->load('payments', 'products'));
     }
 }

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
+use App\Models\Package;
 use App\Models\PackageUser;
 use App\Models\Payment;
 use App\Models\User;
-use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,14 +43,36 @@ class PaymentController extends Controller
     {
         //
         // return response()->json($request->all());
+        $request->validate([
+            'package_id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    // cek jika pembelian adalah paket trial
+                    if ($value == 1) {
+                        // cek jika sudah pernah beli paket trial sebelum nya
+                        $userHasTrialPackageBefore = PackageUser::where('user_id', auth('api')->user()->id)->where('package_id', $value)
+                            ->whereHas('payment', function ($query) {
+                                $query->where('status', 'success');
+                            })->exists();
+                        if ($userHasTrialPackageBefore) {
+                            return $fail('You have already purchased trial package');
+                        }
+                    }
+                },
+            ],
+        ]);
+
+        $user = User::findOrFail(auth('api')->user()->id);
+        $package = Package::findOrFail($request->package_id);
+
         $packageuser = new PackageUser();
         $packageuser->user_id = auth('api')->user()->id;
-        $packageuser->package_id = $request->id;
-        $packageuser->expired_date = Carbon::now()->addDays(30);
+        $packageuser->package_id = $package->id;
+        $packageuser->expired_date = date('Y-m-d H:i:s', strtotime($package->active_period));
         $packageuser->save();
 
         $client = new Client();
-        $json_data = ['value' => $request->price, 'payment_vendor' => 1]; // 1 dibuat langsung BNI
+        $json_data = ['value' => $package->price, 'payment_vendor' => 1]; // 1 dibuat langsung BNI
         $res = $client->post(env('MASTER_PAYMENT_URL') . '/createpayment', [
             'json' => $json_data,
         ]);
@@ -64,9 +86,9 @@ class PaymentController extends Controller
         $payment->value = $master_payment->value;
         $payment->status = $master_payment->status;
         $payment->service_code = 1; // dibuat langsung BNI
-        $payment->name = "Lunas";
+        $payment->name = "Pembelian Paket Laundry";
 
-        $res = auth('api')->user()->package_users()->findOrFail($packageuser->id)->payment()->save($payment);
+        $res = $user->package_users()->findOrFail($packageuser->id)->payment()->save($payment);
 
         return $res;
     }

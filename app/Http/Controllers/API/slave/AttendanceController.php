@@ -35,7 +35,12 @@ class AttendanceController extends Controller
             ->exists();
         // return response()->json($exist);
         if ($exist) {
-            return response('Anda sudah absen', 503);
+            return response()->json([
+                'message' => 'Anda sudah absen',
+                'data' => $request->user()->shop()->firstOrFail()->attendances()
+                    ->where('user_id', $request->id)
+                    ->whereDate('attendances.created_at', \Carbon\Carbon::today())->first(),
+            ], 400);
         } else {
             $request->user()->shop()->firstOrFail()->attendances()->attach($request->id,
                 ['in_at' => \Carbon\Carbon::now()]
@@ -90,7 +95,15 @@ class AttendanceController extends Controller
 
     public function attendanceOut(Request $request)
     {
-        $employee = Attendance::where('user_id', $request->id)->orderBy('id', 'desc')->first();
+        $hasAbsen = Attendance::where('user_id', $request->id)
+            ->whereDate('out_at', \Carbon\Carbon::today())
+            ->exists();
+        if ($hasAbsen) {
+            return response()->json([
+                'message' => 'Anda sudah absen keluar',
+            ], 400);
+        }
+        $employee = Attendance::where('user_id', $request->id)->where('in_at', \Carbon\Carbon::today())->first();
         $employee->out_at = \Carbon\Carbon::now();
         $employee->update();
 
