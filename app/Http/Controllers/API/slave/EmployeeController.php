@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API\slave;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
@@ -20,8 +20,9 @@ class EmployeeController extends Controller
         //
         // $res = Auth::user()->load(['shop.employees'=>fn($query)=>$query->where('role_id',5)]);
         // return $res;
-        $res = User::whereHas('role', fn ($query) => $query->where('id', 5))
-            ->whereHas('employee_shops', fn ($query) => $query->where('shop_id', Auth::user()->load('shop')->shop->id))
+        $user = User::findOrFail(auth('api')->user()->id);
+        $res = User::whereHas('role', fn($query) => $query->where('id', 5))
+            ->whereHas('employee_shops', fn($query) => $query->where('shop_id', $user->load('shop')->shop->id))
             ->get();
         return response()->json($res);
     }
@@ -41,7 +42,7 @@ class EmployeeController extends Controller
             'email' => 'required|unique:users',
         ]);
 
-        $employee =  new User();
+        $employee = new User();
         $employee->role_id = 5;
         $employee->name = $request->name;
         $employee->email = $request->email;
@@ -52,7 +53,7 @@ class EmployeeController extends Controller
             $employee->avatar = $path;
         }
 
-        if($request->has("password")){
+        if ($request->has("password")) {
             $employee->password = bcrypt($request->password);
         }
         $employee->home_address = $request->home_address;
@@ -107,26 +108,27 @@ class EmployeeController extends Controller
     {
         // return $request->all();
         $res = User::
-        whereHas('role', fn ($query) => $query->where('id', 5))
-        ->whereHas('employee_shops', fn ($query) => $query->where('shop_id', $request->user()->shop()->firstOrFail()->id))
+            whereHas('role', fn($query) => $query->where('id', 5))
+            ->whereHas('employee_shops', fn($query) => $query->where('shop_id', $request->user()->shop()->firstOrFail()->id))
             ->where('name', 'like', '%' . $request->name . '%')
             ->get();
         return response()->json($res);
     }
 
-    public function attendance(Request $request){
+    public function attendance(Request $request)
+    {
         // return response()->json($request->all());
         $attendance = Attendance::where('created_at', \Carbon\Carbon::today())->exists();
-        if($attendance){
-            return response()->json("Sudah absen",403);
-        }else{
+        if ($attendance) {
+            return response()->json("Sudah absen", 403);
+        } else {
             $res = new Attendance();
             $res->user_id = $request->id;
             $res->shop_id = auth('api')->user()->shop->id;
             $res->in_at = \Carbon\Carbon::now();
             $res->save();
-            return ;
+            return;
         }
-        
+
     }
 }

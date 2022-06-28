@@ -68,7 +68,7 @@ class PaymentController extends Controller
         $packageuser = new PackageUser();
         $packageuser->user_id = auth('api')->user()->id;
         $packageuser->package_id = $package->id;
-        $packageuser->expired_date = date('Y-m-d H:i:s', strtotime($package->active_period));
+        $packageuser->expired_date = date('Y-m-d H:i:s', strtotime($package->time_period));
         $packageuser->save();
 
         $client = new Client();
@@ -138,13 +138,23 @@ class PaymentController extends Controller
         //
     }
 
-    public function getSpending(Request $request)
+    public function getSpending($shopId)
     {
         // return response()->json($request->all());
         $payment = Payment::where('type', 'out')
-            ->where('payment_id', 1)
+            ->where('payment_id', $shopId)
             ->where('payment_type', 'App\Models\Shop')
             ->get();
+        return response()->json($payment);
+    }
+
+    public function getSpendingSum($shopId)
+    {
+        // return response()->json($request->all());
+        $payment = Payment::where('type', 'out')
+            ->where('payment_id', $shopId)
+            ->where('payment_type', 'App\Models\Shop')
+            ->sum('value');
         return response()->json($payment);
     }
 

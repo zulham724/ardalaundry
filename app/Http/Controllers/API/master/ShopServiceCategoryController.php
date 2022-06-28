@@ -78,9 +78,23 @@ class ShopServiceCategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $shopId, $id)
     {
         //
+        $shop = \App\Models\Shop::findOrFail($shopId);
+
+        $shop->service_categories()->findOrFail($id)->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'service_unit_id' => $request->service_unit_id,
+            'shop_id' => $shopId,
+        ]);
+
+        return response()->json([
+            'message' => 'Service category updated',
+            'data' => $shop->service_categories()->findOrFail($id),
+        ]);
+
     }
 
     /**

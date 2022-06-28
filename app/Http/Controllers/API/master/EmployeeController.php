@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,6 +45,11 @@ class EmployeeController extends Controller
 
         $user = new User($request->all());
         $user->role_id = 5;
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatar', ENV("FILESYSTEM_DRIVER"));
+            $user->avatar = $path;
+        }
+
         $user->save();
 
         $res = Shop::whereHas('user.master', function ($query) {
@@ -86,9 +91,14 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         //
-        // $user = User::findOrFail($id)->update($request->all());
-        // return response()->json($user);
-        return User::findOrFail($id)->update($request->all());
+        $user = User::findOrFail($id);
+        $user->fill($request->all());
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatar', ENV("FILESYSTEM_DRIVER"));
+            $user->avatar = $path;
+        }
+        $user->update();
+        return response()->json($user);
     }
 
     /**
