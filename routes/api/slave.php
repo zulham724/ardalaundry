@@ -47,7 +47,7 @@ Route::apiResources([
 ]);
 
 Route::group([
-    'middleware' => ['checkIfSlave', 'checkSubscribe'],
+    'middleware' => ['checkifslave', 'checksubscribe'],
 ], function () {
     Route::get('/user', function (Request $request) {
 
