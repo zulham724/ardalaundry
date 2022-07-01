@@ -37,6 +37,10 @@ Route::post('/register', [UserController::class, 'register']);
 
 Route::middleware(['auth:api', 'checkifmaster'])->get('/user', [UserController::class, 'login']);
 
+// Route untuk cek affiliate code
+Route::get('/get-user-affiliate-code/{affiliate_code}', [AffiliateController::class, 'getUserByAffiliateCode']);
+
+
 Route::group([
     'middleware' => ['auth:api'],
 ], function () {
@@ -111,9 +115,6 @@ Route::group([
         $res = \App\Models\User::with('packages')->find(2);
         return $res;
     });
-
-// Route untuk cek affiliate code
-    Route::get('/get-user-affiliate-code/{affiliate_code}', [AffiliateController::class, 'getUserByAffiliateCode']);
 
 // Route untuk update avatar
     Route::post('/update-avatar/{id}', [UserController::class, 'updateAvatar']);
