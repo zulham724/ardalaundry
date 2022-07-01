@@ -95,19 +95,14 @@ class AttendanceController extends Controller
 
     public function attendanceOut(Request $request)
     {
-        $hasAbsen = Attendance::where('user_id', $request->id)
-            ->whereDate('out_at', \Carbon\Carbon::today())
-            ->exists();
-        if ($hasAbsen) {
-            return response()->json([
-                'message' => 'Anda sudah absen keluar',
-            ], 400);
-        }
-        $employee = Attendance::where('user_id', $request->id)->where('in_at', \Carbon\Carbon::today())->first();
-        $employee->out_at = \Carbon\Carbon::now();
-        $employee->update();
+        $res = Attendance::where('user_id', $request->id)
+        // ambil yang in_at nya hari ini
+            ->whereDate('in_at', \Carbon\Carbon::today())
+            ->firstOrFail();
+        $res->out_at = \Carbon\Carbon::now();
+        $res->update();
 
-        return response()->json($employee);
+        return response()->json($res);
     }
 
     public function searchAttendance(Request $request)
