@@ -606,6 +606,7 @@ class OrderController extends Controller
     public function getOrderByStatus($orderstatusid)
     {
         $res = Order::where('order_status_id', $orderstatusid)
+            ->where('shop_id', auth('api')->user()->shop->id)
             ->with('customer', 'employee', 'shop', 'services', 'status', 'payments')
             ->paginate();
 
