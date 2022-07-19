@@ -29,12 +29,9 @@ class CustomerController extends Controller
         // return response()->json($request->all());
         // return $request->user()->shop()->firstOrFail()->customers()->get();
 
-        $customer = new User();
-        $customer->name = $request->name;
+        $customer = new User($request->all());
         $customer->role_id = 6;
-        $customer->email = $request->email;
-        $customer->contact_number = $request->contact_number;
-        $customer->home_address = $request->home_address;
+
         if ($request->has('password')) {
             $customer->password = bcrypt($request->password);
         }

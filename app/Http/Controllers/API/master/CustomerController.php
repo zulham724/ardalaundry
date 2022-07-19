@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\API\master;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Shop;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
@@ -40,14 +40,14 @@ class CustomerController extends Controller
     {
         //
         $request->validate([
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'string|email|max:255|unique:users',
         ]);
-        
+
         $user = new User($request->all());
         $user->role_id = 6;
         $user->save();
 
-        $res = Shop::whereHas('user.master',  function($query){
+        $res = Shop::whereHas('user.master', function ($query) {
             $query->where('master_id', auth('api')->user()->id);
         })->findOrFail($request->shop_id)->customers()->attach($user->id);
 
@@ -89,7 +89,7 @@ class CustomerController extends Controller
     {
         //
         return User::findOrFail($id)->update($request->all
-        ());
+            ());
     }
 
     /**
@@ -101,11 +101,11 @@ class CustomerController extends Controller
     public function destroy($id)
     {
         //
-      
+
         $user = User::whereHas('customer_shops.user.master', function ($query) {
             $query->where("master_id", auth('api')->user()->id);
         })->findOrFail($id)->delete();
         return $user;
-       
+
     }
 }
